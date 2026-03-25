@@ -1,4 +1,4 @@
-﻿import React from 'react';
+﻿import { useEffect, useState, useRef } from 'react';
 import { Box, Grid, Tabs, Tab, Typography, Paper } from "@mui/material";
 import CardPermiso from "../components/CardPermiso";
 import PermisosData from "../services/PermisosData";
@@ -6,13 +6,41 @@ import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 import CardDescUser from '../components/CardDescUser';
 import GuardarPermisosDialog from '../components/Dialog/GuardarPermisosDialog';
+import { getPermisos } from './../services/PermisoService';
 
 export default function Permisos() {
 
     //datos de ejemplo, en un caso real se obtendrían de una API
-    const [permisos, setPermisosData] = React.useState(PermisosData);
-    // ref para mantener los permisos originales y comparar cambios
-    const permisosOriginal = React.useRef(PermisosData);
+    const [permisos, setPermisosData] = useState([]);
+
+    //permisos que se guardaran
+    const permisosOriginal = useRef([]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const cargar = async () => {
+            try {
+                const res = await getPermisos();
+
+                if (isMounted) {
+                    setPermisosData(res.data);
+                    // ref para mantener los permisos originales y comparar cambios
+                    permisosOriginal.current = JSON.parse(JSON.stringify(res.data));
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+
+        cargar();
+
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
+    
 
     // Función para obtener una lista plana de todos los permisos
     const obtenerPermisos = (data) =>
@@ -23,13 +51,13 @@ export default function Permisos() {
         const actuales = obtenerPermisos(permisos);
 
         const agregados = actuales.filter(p => {
-            const orig = originales.find(o => o.id === p.id);
-            return orig && !orig.checked && p.checked;
+            const orig = originales.find(o => o.idRecurso === p.idRecurso);
+            return orig && !orig.check && p.check;
         });
 
         const quitados = actuales.filter(p => {
-            const orig = originales.find(o => o.id === p.id);
-            return orig && orig.checked && !p.checked;
+            const orig = originales.find(o => o.idRecurso === p.idRecurso);
+            return orig && orig.check && !p.check;
         });
 
         return { agregados, quitados };
@@ -42,29 +70,28 @@ export default function Permisos() {
             prev.map(modulo => ({
                 ...modulo,
                 permisos: modulo.permisos.map(p =>
-                    p.id === idPermiso
-                        ? { ...p, checked: !p.checked }
+                    p.idRecurso === idPermiso
+                        ? { ...p, check: !p.check }
                         : p
                 )
             }))
         );
     };
 
-
     // Estado para controlar el diálogo de guardar permisos
-    const [openDialog, setOpenDialog] = React.useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
 
     const handleCloseDialog = () => setOpenDialog(false);
 
-    const [value, setValue] = React.useState(0);
+    const [value, setValue] = useState(0);
 
     // refs dinámicos
-    const sectionsRef = React.useRef({});
+    const sectionsRef = useRef({});
 
     const tabsChange = (event, newValue) => {
         setValue(newValue);
 
-        const rolId = PermisosData[newValue].id;
+        const rolId = PermisosData[newValue].idRecurso;
         const element = sectionsRef.current[rolId];
 
         if (element) {
@@ -100,7 +127,7 @@ export default function Permisos() {
                     allowScrollButtonsMobile
                 >
                     {permisos.map((m) => (
-                        <Tab key={m.id} label={m.titulo} />
+                        <Tab key={m.idModulo} label={m.modulo} />
                     ))}
                 </Tabs>
                
@@ -110,29 +137,29 @@ export default function Permisos() {
             {/* LISTA COMPLETA DE PERMISOS */}
             {permisos.map((modulo) => (
 
-                <Box key={modulo.id} sx={{ mb: 4 }}>
+                <Box key={modulo.idModulo} sx={{ mb: 4 }}>
 
                     {/* TITULO DEL MODULO */}
                     <Typography variant="h6" sx={{ mb: 2 }}>
-                        {modulo.titulo}
+                        {modulo.modulo}
                     </Typography>
 
                     {/* LISTADO PERMISOS */}
                     <Paper
-                        key={modulo.id}
-                        ref={(el) => (sectionsRef.current[modulo.id] = el)}
+                        key={modulo.idModulo}
+                        ref={(el) => (sectionsRef.current[modulo.idModulo] = el)}
                         sx={{ p: 3, mb: 4 }}
 
                     >
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container spacing={2}>
                                 {modulo.permisos.map((permiso) => (
-                                    <Grid key={permiso.id} size={{ xs: 12, md: 6 }}>
+                                    <Grid key={permiso.idRecurso} size={{ xs: 12, md: 6 }}>
                                         <CardPermiso
-                                            id={permiso.id}
-                                            nombrePermiso={permiso.nombrePermiso}
+                                            id={permiso.idRecurso}
+                                            nombrePermiso={permiso.recurso}
                                             descripcion={permiso.descripcion}
-                                            checked={permiso.checked}
+                                            checked={permiso.check}
                                             cambiarPermiso={cambiarPermiso}
                                         />
                                     </Grid>

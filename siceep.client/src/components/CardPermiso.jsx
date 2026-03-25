@@ -34,7 +34,12 @@ const CardPermiso = ({ id, nombrePermiso, descripcion, checked, cambiarPermiso }
                             {descripcion}
                         </Typography>
                     </Grid>
-                    <Grid size={{ xs: 2, md: 2 }}>
+                    <Grid
+                        size={{ xs: 2, md: 2 }}
+                        container
+                        justifyContent="center"
+                        alignItems="center">
+
                         <Checkbox
                             sx={{ transform: 'scale(1.5)' }}
                             checked={checked}
