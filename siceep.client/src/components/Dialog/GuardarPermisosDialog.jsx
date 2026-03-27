@@ -17,12 +17,20 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 
 export default function GuardarPermisosDialog({ open, onClose, cambios }) {
 
-
     const resultado = React.useMemo(() => {
-        if (!open) return { agregados: [], quitados: [] };
-        return cambios();
-    }, [open, cambios]);
+        if (!open) return { cambios: [], agregados: [], quitados: [] };
 
+        const lista = cambios(); // tu función
+        console.log(lista);
+        const agregados = lista.filter(x => x.estado === 1);
+        const quitados = lista.filter(x => x.estado === 0);
+
+        return {
+            cambios: lista,
+            agregados,
+            quitados
+        };
+    }, [open, cambios]);
 
     return (
         <React.Fragment>
@@ -53,34 +61,27 @@ export default function GuardarPermisosDialog({ open, onClose, cambios }) {
                     </Toolbar>
                 </AppBar>
                 <Typography variant="h6">Permisos Agregados</Typography>
-                {resultado?.agregados?.length === 0 && (
-                    <Typography variant="body2" color="text.secondary">
-                        No hay permisos agregados.
-                    </Typography>
+                
+                {resultado.agregados.length === 0 && (
+                    <Typography variant="body2" color="text.secondary">No hay permisos agregados</Typography>
                 )}
                 <List>
-                    {resultado?.agregados?.map((permiso) => (
-                        <ListItemButton key={permiso.idRecurso}>
-                            <ListItemText primary={permiso.recurso} secondary={permiso.descripcion} />
+                    {resultado.agregados.map(p => (
+                        <ListItemButton key={p.idRecurso}>
+                            <ListItemText primary={p.recurso} secondary={p.descripcion} />
                         </ListItemButton>
-                    
                     ))}
-
                 </List>
-                <Typography variant="h6">Permisos Quitados</Typography>
-                {resultado?.quitados?.length === 0 && (
-                    <Typography variant="body2" color="text.secondary">
-                        No hay permisos quitados.
-                    </Typography>
+                <Typography variant="h6">Permisos Eliminados</Typography>
+                {resultado.quitados.length === 0 && (
+                    <Typography variant="body2" color="text.secondary">No hay permisos eliminados</Typography>
                 )}
                 <List>
-                    {resultado?.quitados?.map((permiso) => (
-                        <ListItemButton key={permiso.idRecurso}>
-                            <ListItemText primary={permiso.recurso} secondary={permiso.descripcion} />
+                    {resultado.quitados.map(p => (
+                        <ListItemButton key={p.idRecurso}>
+                            <ListItemText primary={p.recurso} secondary={p.descripcion} />
                         </ListItemButton>
-
                     ))}
-
                 </List>
             </Dialog>
         </React.Fragment>

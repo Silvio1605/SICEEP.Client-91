@@ -1,5 +1,5 @@
 ﻿/* eslint-disable react-hooks/rules-of-hooks */
-import * as React from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import {
@@ -7,7 +7,7 @@ import {
     GridToolbar,
 } from '@mui/x-data-grid';
 import { useTheme, useMediaQuery } from "@mui/material";
-import { rowsUsuarios, columnsUsuarios } from '../services/usuariosData';
+import { columnsUsuarios } from '../services/usuariosData';
 import AddIcon from '@mui/icons-material/Add';
 import { Button } from '@mui/material';
 import Paper from '@mui/material/Paper';
@@ -15,30 +15,63 @@ import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import PerfilUsuarioDialog from '../components/Dialog/PerfilUsuarioDialog';
+//extraer datos de la api
+import { getUsuarios } from './../services/usuarioService';
+
+
 
 export default function usuarios() {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+    //datos de los usuarios
+    const [usuarios, setUsuariosData] = useState([]);
+
+    useEffect(() => {
+        let isMounted = true;
+
+        const cargar = async () => {
+            try {
+                const filtros = {
+                    propietario: "",
+                    pagina: 1,
+                    tamañoPagina: 10
+                };
+
+                const res = await getUsuarios(filtros);
+
+                console.log(res.data.data);
+                if (isMounted) {
+                    setUsuariosData(res.data.data);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+        cargar();
+        return () => {
+            isMounted = false;
+        };
+    }, []);
+
     //logica para abrir perfil de usuario
-    const [openPerfil, setOpenPerfil] = React.useState(false);
+    const [openPerfil, setOpenPerfil] =useState(false);
     
-    const abrirPerfil = React.useCallback(() => {
+    const abrirPerfil = useCallback(() => {
         setOpenPerfil(true);
     }, []);
 
-    const cerrarPerfil = React.useCallback(() => {
+    const cerrarPerfil = useCallback(() => {
         setOpenPerfil(false);
     }, []);
 
-    const registros = React.useMemo(() => {
+    const registros = useMemo(() => {
         return columnsUsuarios({ isMobile, abrirPerfil });
     }, [isMobile, abrirPerfil]);
 
-    const slots = React.useMemo(() => ({ toolbar: GridToolbar }), []);
+    const slots = useMemo(() => ({ toolbar: GridToolbar }), []);
 
-   
     return (
         
         // Box con padding general y fondo suave
@@ -88,7 +121,7 @@ export default function usuarios() {
 
                 {/* DataGrid */}
                 <DataGrid
-                    rows={rowsUsuarios}
+                    rows={usuarios}
                     columns={registros} // Columnas con flex: 1 aplicado
                     // Configuramos el GridToolbar
                     slots={slots}

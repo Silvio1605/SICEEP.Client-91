@@ -1,7 +1,6 @@
 ﻿import { useEffect, useState, useRef } from 'react';
 import { Box, Grid, Tabs, Tab, Typography, Paper } from "@mui/material";
 import CardPermiso from "../components/CardPermiso";
-import PermisosData from "../services/PermisosData";
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 import CardDescUser from '../components/CardDescUser';
@@ -21,7 +20,7 @@ export default function Permisos() {
 
         const cargar = async () => {
             try {
-                const res = await getPermisos();
+                const res = await getPermisos(5);
 
                 if (isMounted) {
                     setPermisosData(res.data);
@@ -32,15 +31,11 @@ export default function Permisos() {
                 console.error("Error:", error);
             }
         };
-
         cargar();
-
         return () => {
             isMounted = false;
         };
     }, []);
-
-    
 
     // Función para obtener una lista plana de todos los permisos
     const obtenerPermisos = (data) =>
@@ -50,17 +45,30 @@ export default function Permisos() {
         const originales = obtenerPermisos(permisosOriginal.current);
         const actuales = obtenerPermisos(permisos);
 
-        const agregados = actuales.filter(p => {
-            const orig = originales.find(o => o.idRecurso === p.idRecurso);
-            return orig && !orig.check && p.check;
-        });
+        // Convertir originales a mapa
+        const mapaOriginal = new Map(
+            originales.map(o => [o.idRecurso, o.check])
+        );
 
-        const quitados = actuales.filter(p => {
-            const orig = originales.find(o => o.idRecurso === p.idRecurso);
-            return orig && orig.check && !p.check;
-        });
+        // recorrer el mapeado para encontrar el id del recurso
+        const cambios = actuales.reduce((acc, p) => {
+            const originalCheck = mapaOriginal.get(p.idRecurso);
 
-        return { agregados, quitados };
+            //que no sea indefinido y sea distito al original
+            if (originalCheck !== undefined && originalCheck !== p.check) {
+                acc.push({
+                    idRecurso: p.idRecurso,
+                    recurso: p.recurso,
+                    descripcion: p.descripcion,
+                    estado: p.check ? 1 : 0
+                });
+            }
+
+            return acc;
+        }, []);
+
+        return cambios;
+    
     };
 
 
@@ -91,8 +99,8 @@ export default function Permisos() {
     const tabsChange = (event, newValue) => {
         setValue(newValue);
 
-        const rolId = PermisosData[newValue].idRecurso;
-        const element = sectionsRef.current[rolId];
+        const idModulo = permisosOriginal.current[newValue].idModulo;
+        const element = sectionsRef.current[idModulo];
 
         if (element) {
             element.scrollIntoView({
@@ -149,7 +157,6 @@ export default function Permisos() {
                         key={modulo.idModulo}
                         ref={(el) => (sectionsRef.current[modulo.idModulo] = el)}
                         sx={{ p: 3, mb: 4 }}
-
                     >
                         <Box sx={{ flexGrow: 1 }}>
                             <Grid container spacing={2}>
@@ -166,9 +173,7 @@ export default function Permisos() {
                                 ))}
                             </Grid>
                         </Box>
-                        
                     </Paper>
-
                 </Box>
             ))}
             <Fab
