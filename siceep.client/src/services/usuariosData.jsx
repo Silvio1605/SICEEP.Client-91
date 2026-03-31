@@ -17,12 +17,20 @@ const getEstadoColor = (estado) => {
 
 export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
     {
-        field: 'id', headerName: 'No.', flex: 2, minWidth: 20,
+        field: 'id', headerName: 'No.', flex: 2, minWidth: 20, maxWidth: 80,
         align: 'center', headerAlign: 'center'
     },
     !isMobile && {
-        field: 'carnet', headerName: 'Carnet.', flex: 2, minWidth: 40,
+        field: 'carnet', headerName: 'Carnet.', flex: 2, minWidth: 20,
         align: 'center', headerAlign: 'center'
+    },
+    !isMobile && {
+        field: 'propietario', headerName: 'Nombre Completo', flex: 2, minWidth: 150,
+        align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
+    },
+    {
+        field: 'usuario', headerName: 'Usuario', flex: 2, minWidth: 40,
+        align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
     },
     {
         field: 'estado',
@@ -39,16 +47,12 @@ export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
             />
         ),
     }, 
-    {
-        field: 'propietario', headerName: 'Nombre Completo', flex: 2, minWidth: 180,
-        align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
-    },
     !isMobile && {
-        field: 'fechaExpiracion', headerName: 'Fecha Expiración', flex: 2, minWidth: 50,
+        field: 'fechaExpiracion', headerName: 'Fecha Expiración', flex: 2, minWidth: 30,
         align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
     },
     {
-        field: 'acciones', headerName: 'Acciones', flex: 1, minWidth: 40,
+        field: 'acciones', headerName: 'Acciones', flex: 1, minWidth: 30,
         sortable: false,
         filterable: false,
         align: 'center',
