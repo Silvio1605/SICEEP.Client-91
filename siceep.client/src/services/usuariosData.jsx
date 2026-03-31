@@ -6,9 +6,9 @@ const getEstadoColor = (estado) => {
     switch (estado) {
         case "Activo":
             return 'success';
-        case "Baja":
+        case "Inactivo":
             return 'warning';
-        case 'Suspendido':
+        case 'Expirado':
             return 'default';
         default:
             return 'default';
@@ -17,11 +17,11 @@ const getEstadoColor = (estado) => {
 
 export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
     {
-        field: 'id', headerName: 'No.', flex: 2, minWidth: 20, maxWidth: 80,
+        field: 'index', headerName: 'No.', flex: 2, minWidth: 20, maxWidth: 80,
         align: 'center', headerAlign: 'center'
     },
     !isMobile && {
-        field: 'carnet', headerName: 'Carnet.', flex: 2, minWidth: 20,
+        field: 'id', headerName: 'Ident.', flex: 2, minWidth: 20,
         align: 'center', headerAlign: 'center'
     },
     !isMobile && {
@@ -61,4 +61,5 @@ export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
             <MenuAcciones row={params.row} abrirPerfil={abrirPerfil} />
         ),
     },
+
 ].filter(Boolean);

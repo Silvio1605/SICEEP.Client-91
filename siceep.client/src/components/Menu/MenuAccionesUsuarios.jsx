@@ -41,7 +41,12 @@ export default function MenuAcciones({ row, abrirPerfil }) {
                 <MenuItem onClick={abrirPerfil}>
                     Perfil
                 </MenuItem>
-                <MenuItem component={Link} to={'/permisos'}>
+                <MenuItem
+                    component={Link}
+                    to={'/permisos'}
+                    onClick={handleClose}
+                    state={{ user: row }}
+                >
                     <KeyIcon sx={{ mr: 1 }} /> Permisos
                 </MenuItem>
 

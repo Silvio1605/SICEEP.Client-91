@@ -5,10 +5,13 @@ import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 import CardDescUser from '../components/CardDescUser';
 import GuardarPermisosDialog from '../components/Dialog/GuardarPermisosDialog';
+import { useLocation } from 'react-router-dom';
 import { getPermisos } from './../services/PermisoService';
 
 export default function Permisos() {
 
+    //funcion para extraer el valor enviado desde usuario
+    const { state } = useLocation();
     //datos de ejemplo, en un caso real se obtendrían de una API
     const [permisos, setPermisosData] = useState([]);
 
@@ -20,8 +23,11 @@ export default function Permisos() {
 
         const cargar = async () => {
             try {
-                const res = await getPermisos(5);
 
+                //identificador del usuario
+                var id = state?.user.id;
+
+                const res = await getPermisos(id);
                 if (isMounted) {
                     setPermisosData(res.data);
                     // ref para mantener los permisos originales y comparar cambios
@@ -35,7 +41,7 @@ export default function Permisos() {
         return () => {
             isMounted = false;
         };
-    }, []);
+    }, [state]);
 
     // Función para obtener una lista plana de todos los permisos
     const obtenerPermisos = (data) =>
@@ -68,9 +74,7 @@ export default function Permisos() {
         }, []);
 
         return cambios;
-    
     };
-
 
     // Función para cambiar el estado de un permiso
     const cambiarPermiso = (idPermiso) => {
@@ -139,7 +143,6 @@ export default function Permisos() {
                     ))}
                 </Tabs>
                
-                
             </Box>
 
             {/* LISTA COMPLETA DE PERMISOS */}

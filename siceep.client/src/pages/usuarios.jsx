@@ -73,9 +73,9 @@ export default function usuarios() {
             if (filtro.estado === "") {
                 filtro.estado = null;
             }
-
             const res = await getUsuarios(filtro);
             setUsuariosData(res.data.data);
+
         } catch (error) {
             console.error("Error:", error);
         }
