@@ -12,46 +12,62 @@ const CardPermiso = ({ id, nombrePermiso, descripcion, checked, cambiarPermiso }
         <Card
             onClick={() => cambiarPermiso(id)}
             sx={{
-                p: 0,
-                m: 1,
-                bgcolor: checked
-                    ? alpha('#0288d1', 0.12)
-                    : 'background.paper',
-                border: checked ? '2px solid  #0288d1' : '1px solid',
+                borderRadius: 3,
+                bgcolor: checked ? alpha('#0288d1', 0.08) : 'background.paper',
+                border: checked ? '2px solid #0288d1' : '1px solid',
                 borderColor: checked ? '#0288d1' : 'divider',
-                transition: 'all 0.2s ease',
-                cursor: 'pointer'
+                transition: 'all 0.25s ease',
+                cursor: 'pointer',
+                '&:hover': {
+                    boxShadow: 3,
+                    transform: 'translateY(-2px)',
+                    borderColor: '#0288d1'
+                }
             }}
         >
-            <CardContent sx={{ p: 1 }}>
+            <CardContent sx={{ px: 2, py: 1.5 }}>
+                <Grid container alignItems="center">
 
-                <Grid container spacing={2}>
-                    <Grid size={{ xs: 10, md: 10 }}>
-                        <Typography variant="subtitle2" color="text.primary">
+                    {/* Texto */}
+                    <Grid size={{ xs: 10 }}>
+                        <Typography
+                            variant="subtitle1"
+                            fontWeight="600"
+                            color="text.primary"
+                        >
                             {nombrePermiso}
                         </Typography>
-                        <Typography variant="body2" color="text.secondary">
+
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.3 }}
+                        >
                             {descripcion}
                         </Typography>
                     </Grid>
-                    <Grid
-                        size={{ xs: 2, md: 2 }}
-                        container
-                        justifyContent="center"
-                        alignItems="center">
 
+                    {/* Checkbox */}
+                    <Grid
+                        size={{ xs: 2 }}
+                        display="flex"
+                        justifyContent="center"
+                        alignItems="center"
+                    >
                         <Checkbox
-                            sx={{ transform: 'scale(1.5)' }}
                             checked={checked}
                             onChange={() => cambiarPermiso(id)}
-                            onClick={(e) => e.stopPropagation()} // evita que el clic doble dispare dos veces
+                            onClick={(e) => e.stopPropagation()}
                             color="primary"
                             icon={<RadioButtonUncheckedIcon />}
                             checkedIcon={<CheckCircleIcon />}
+                            sx={{
+                                transform: 'scale(1.3)',
+                            }}
                         />
                     </Grid>
+
                 </Grid>
-                
             </CardContent>
         </Card>
     );

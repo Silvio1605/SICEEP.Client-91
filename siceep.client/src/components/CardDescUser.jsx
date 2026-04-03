@@ -1,4 +1,4 @@
-﻿import { Box, Typography } from "@mui/material";
+﻿import { Box, Typography, Divider } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
@@ -6,12 +6,17 @@ import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { TextField } from "@mui/material";
 import VillaIcon from '@mui/icons-material/Villa';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import BoyIcon from '@mui/icons-material/Boy';
+import WorkIcon from '@mui/icons-material/Work';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import LockClockIcon from '@mui/icons-material/LockClock';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
     ...theme.typography.body2,
     padding: theme.spacing(1),
-    textAlign: 'center',
+    textAlign: 'left',
     color: (theme.vars ?? theme).palette.text.secondary,
     ...theme.applyStyles('dark', {
         backgroundColor: '#1A2027',
@@ -22,44 +27,78 @@ function CardDescUser() {
     
     return (
       // Información del Usuario
-        <Box sx={{ flexGrow: 1 , p: 1, m:1 }}>
+        <Box sx={{ flexGrow: 1 , mb: 2 }}>
             <Grid container spacing={2}>
                 <Grid size={{ xs: 12, lg: 6 }}>
-                    <Box sx={{ p: 2, bgcolor: "background.default" }}>
-                        <Box display="flex" alignItems="left" sx={{ p: 1, m: 0, bgcolor: "background.default" }}>
-                            <Stack direction="row" spacing={2}>
-                                <Avatar alt="user" src="./../public/image/default-user.jpg" />
-                            </Stack>
-                            <Typography variant="h6" sx={{ mb: 1, p: 1 }}>
-                                <strong>SilvioJM</strong> (Carnet:2602102030)
-                            </Typography>
+                    <Item>
+                        <Box sx={{ p: 1, bgcolor: "background.default" }}>
+                            <Box display="flex" alignItems="center" sx={{ pl: 4 }}>
+
+                                {/* Avatar */}
+                                <Avatar alt="user" src="/image/default-user.jpg" />
+
+                                {/* Textos */}
+                                <Box sx={{ ml: 2 }}>
+                                    <Typography variant="h5">
+                                        <strong>SilvioJM</strong>
+                                    </Typography>
+
+                                    <Typography variant="body2" sx={{ pt: 1 }}>
+                                        <strong>Propietario: </strong> Silvio Junior Morales Domínguez
+                                    </Typography>
+                                </Box>
+
+                            </Box>
                         </Box>
-                        <Typography variant="body2" sx={{ ml: 5, p: 0 }}>
-                            <strong>Cuenta asignada a:</strong> Silvio Junior Morales Domínguez
-                        </Typography>
-                    </Box>
-                    
+                    </Item>
                     
                 </Grid>
+               
                 <Grid size={{ xs: 12, lg: 6 }}>
-                    <Box sx={{ p: 2, bgcolor: "background.default" }}>
-                        
-                        <TextField
-                            fullWidth
-                            disabled
-                            label="La cuenta expira el"
-                            type="date"
-                            size="small"
-                            defaultValue="2028-02-10"
-                            InputLabelProps={{
-                                shrink: true,
-                            }}
-                        />
-                        <Typography variant="body2" sx={{ mb: 1, p: 1 }}>
-                            <VillaIcon sx={{ mt:1, mr: 1 }} />
-                            <strong>Ubicado en:</strong> División de Personal y Cuadros
-                        </Typography>
-                    </Box>
+                    <Item>
+                        <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
+                            <WorkIcon sx={{ mr: 1 }} />
+
+                            <Typography variant="body2">
+                                <strong>Rol :</strong> Administrador
+                            </Typography>
+                        </Box>
+
+                        <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
+                            <VillaIcon sx={{ mr: 1 }} />
+
+                            <Typography variant="body2">
+                                <strong>Ubicado en:</strong> División de Personal y Cuadros
+                            </Typography>
+                        </Box>
+                    </Item>
+                </Grid>
+                <Grid size={{ xs: 12, lg: 12 }}>
+                    <Item>
+                        <Box
+                            display="flex"
+                            alignItems="center"
+                            sx={{ bgcolor: "background.default" }}
+                        >
+                            {/* Bloque izquierdo */}
+                            <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
+                                <CalendarTodayIcon sx={{ mr: 1 }} />
+
+                                <Typography variant="body2">
+                                    <strong>La cuenta expira el:</strong> 03/12/2028
+                                </Typography>
+                            </Box>
+                            {/* Bloque derecho*/}
+                            <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
+                                <LockClockIcon sx={{ mr: 1 }} />
+
+                                <Typography variant="body2">
+                                    <strong>Tiempo de uso restante:</strong> 2 años y 5 meses de uso restantes.
+                                </Typography>
+                            </Box>
+
+                        </Box>
+                    </Item>
                 </Grid>
 
             </Grid>

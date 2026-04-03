@@ -7,12 +7,13 @@ import CardDescUser from '../components/CardDescUser';
 import GuardarPermisosDialog from '../components/Dialog/GuardarPermisosDialog';
 import { useLocation } from 'react-router-dom';
 import { getPermisos } from './../services/PermisoService';
+//import { getEstructura } from './../services/usuarioService';
 
 export default function Permisos() {
 
     //funcion para extraer el valor enviado desde usuario
     const { state } = useLocation();
-    //datos de ejemplo, en un caso real se obtendrían de una API
+    //datos de la API
     const [permisos, setPermisosData] = useState([]);
 
     //permisos que se guardaran
@@ -28,8 +29,12 @@ export default function Permisos() {
                 var id = state?.user.id;
 
                 const res = await getPermisos(id);
+                //const estructura = await getEstructura(id);
+
                 if (isMounted) {
+                    // datos para mostrar permisos con su estado
                     setPermisosData(res.data);
+
                     // ref para mantener los permisos originales y comparar cambios
                     permisosOriginal.current = JSON.parse(JSON.stringify(res.data));
                 }
@@ -41,6 +46,7 @@ export default function Permisos() {
         return () => {
             isMounted = false;
         };
+
     }, [state]);
 
     // Función para obtener una lista plana de todos los permisos
@@ -127,7 +133,8 @@ export default function Permisos() {
                     zIndex: 10,
                     bgcolor: "background.paper",
                     borderBottom: 1,
-                    borderColor: "divider"
+                    borderColor: "divider",
+                    boxShadow: 2
                 }}
             >
                 
@@ -137,6 +144,11 @@ export default function Permisos() {
                     variant="scrollable"
                     scrollButtons
                     allowScrollButtonsMobile
+                    textColor="primary"
+                    indicatorColor="primary"
+                    sx={{
+                        px: 2
+                    }}
                 >
                     {permisos.map((m) => (
                         <Tab key={m.idModulo} label={m.modulo} />
@@ -147,36 +159,50 @@ export default function Permisos() {
 
             {/* LISTA COMPLETA DE PERMISOS */}
             {permisos.map((modulo) => (
+                <Box key={modulo.idModulo} sx={{ mb: 4  }} >
 
-                <Box key={modulo.idModulo} sx={{ mb: 4 }}>
+                    {/* HEADER DEL MÓDULO */}
+                    <Box
+                        sx={{
+                            mt: 3,
+                            mb: 1.5,
+                            px: 1,
+                            borderLeft: '4px solid #0288d1'
 
-                    {/* TITULO DEL MODULO */}
-                    <Typography variant="h6" sx={{ mb: 2 }}>
-                        {modulo.modulo}
-                    </Typography>
-
-                    {/* LISTADO PERMISOS */}
-                    <Paper
-                        key={modulo.idModulo}
-                        ref={(el) => (sectionsRef.current[modulo.idModulo] = el)}
-                        sx={{ p: 3, mb: 4 }}
+                        }}
                     >
-                        <Box sx={{ flexGrow: 1 }}>
-                            <Grid container spacing={2}>
-                                {modulo.permisos.map((permiso) => (
-                                    <Grid key={permiso.idRecurso} size={{ xs: 12, md: 6 }}>
-                                        <CardPermiso
-                                            id={permiso.idRecurso}
-                                            nombrePermiso={permiso.recurso}
-                                            descripcion={permiso.descripcion}
-                                            checked={permiso.check}
-                                            cambiarPermiso={cambiarPermiso}
-                                        />
-                                    </Grid>
-                                ))}
-                            </Grid>
-                        </Box>
+                        <Typography variant="h6" fontWeight="600">
+                            {modulo.modulo}
+                        </Typography>
+                    </Box>
+
+                    {/* CONTENEDOR */}
+                    <Paper
+                        ref={(el) => (sectionsRef.current[modulo.idModulo] = el)}
+                        elevation={0}
+                        sx={{
+                            p: 2,
+                            borderRadius: 3,
+                            border: '1px solid',
+                            borderColor: 'divider',
+                            bgcolor: 'background.paper'
+                        }}
+                    >
+                        <Grid container spacing={2}>
+                            {modulo.permisos.map((permiso) => (
+                                <Grid key={permiso.idRecurso} size={{ xs: 12, md: 6 }}>
+                                    <CardPermiso
+                                        id={permiso.idRecurso}
+                                        nombrePermiso={permiso.recurso}
+                                        descripcion={permiso.descripcion}
+                                        checked={permiso.check}
+                                        cambiarPermiso={cambiarPermiso}
+                                    />
+                                </Grid>
+                            ))}
+                        </Grid>
                     </Paper>
+
                 </Box>
             ))}
             <Fab
