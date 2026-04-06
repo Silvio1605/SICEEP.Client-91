@@ -16,6 +16,8 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import PerfilUsuarioDialog from '../components/Dialog/PerfilUsuarioDialog';
 import SelectItem from '../components/SelectItem';
+// React Router
+import { useSearchParams } from "react-router-dom";
 //extraer datos de la api
 import { getUsuarios } from './../services/usuarioService';
 import { getSelectUsuario } from './../services/selectService';
@@ -26,16 +28,23 @@ export default function usuarios() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+    const [inputPropietario, setInputPropietario] = useState("");
     //datos de la busqueda con filtro
-    const [año, setAño] = useState("");
+    const [, setAño] = useState("");
     const [filtro, setFiltro] = useState({
         propietario: "",
         fechaExpiracionDesde: null,
         fechaExpiracionHasta: null,
         estado: null,
-        pagina: 1,
-        tamañoPagina: 10
+        pagina: null,
+        tamañoPagina: null
     });
+
+    // para manejar los parámetros de búsqueda en la URL (si es necesario)
+    const [searchParams, setSearchParams] = useSearchParams();
+    //const firstLoad = useRef(true);
+    // Verificar si hay parámetros de búsqueda en la URL
+    const hayParams = searchParams.toString().length > 0;
 
     //datos de seleccion (filtro)
     const [selEstado, setSelEstado] = useState([]);
@@ -44,9 +53,65 @@ export default function usuarios() {
     //datos de los usuarios
     const [usuarios, setUsuariosData] = useState([]);
 
+    // Sincronizar el estado del filtro con los parámetros de búsqueda en la URL al montar el componente
+    useEffect(() => {
+
+        const query = searchParams.toString();
+
+        // si no hay parámetros - no hacer nada
+        if (!query) return;
+
+        const nuevosFiltros = {};
+
+        for (let [key, value] of searchParams.entries()) {
+            nuevosFiltros[key] = value;
+        }
+
+        setFiltro(prev => ({
+            ...prev,
+            ...nuevosFiltros
+        }));
+
+    }, [searchParams]);
+
+    // Cargar usuarios cada vez que cambie el filtro o los parámetros de búsqueda en la URL
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            // solo cargar si viene de URL
+            if (!hayParams) return;
+
+            const cargarUsuarios = async () => {
+                const res = await getUsuarios(filtro);
+                console.log("respuesta usuarios:", res.data);
+                setUsuariosData(res.data.data);
+            };
+            // Evitar cargar si el filtro de propietario está vacío (puede ser el caso al sincronizar con URL sin ese parámetro)
+            if (filtro.propietario === "") return;
+            cargarUsuarios();
+        }, 500);
+       
+        return () => clearTimeout(timer);
+
+    }, [filtro, hayParams]);
+
+    // Actualizar los parámetros de búsqueda en la URL cada vez que cambie el filtro
+    useEffect(() => {
+        const params = {};
+
+        Object.entries(filtro).forEach(([key, value]) => {
+            if (value) {
+                params[key] = value;
+            }
+        });
+        setSearchParams(params);
+
+    }, [filtro, setSearchParams]);
+
+    // Cargar datos de selección para los filtros al montar el componente
     useEffect(() => {
         let isMountedSel = true;
 
+        // Función para cargar datos de selección
         const cargarSelect = async () => {
             try {
                 //cargar datos de seleccion
@@ -60,12 +125,14 @@ export default function usuarios() {
                 console.error("Error:", error);
             }
         };
+
         cargarSelect();
+
         return () => {
             isMountedSel = false;
         };
-    }, []);
 
+    }, []);
 
     const handleBuscar = async () => {
         try {
@@ -73,6 +140,9 @@ export default function usuarios() {
             if (filtro.estado === "") {
                 filtro.estado = null;
             }
+            filtro.pagina = 1; // Reiniciar a la primera página al cambiar el filtro
+            filtro.tamañoPagina = 10; // Asegurar que el tamaño de página esté definido
+            filtro.propietario = inputPropietario; // Actualizar el filtro con el valor del input
             const res = await getUsuarios(filtro);
             setUsuariosData(res.data.data);
 
@@ -162,20 +232,15 @@ export default function usuarios() {
                                 sx={{ ml: 1, flex: 1 }}
                                 placeholder="Búscar por nombre del propietario"
                                 inputProps={{ 'aria-label': 'Busqueda Usuarios' }}
-                                value={filtro.propietario}
-                                onChange={(e) =>
-                                    setFiltro(prev => ({
-                                        ...prev,
-                                        [e.target.name]: e.target.value
-                                    }))
-                                }
+                                value={inputPropietario}
+                                onChange={(e) => setInputPropietario(e.target.value)}
                             />
                             <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleBuscar}>
                                 <SearchIcon />
                             </IconButton>
                         </Paper>
                         <SelectItem
-                            value={filtro.estado}
+                            value={selEstado.length ? filtro.estado : ""}
                             onChange={(estado) =>
                                 setFiltro(prev => ({
                                     ...prev,
@@ -186,7 +251,11 @@ export default function usuarios() {
                             titulo={"Estados"}
                         />
                         <SelectItem
-                            value={año}
+                            value={
+                                selAño.length && filtro.fechaExpiracionDesde
+                                    ? filtro.fechaExpiracionDesde.split("-")[0]
+                                    : ""
+                            }
                             onChange={(año) => {
 
                                 setAño(año);
@@ -215,6 +284,7 @@ export default function usuarios() {
                 <Typography variant="subtitle1" component="h1" color="text.secundary">
                     Registros de cuentas
                 </Typography>
+
                 {/* DataGrid */}
                 <DataGrid
                     rows={usuarios}

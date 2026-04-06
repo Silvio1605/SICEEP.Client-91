@@ -5,12 +5,16 @@ import KeyIcon from '@mui/icons-material/Key';
 import PasswordIcon from '@mui/icons-material/Password';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 
 export default function MenuAcciones({ row, abrirPerfil }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
+
+
+    const navigate = useNavigate();
+    const location = useLocation();
 
     const handleOpen = (event) => {
         setAnchorEl(event.currentTarget);
@@ -42,10 +46,17 @@ export default function MenuAcciones({ row, abrirPerfil }) {
                     Perfil
                 </MenuItem>
                 <MenuItem
-                    component={Link}
-                    to={'/permisos'}
-                    onClick={handleClose}
-                    state={{ user: row }}
+                    
+                    onClick={() => {
+                        handleClose();
+
+                        navigate("/permisos", {
+                            state: {
+                                user: row,
+                                from: location // guardar filtro actual para volver después
+                            }
+                        });
+                    }}
                 >
                     <KeyIcon sx={{ mr: 1 }} /> Permisos
                 </MenuItem>

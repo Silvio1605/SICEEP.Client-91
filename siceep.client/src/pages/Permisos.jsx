@@ -5,6 +5,7 @@ import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 import CardDescUser from '../components/CardDescUser';
 import GuardarPermisosDialog from '../components/Dialog/GuardarPermisosDialog';
+// servicios
 import { useLocation } from 'react-router-dom';
 import { getPermisos } from './../services/PermisoService';
 import { getEstructura } from './../services/usuarioService';
@@ -13,8 +14,10 @@ export default function Permisos() {
 
     //funcion para extraer el valor enviado desde usuario
     const { state } = useLocation();
+
     //datos de la API
     const [permisos, setPermisosData] = useState([]);
+    
     const [perfil, setPerfil] = useState({
         usuario: null,
         estructura: null
@@ -31,7 +34,6 @@ export default function Permisos() {
 
                 //identificador del usuario
                 var id = state?.user.id;
-                console.log("ID Usuario:", id);
                 const res = await getPermisos(id);
                 const estructura = await getEstructura(id);
 
@@ -105,7 +107,6 @@ export default function Permisos() {
 
     // Estado para controlar el diálogo de guardar permisos
     const [openDialog, setOpenDialog] = useState(false);
-
     const handleCloseDialog = () => setOpenDialog(false);
 
     const [value, setValue] = useState(0);
