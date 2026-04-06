@@ -10,27 +10,47 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
+//servicios
+import { guardarPermisos } from '../../services/PermisoService';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function GuardarPermisosDialog({ open, onClose, cambios }) {
+export default function GuardarPermisosDialog({ open, onClose, idUsuario, cambios }) {
 
     const resultado = React.useMemo(() => {
         if (!open) return { cambios: [], agregados: [], quitados: [] };
 
         const lista = cambios(); // tu función
-        console.log(lista);
+
         const agregados = lista.filter(x => x.estado === 1);
         const quitados = lista.filter(x => x.estado === 0);
-
         return {
             cambios: lista,
             agregados,
             quitados
         };
+
     }, [open, cambios]);
+
+    const handleGuardar = async () => {
+        onClose();
+
+        const permisosCambiados = resultado.cambios.map(x => ({
+            idRecurso: x.idRecurso,
+            permitido: x.estado === 1 // mejor booleano
+        }));
+
+        const dataEnvio = {
+            idUsuario: idUsuario,
+            permisos: permisosCambiados
+        };
+
+        const result = await guardarPermisos(dataEnvio);
+        console.log(result);
+
+    };
 
     return (
         <React.Fragment>
@@ -55,7 +75,11 @@ export default function GuardarPermisosDialog({ open, onClose, cambios }) {
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                             SilvioJM
                         </Typography>
-                        <Button autoFocus color="inherit" onClick={onClose}>
+                        <Button autoFocus color="inherit"
+                            onClick={
+                                handleGuardar
+                            }
+                        >
                             Guardar Cambios
                         </Button>
                     </Toolbar>

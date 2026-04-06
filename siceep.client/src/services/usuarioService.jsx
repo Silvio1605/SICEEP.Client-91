@@ -5,5 +5,5 @@ export const getUsuarios = async (filtros) => {
 };
 
 export const getEstructura = async (idUsuario) => {
-    return await api.get(`Estructura/Estructura/GetEstructura_byId?id=${idUsuario}`);
+    return await api.post(`Estructura/GetEstructura_byId?id=${idUsuario}`);
 };

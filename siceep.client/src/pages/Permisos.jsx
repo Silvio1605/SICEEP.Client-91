@@ -7,7 +7,7 @@ import CardDescUser from '../components/CardDescUser';
 import GuardarPermisosDialog from '../components/Dialog/GuardarPermisosDialog';
 import { useLocation } from 'react-router-dom';
 import { getPermisos } from './../services/PermisoService';
-//import { getEstructura } from './../services/usuarioService';
+import { getEstructura } from './../services/usuarioService';
 
 export default function Permisos() {
 
@@ -15,6 +15,10 @@ export default function Permisos() {
     const { state } = useLocation();
     //datos de la API
     const [permisos, setPermisosData] = useState([]);
+    const [perfil, setPerfil] = useState({
+        usuario: null,
+        estructura: null
+    });
 
     //permisos que se guardaran
     const permisosOriginal = useRef([]);
@@ -27,14 +31,17 @@ export default function Permisos() {
 
                 //identificador del usuario
                 var id = state?.user.id;
-
+                console.log("ID Usuario:", id);
                 const res = await getPermisos(id);
-                //const estructura = await getEstructura(id);
+                const estructura = await getEstructura(id);
 
                 if (isMounted) {
                     // datos para mostrar permisos con su estado
                     setPermisosData(res.data);
-
+                    setPerfil({
+                        usuario: state.user,
+                        estructura: estructura.data
+                    });
                     // ref para mantener los permisos originales y comparar cambios
                     permisosOriginal.current = JSON.parse(JSON.stringify(res.data));
                 }
@@ -123,7 +130,7 @@ export default function Permisos() {
     return (
         <Box>
             {/* Información del Usuario */}
-            <CardDescUser />
+            <CardDescUser perfil={ perfil } />
 
             {/* Tabs */}
             <Box
@@ -219,7 +226,7 @@ export default function Permisos() {
             >
                 <SaveIcon />
             </Fab>
-            <GuardarPermisosDialog open={openDialog} onClose={handleCloseDialog} cambios={detectarCambios} />
+            <GuardarPermisosDialog open={openDialog} onClose={handleCloseDialog} idUsuario={state?.user.id} cambios={detectarCambios} />
         </Box>
     );
 }

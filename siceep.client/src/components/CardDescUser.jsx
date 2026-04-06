@@ -23,8 +23,53 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-function CardDescUser() {
-    
+const esFechaValida = (fecha) => {
+    const f = new Date(fecha);
+    return !isNaN(f.getTime());
+};
+
+const tiempoRestante = (fecha) => {
+    // Validación de fecha
+    if (!esFechaValida(fecha)) {
+        return "Fecha inválida";
+    }
+    // Cálculo de tiempo restante
+    const ahora = new Date();
+    const objetivo = new Date(fecha);
+
+    if (objetivo <= ahora) return "Cuenta Expirada";
+
+    let anios = objetivo.getFullYear() - ahora.getFullYear();
+    let meses = objetivo.getMonth() - ahora.getMonth();
+    let dias = objetivo.getDate() - ahora.getDate();
+
+    if (dias < 0) {
+        meses--;
+        const diasMesAnterior = new Date(
+            objetivo.getFullYear(),
+            objetivo.getMonth(),
+            0
+        ).getDate();
+        dias += diasMesAnterior;
+    }
+
+    if (meses < 0) {
+        anios--;
+        meses += 12;
+    }
+
+    // Construcción dinámica
+    const partes = [];
+
+    if (anios > 0) partes.push(`${anios} año${anios > 1 ? "s" : ""}`);
+    if (meses > 0) partes.push(`${meses} mes${meses > 1 ? "es" : ""}`);
+    if (dias > 0) partes.push(`${dias} día${dias > 1 ? "s" : ""}`);
+
+    return partes.length > 0 ? partes.join(", ") : "Hoy";
+};
+
+function CardDescUser({ perfil }) {
+
     return (
       // Información del Usuario
         <Box sx={{ flexGrow: 1 , mb: 2 }}>
@@ -40,11 +85,11 @@ function CardDescUser() {
                                 {/* Textos */}
                                 <Box sx={{ ml: 2 }}>
                                     <Typography variant="h5">
-                                        <strong>SilvioJM</strong>
+                                        <strong>{perfil.usuario?.usuario}</strong>
                                     </Typography>
 
                                     <Typography variant="body2" sx={{ pt: 1 }}>
-                                        <strong>Propietario: </strong> Silvio Junior Morales Domínguez
+                                        <strong>Propietario: </strong> { perfil.usuario?.propietario }
                                     </Typography>
                                 </Box>
 
@@ -60,7 +105,7 @@ function CardDescUser() {
                             <WorkIcon sx={{ mr: 1 }} />
 
                             <Typography variant="body2">
-                                <strong>Rol :</strong> Administrador
+                                <strong>Rol :</strong> {perfil.usuario?.rol} 
                             </Typography>
                         </Box>
 
@@ -68,7 +113,7 @@ function CardDescUser() {
                             <VillaIcon sx={{ mr: 1 }} />
 
                             <Typography variant="body2">
-                                <strong>Ubicado en:</strong> División de Personal y Cuadros
+                                <strong>Ubicado en:</strong> {perfil.estructura?.estructura} 
                             </Typography>
                         </Box>
                     </Item>
@@ -85,7 +130,7 @@ function CardDescUser() {
                                 <CalendarTodayIcon sx={{ mr: 1 }} />
 
                                 <Typography variant="body2">
-                                    <strong>La cuenta expira el:</strong> 03/12/2028
+                                    <strong>La cuenta expira el:</strong> {perfil.usuario?.fechaExpiracion}
                                 </Typography>
                             </Box>
                             {/* Bloque derecho*/}
@@ -93,7 +138,7 @@ function CardDescUser() {
                                 <LockClockIcon sx={{ mr: 1 }} />
 
                                 <Typography variant="body2">
-                                    <strong>Tiempo de uso restante:</strong> 2 años y 5 meses de uso restantes.
+                                    <strong>Tiempo de uso restante:</strong> {tiempoRestante(perfil.usuario?.fechaExpiracion)} 
                                 </Typography>
                             </Box>
 
