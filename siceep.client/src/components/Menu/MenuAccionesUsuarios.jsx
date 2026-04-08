@@ -1,10 +1,13 @@
 ﻿import { useState } from 'react';
 import { IconButton, Menu, MenuItem } from '@mui/material';
+// Importar iconos
 import MoreVertIcon from '@mui/icons-material/MoreVert';
 import KeyIcon from '@mui/icons-material/Key';
+import FaceIcon from '@mui/icons-material/Face';
 import PasswordIcon from '@mui/icons-material/Password';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
+// Importar Link y useNavigate para navegación
 import { Link, useNavigate, useLocation } from "react-router-dom";
 
 
@@ -43,7 +46,7 @@ export default function MenuAcciones({ row, abrirPerfil }) {
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <MenuItem onClick={abrirPerfil}>
-                    Perfil
+                    <FaceIcon sx={{ mr: 1 }} /> Perfil
                 </MenuItem>
                 <MenuItem
                     
@@ -63,9 +66,6 @@ export default function MenuAcciones({ row, abrirPerfil }) {
 
                 <MenuItem onClick={() => handleAction('editar')}>
                     <PasswordIcon sx={{ mr: 1 }} /> Reestablecer contraseña
-                </MenuItem>
-                <MenuItem onClick={() => handleAction('editar')}>
-                    <DateRangeIcon sx={{ mr: 1 }} /> Actualizar Fecha
                 </MenuItem>
                 <MenuItem
                     onClick={() => handleAction('eliminar')}

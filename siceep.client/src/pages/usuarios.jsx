@@ -16,6 +16,8 @@ import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import PerfilUsuarioDialog from '../components/Dialog/PerfilUsuarioDialog';
 import SelectItem from '../components/SelectItem';
+// Importar Grid para el toolbar
+import Grid from '@mui/material/Grid';
 // React Router
 import { useSearchParams } from "react-router-dom";
 //extraer datos de la api
@@ -42,7 +44,6 @@ export default function usuarios() {
 
     // para manejar los parámetros de búsqueda en la URL (si es necesario)
     const [searchParams, setSearchParams] = useSearchParams();
-    //const firstLoad = useRef(true);
     // Verificar si hay parámetros de búsqueda en la URL
     const hayParams = searchParams.toString().length > 0;
 
@@ -82,7 +83,6 @@ export default function usuarios() {
 
             const cargarUsuarios = async () => {
                 const res = await getUsuarios(filtro);
-                console.log("respuesta usuarios:", res.data);
                 setUsuariosData(res.data.data);
             };
             // Evitar cargar si el filtro de propietario está vacío (puede ser el caso al sincronizar con URL sin ese parámetro)
@@ -103,6 +103,7 @@ export default function usuarios() {
                 params[key] = value;
             }
         });
+
         setSearchParams(params);
 
     }, [filtro, setSearchParams]);
@@ -214,69 +215,91 @@ export default function usuarios() {
                     }}
                 >
                     <Typography variant="subtitle1" component="h1" color="text.secundary">
-                        Búsqueda de cuentas de usuario
+                        Búsqueda de cuentas
                     </Typography>
                     <Box
                         sx={{
                             display: "flex",
-                            gap: 2,              // espacio entre elementos
-                            alignItems: "center" // alineación vertical
+                            gap: 2,
+                            alignItems: "center"
                         }}
                     >
-                        <Paper
-                            component="form"
-                            sx={{ m: '10px 0px', p: '2px 2px', display: 'flex', alignItems: 'flex-end', width: '50%' }}
-                        >
-                            <InputBase
-                                name="propietario"
-                                sx={{ ml: 1, flex: 1 }}
-                                placeholder="Búscar por nombre del propietario"
-                                inputProps={{ 'aria-label': 'Busqueda Usuarios' }}
-                                value={inputPropietario}
-                                onChange={(e) => setInputPropietario(e.target.value)}
-                            />
-                            <IconButton type="button" sx={{ p: '10px' }} aria-label="search" onClick={handleBuscar}>
-                                <SearchIcon />
-                            </IconButton>
-                        </Paper>
-                        <SelectItem
-                            value={selEstado.length ? filtro.estado : ""}
-                            onChange={(estado) =>
-                                setFiltro(prev => ({
-                                    ...prev,
-                                    estado: estado
-                                }))
-                            }
-                            datos={selEstado}
-                            titulo={"Estados"}
-                        />
-                        <SelectItem
-                            value={
-                                selAño.length && filtro.fechaExpiracionDesde
-                                    ? filtro.fechaExpiracionDesde.split("-")[0]
-                                    : ""
-                            }
-                            onChange={(año) => {
+                        <Box sx={{ flexGrow: 1 }}>
+                            <Grid container spacing={2}>
 
-                                setAño(año);
-                                if (!año) {
-                                    setFiltro(prev => ({
-                                        ...prev,
-                                        fechaExpiracionDesde: null,
-                                        fechaExpiracionHasta: null
-                                    }));
-                                    return;
-                                }
+                                {/* INPUT → 50% en md, 100% en xs */}
+                                <Grid size={{ xs: 12, md: 8 }}>
+                                    <Paper
+                                        component="form"
+                                        sx={{
+                                            m: '10px 0px',
+                                            p: '2px 2px',
+                                            display: 'flex',
+                                            alignItems: 'flex-end',
+                                            width: '100%' 
+                                        }}
+                                    >
+                                        <InputBase
+                                            name="propietario"
+                                            sx={{ ml: 1, flex: 1 }}
+                                            placeholder="Búscar por nombre del propietario"
+                                            value={filtro.propietario === "" ? inputPropietario : filtro.propietario}
+                                            onChange={(e) => setInputPropietario(e.target.value)}
+                                        />
+                                        <IconButton onClick={handleBuscar}>
+                                            <SearchIcon />
+                                        </IconButton>
+                                    </Paper>
+                                </Grid>
 
-                                setFiltro(prev => ({
-                                    ...prev,
-                                    fechaExpiracionDesde: `${año}-01-01`,
-                                    fechaExpiracionHasta: `${año}-12-31`
-                                }));
-                            }}
-                            datos={selAño}
-                            titulo={"Año Vencimiento"}
-                        />
+                                {/* SELECT 1 → 25% en md */}
+                                <Grid size={{ xs: 6, md: 2 }}>
+                                    <SelectItem
+                                        value={selEstado.length ? filtro.estado : ""}
+                                        onChange={(estado) =>
+                                            setFiltro(prev => ({
+                                                ...prev,
+                                                estado: estado
+                                            }))
+                                        }
+                                        datos={selEstado}
+                                        titulo={"Estados"}
+                                    />
+                                </Grid>
+
+                                {/* SELECT 2 → 25% en md */}
+                                <Grid size={{ xs: 6, md: 2 }}>
+                                    <SelectItem
+                                        value={
+                                            selAño.length && filtro.fechaExpiracionDesde
+                                                ? filtro.fechaExpiracionDesde.split("-")[0]
+                                                : ""
+                                        }
+                                        onChange={(año) => {
+                                            setAño(año);
+
+                                            if (!año) {
+                                                setFiltro(prev => ({
+                                                    ...prev,
+                                                    fechaExpiracionDesde: null,
+                                                    fechaExpiracionHasta: null
+                                                }));
+                                                return;
+                                            }
+
+                                            setFiltro(prev => ({
+                                                ...prev,
+                                                fechaExpiracionDesde: `${año}-01-01`,
+                                                fechaExpiracionHasta: `${año}-12-31`
+                                            }));
+                                        }}
+                                        datos={selAño}
+                                        titulo={"Año Vencimiento"}
+                                    />
+                                </Grid>
+
+                            </Grid>
+                        </Box>
                     </Box>
                     
                 </Box>
@@ -309,6 +332,7 @@ export default function usuarios() {
                 open={openPerfil}
                 onClose={cerrarPerfil}
             />
+
         </Box>
     )
 }
