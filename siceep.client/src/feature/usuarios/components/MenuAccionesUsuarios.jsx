@@ -5,7 +5,6 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import KeyIcon from '@mui/icons-material/Key';
 import FaceIcon from '@mui/icons-material/Face';
 import PasswordIcon from '@mui/icons-material/Password';
-import DateRangeIcon from '@mui/icons-material/DateRange';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 // Importar Link y useNavigate para navegación
 import { Link, useNavigate, useLocation } from "react-router-dom";

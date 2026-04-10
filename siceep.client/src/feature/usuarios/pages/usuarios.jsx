@@ -7,20 +7,21 @@ import {
     GridToolbar,
 } from '@mui/x-data-grid';
 import { useTheme, useMediaQuery } from "@mui/material";
-import { columnsUsuarios } from '../services/usuariosData';
-import AddIcon from '@mui/icons-material/Add';
 import { Button } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
-import PerfilUsuarioDialog from '../components/Dialog/PerfilUsuarioDialog';
-import SelectItem from '../components/SelectItem';
+// 
+import SelectItem from './../../../shared/components/SelectItem';
+import PerfilUsuarioDialog from './../components/MenuAccionesUsuarios';
 // Importar Grid para el toolbar
 import Grid from '@mui/material/Grid';
 // React Router
 import { useSearchParams } from "react-router-dom";
-//extraer datos de la api
+// extraer datos de la api
+import { columnsUsuarios } from './../services/usuariosData';
 import { getUsuarios } from './../services/usuarioService';
 import { getSelectUsuario } from './../services/selectService';
 
@@ -30,6 +31,9 @@ export default function usuarios() {
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
+    //datos de seleccion (filtro)
+    const [selEstado, setSelEstado] = useState([]);
+    const [selAño, setSelAño] = useState([]);
     const [inputPropietario, setInputPropietario] = useState("");
     //datos de la busqueda con filtro
     const [, setAño] = useState("");
@@ -46,10 +50,6 @@ export default function usuarios() {
     const [searchParams, setSearchParams] = useSearchParams();
     // Verificar si hay parámetros de búsqueda en la URL
     const hayParams = searchParams.toString().length > 0;
-
-    //datos de seleccion (filtro)
-    const [selEstado, setSelEstado] = useState([]);
-    const [selAño, setSelAño] = useState([]);
 
     //datos de los usuarios
     const [usuarios, setUsuariosData] = useState([]);
@@ -80,6 +80,10 @@ export default function usuarios() {
         const timer = setTimeout(() => {
             // solo cargar si viene de URL
             if (!hayParams) return;
+
+            if (filtro.estado === "") {
+                filtro.estado = null;
+            }
 
             const cargarUsuarios = async () => {
                 const res = await getUsuarios(filtro);

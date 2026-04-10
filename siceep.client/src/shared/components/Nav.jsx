@@ -11,7 +11,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import MobileFriendlyIcon from '@mui/icons-material/MobileFriendly';
 import PersonIcon from '@mui/icons-material/Person';
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import KeyIcon from '@mui/icons-material/Key';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import BarChartIcon from '@mui/icons-material/BarChart';
 
@@ -19,7 +19,7 @@ export default function Nav({ open, toggleNav }) {
 
     const menuItems = [
         { text: "Usuarios", icon: <PersonIcon />, path: "/usuarios" },
-        { text: "Permisos", icon: <FolderSharedIcon />, path: "/permisos" },
+        { text: "Permisos", icon: <KeyIcon />, path: "/permisos" },
         { text: "Reportes", icon: <ContentPasteIcon />, path: "" },
         { text: "Estadisticas", icon: <BarChartIcon />, path: "" },
     ];

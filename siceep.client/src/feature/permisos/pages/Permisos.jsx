@@ -1,14 +1,14 @@
 ﻿import { useEffect, useState, useRef } from 'react';
 import { Box, Grid, Tabs, Tab, Typography, Paper } from "@mui/material";
-import CardPermiso from "../components/CardPermiso";
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
+// componentes
 import CardDescUser from '../components/CardDescUser';
-import GuardarPermisosDialog from '../components/Dialog/GuardarPermisosDialog';
+import CardPermiso from "../components/CardPermiso";
+import GuardarPermisosDialog from './../components/GuardarPermisosDialog';
 // servicios
 import { useLocation } from 'react-router-dom';
-import { getPermisos } from './../services/PermisoService';
-import { getEstructura } from './../services/usuarioService';
+import { getPermisos, getEstructura } from './../services/PermisoService';
 
 export default function Permisos() {
 

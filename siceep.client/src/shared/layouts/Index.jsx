@@ -1,8 +1,8 @@
 ﻿import * as React from "react";
 import { Box } from "@mui/material";
-import Nav from "../components/Nav";
-import BarraNav from "../components/BarraNav";
 import { Outlet } from "react-router-dom";
+import Nav from "./../components/Nav";
+import BarraNav from "./../components/BarraNav";
 import Toolbar from "@mui/material/Toolbar";
 
 function Index() {
