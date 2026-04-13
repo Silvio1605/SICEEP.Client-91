@@ -9,6 +9,6 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\feature\usuarios\hooks\" />
+    <Folder Include="src\feature\permisos\hooks\" />
   </ItemGroup>
 </Project>
