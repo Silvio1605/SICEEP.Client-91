@@ -1,4 +1,4 @@
-import * as React from 'react';
+ï»¿import * as React from 'react';
 import { getUsuarios } from '../services/usuarioService';
 
 export const useUsuarios = () => {
@@ -10,10 +10,9 @@ export const useUsuarios = () => {
         if (filtro.estado === "") {
             filtro.estado = null;
         }
-
-        //definir el tamaño de la paginacion
+        //definir el tamaÃ±o de la paginacion
         filtro.pagina = 1;
-        filtro.tamañoPagina = 10;
+        filtro.tamaÃ±oPagina = 10;
 
         const res = await getUsuarios(filtro);
         setUsuariosData(res.data.data);

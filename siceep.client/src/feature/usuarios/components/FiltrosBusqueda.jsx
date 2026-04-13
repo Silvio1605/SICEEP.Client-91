@@ -9,22 +9,18 @@ import Grid from '@mui/material/Grid';
 import SelectItem from './../../../shared/components/SelectItem';
 import { useSelectUsuarios } from './../hooks/useSelectUsuarios';
 
-export default function FiltrosBusqueda({ filtro, setFiltro, handleBuscar }) {
+export default function FiltrosBusqueda({ filtro, actualizarFiltro }) {
 
     //datos para las cajas de selecciones
     const { selEstado, selAño, loading } = useSelectUsuarios();
 
-    const [inputPropietario, setInputPropietario] = useState("");
+    const [inputPropietario, setInputPropietario] = useState(
+        filtro.propietario || ""
+    );
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
-        setFiltro(prev => ({
-            ...prev,
-            propietario: inputPropietario
-        }));
-
-        handleBuscar();
+        actualizarFiltro({ propietario: inputPropietario });
     };
 
     return (
@@ -62,8 +58,10 @@ export default function FiltrosBusqueda({ filtro, setFiltro, handleBuscar }) {
                                 <InputBase
                                     sx={{ ml: 1, flex: 1 }}
                                     placeholder="Buscar por nombre del propietario"
-                                    value={inputPropietario}
-                                    onChange={(e) => setInputPropietario(e.target.value)}
+                                    value={inputPropietario} 
+                                    onChange={(e) => {
+                                        setInputPropietario(e.target.value);
+                                    }}
                                 />
                                 <IconButton type="submit">
                                     <SearchIcon />
@@ -78,17 +76,13 @@ export default function FiltrosBusqueda({ filtro, setFiltro, handleBuscar }) {
                             ) : (
                                 <SelectItem
                                    value={filtro.estado || ""}
-                                   onChange={(estado) =>
-                                        setFiltro(prev => ({
-                                            ...prev,
-                                            estado
-                                        }))
-                                   }
+                                        onChange={(estado) => {
+                                            actualizarFiltro({ estado: estado });
+                                        }}
                                    datos={selEstado}
                                    titulo="Estados"
                                 />  
                             )}
-                            
                         </Grid>
 
                         {/* SELECT AÑO */}
@@ -104,26 +98,22 @@ export default function FiltrosBusqueda({ filtro, setFiltro, handleBuscar }) {
                                  }
                                  onChange={(año) => {
                                      if (!año) {
-                                          setFiltro(prev => ({
-                                              ...prev,
-                                              fechaExpiracionDesde: null,
-                                              fechaExpiracionHasta: null
-                                          }));
-                                          return;
+                                         actualizarFiltro({
+                                             fechaExpiracionDesde: null,
+                                             fechaExpiracionHasta: null
+                                         });
+                                         return;
                                      }
-
-                                     setFiltro(prev => ({
-                                          ...prev,
-                                          fechaExpiracionDesde: `${año}-01-01`,
-                                          fechaExpiracionHasta: `${año}-12-31`
-                                     }));
+                                     actualizarFiltro({
+                                         fechaExpiracionDesde: `${año}-01-01`,
+                                         fechaExpiracionHasta: `${año}-12-31`
+                                     });
                                  }}
                                  datos={selAño}
                                  titulo="Año Vencimiento"
                                />
                             )}
                         </Grid>
-
                     </Grid>
                 </Box>
             </Box>

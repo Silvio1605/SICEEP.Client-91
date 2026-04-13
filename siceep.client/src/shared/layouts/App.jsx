@@ -1,5 +1,5 @@
 import { Routes, Route } from "react-router-dom";
-import Usuarios from './../../feature/usuarios/pages/usuarios.jsx';
+import Usuarios from './../../feature/usuarios/pages/Usuarios.jsx';
 import Permisos from './../../feature/permisos/pages/Permisos.jsx';
 import Home from "./Home.jsx";
 import Index from "./Index.jsx";

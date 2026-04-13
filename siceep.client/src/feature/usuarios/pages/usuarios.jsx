@@ -14,122 +14,70 @@ import PerfilUsuarioDialog from './../components/MenuAccionesUsuarios';
 import { useSearchParams } from "react-router-dom";
 // extraer datos de la api
 import { columnsUsuarios } from './../services/usuariosData';
-import { getUsuarios } from './../services/usuarioService';
-//import { usuarios, buscar } from './../hooks/useUsuarios';
+import { useUsuarios } from './../hooks/useUsuarios';
 // componentes
 import FiltrosBusqueda from '../components/filtrosBusqueda';
+// loading
+import Skeleton from '@mui/material/Skeleton';
+import Stack from '@mui/material/Stack';
 
-export default function usuarios() {
+export default function Usuarios() {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
-    //datos de la busqueda con filtro
-    const [filtro, setFiltro] = useState({
-        propietario: "",
-        fechaExpiracionDesde: null,
-        fechaExpiracionHasta: null,
-        estado: null,
-        pagina: null,
-        tamañoPagina: null
-    });
-
+    const { usuarios, buscar } = useUsuarios();
     // para manejar los parámetros de búsqueda en la URL (si es necesario)
     const [searchParams, setSearchParams] = useSearchParams();
-    // Verificar si hay parámetros de búsqueda en la URL
-    const hayParams = searchParams.toString().length > 0;
 
-    //datos de los usuarios
-    const [usuarios, setUsuariosData] = useState([]);
+    //datos de la busqueda con filtro
+    const filtro = useMemo(() => ({
+        propietario: searchParams.get("propietario") || null,
+        fechaExpiracionDesde: searchParams.get("fechaExpiracionDesde") || null,
+        fechaExpiracionHasta: searchParams.get("fechaExpiracionHasta") || null,
+        estado: searchParams.get("estado") || null,
+        pagina: Number(searchParams.get("pagina")) || 1,
+        tamañoPagina: Number(searchParams.get("tamañoPagina")) || 10
+    }), [searchParams]);
 
-    // Sincronizar el estado del filtro con los parámetros de búsqueda en la URL al montar el componente
-    useEffect(() => {
+    const actualizarFiltro = (nuevoFiltro) => {
+        const params = new URLSearchParams(searchParams);
 
-        const query = searchParams.toString();
-
-        // si no hay parámetros - no hacer nada
-        if (!query) return;
-
-        const nuevosFiltros = {};
-
-        for (let [key, value] of searchParams.entries()) {
-            nuevosFiltros[key] = value;
-        }
-
-        setFiltro(prev => ({
-            ...prev,
-            ...nuevosFiltros
-        }));
-
-    }, [searchParams]);
+        Object.entries(nuevoFiltro).forEach(([key, value]) => {
+            if (value !== null && value !== "" && value !== undefined) {
+                params.set(key, value);
+            } else {
+                params.delete(key);
+            }
+        });
+        setSearchParams(params);
+    };
 
     // Cargar usuarios cada vez que cambie el filtro o los parámetros de búsqueda en la URL
     useEffect(() => {
         const timer = setTimeout(() => {
-            // solo cargar si viene de URL
-            if (!hayParams) return;
-
-            if (filtro.estado === "") {
-                filtro.estado = null;
-            }
-            filtro.pagina = 1; // Reiniciar a la primera página al cambiar el filtro
-            filtro.tamañoPagina = 10; // Asegurar que el tamaño de página esté definido
-
-            const cargarUsuarios = async () => {
-                const res = await getUsuarios(filtro);
-                setUsuariosData(res.data.data);
+            const cargarDatos = async () => {
+                try {
+                    await buscar(filtro);
+                } catch (error) {
+                    console.error("Error:", error);
+                }
             };
-            // Evitar cargar si el filtro de propietario está vacío (puede ser el caso al sincronizar con URL sin ese parámetro)
-            if (filtro.propietario === "") return;
-            //buscar(filtro);
-            cargarUsuarios();
+            cargarDatos();
         }, 500);
-       
         return () => clearTimeout(timer);
-
-    }, [filtro, hayParams]);
-
-    // Actualizar los parámetros de búsqueda en la URL cada vez que cambie el filtro
-    useEffect(() => {
-        const params = {};
-
-        Object.entries(filtro).forEach(([key, value]) => {
-            if (value) {
-                params[key] = value;
-            }
-        });
-
-        setSearchParams(params);
-
-    }, [filtro, setSearchParams]);
-   
-    const handleBuscar = async () => {
-        try {
-            
-            if (filtro.estado === "") {
-                filtro.estado = null;
-            }
-            filtro.pagina = 1; // Reiniciar a la primera página al cambiar el filtro
-            filtro.tamañoPagina = 10; // Asegurar que el tamaño de página esté definido
-            const res = await getUsuarios(filtro);
-            setUsuariosData(res.data.data);
-
-        } catch (error) {
-            console.error("Error:", error);
-        }
-    };
+    }, [filtro, buscar]);
 
     //logica para abrir perfil de usuario
     const [openPerfil, setOpenPerfil] = useState(false);
-    
     const abrirPerfil = useCallback(() => {
         setOpenPerfil(true);
     }, []);
-
     const cerrarPerfil = useCallback(() => {
         setOpenPerfil(false);
     }, []);
 
+    // 
     const registros = useMemo(() => {
         return columnsUsuarios({ isMobile, abrirPerfil });
     }, [isMobile, abrirPerfil]);
@@ -172,14 +120,17 @@ export default function usuarios() {
                 }}
             >
                 {/* componente para el filtro de busqueda */}
-                <FiltrosBusqueda filtro={filtro} setFiltro={setFiltro} handleBuscar={ handleBuscar } />
+                <FiltrosBusqueda
+                    filtro={filtro}
+                    actualizarFiltro={actualizarFiltro}
+                />
                 
-                <Typography variant="subtitle1" component="h1" color="text.secundary">
+                <Typography variant="subtitle1" component="h1" color="text-secundary">
                     Registros de cuentas
                 </Typography>
 
-                {/* DataGrid */}
-                <DataGrid
+                {usuarios ? (
+                    <DataGrid
                     rows={usuarios}
                     columns={registros} // Columnas con flex: 1 aplicado
                     // Configuramos el GridToolbar
@@ -195,7 +146,14 @@ export default function usuarios() {
                             labelRowsPerPage: "Filas:"
                         }
                     }}
-                />
+                    />
+                ): (
+                    <Stack spacing={1}>
+                         {/* For variant="text", adjust the height via font-size */}
+                          <Skeleton variant="rectangular" width={'100%'} height={20} />
+                         <Skeleton variant="rounded" width={'100%'} height={60} />
+                    </Stack>
+                )}
             </Box>
 
             <PerfilUsuarioDialog
