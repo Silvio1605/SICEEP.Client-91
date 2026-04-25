@@ -33,9 +33,9 @@ function Index() {
                 {/** Panel principal con fondo suave y espacio para el contenido */}
                 <Box
                     sx={{
-                        width: '96vw',
+                        width: '98vw', //esapcio para el contenido principal
                         height: 'auto',
-                        p: 3, // Padding general para el panel
+                        p: 2, // Padding general para el panel
                         bgcolor: 'grey.50', // Color de fondo suave
                         display: 'flex',
                         flexDirection: 'column',

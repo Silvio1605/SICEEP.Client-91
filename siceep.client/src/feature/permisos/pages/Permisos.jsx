@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useRef } from 'react';
+﻿import { useState, useRef } from 'react';
 import { Box, Grid, Tabs, Tab, Typography, Paper } from "@mui/material";
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
@@ -8,102 +8,14 @@ import CardPermiso from "../components/CardPermiso";
 import GuardarPermisosDialog from './../components/GuardarPermisosDialog';
 // servicios
 import { useLocation } from 'react-router-dom';
-import { getPermisos, getEstructura } from './../services/PermisoService';
+import { usePermisos } from '../hooks/usePermisos';
 
 export default function Permisos() {
 
     //funcion para extraer el valor enviado desde usuario
     const { state } = useLocation();
-
-    //datos de la API
-    const [permisos, setPermisosData] = useState([]);
-    
-    const [perfil, setPerfil] = useState({
-        usuario: null,
-        estructura: null
-    });
-
-    //permisos que se guardaran
-    const permisosOriginal = useRef([]);
-
-    useEffect(() => {
-        let isMounted = true;
-
-        const cargar = async () => {
-            try {
-
-                //identificador del usuario
-                var id = state?.user.id;
-                const res = await getPermisos(id);
-                const estructura = await getEstructura(id);
-
-                if (isMounted) {
-                    // datos para mostrar permisos con su estado
-                    setPermisosData(res.data);
-                    setPerfil({
-                        usuario: state.user,
-                        estructura: estructura.data
-                    });
-                    // ref para mantener los permisos originales y comparar cambios
-                    permisosOriginal.current = JSON.parse(JSON.stringify(res.data));
-                }
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        };
-        cargar();
-        return () => {
-            isMounted = false;
-        };
-
-    }, [state]);
-
-    // Función para obtener una lista plana de todos los permisos
-    const obtenerPermisos = (data) =>
-        data.flatMap(m => m.permisos);
-
-    const detectarCambios = () => {
-        const originales = obtenerPermisos(permisosOriginal.current);
-        const actuales = obtenerPermisos(permisos);
-
-        // Convertir originales a mapa
-        const mapaOriginal = new Map(
-            originales.map(o => [o.idRecurso, o.check])
-        );
-
-        // recorrer el mapeado para encontrar el id del recurso
-        const cambios = actuales.reduce((acc, p) => {
-            const originalCheck = mapaOriginal.get(p.idRecurso);
-
-            //que no sea indefinido y sea distito al original
-            if (originalCheck !== undefined && originalCheck !== p.check) {
-                acc.push({
-                    idRecurso: p.idRecurso,
-                    recurso: p.recurso,
-                    descripcion: p.descripcion,
-                    estado: p.check ? 1 : 0
-                });
-            }
-
-            return acc;
-        }, []);
-
-        return cambios;
-    };
-
-    // Función para cambiar el estado de un permiso
-    const cambiarPermiso = (idPermiso) => {
-        setPermisosData(prev =>
-            prev.map(modulo => ({
-                ...modulo,
-                permisos: modulo.permisos.map(p =>
-                    p.idRecurso === idPermiso
-                        ? { ...p, check: !p.check }
-                        : p
-                )
-            }))
-        );
-    };
+    //hook personalizado para manejar permisos
+    const { perfil, permisos, permisosOriginal, detectarCambios, cambiarPermiso } = usePermisos(state?.user?.id);
 
     // Estado para controlar el diálogo de guardar permisos
     const [openDialog, setOpenDialog] = useState(false);
@@ -129,6 +41,7 @@ export default function Permisos() {
     };
 
     return (
+
         <Box>
             {/* Información del Usuario */}
             <CardDescUser perfil={ perfil } />

@@ -21,6 +21,7 @@ import FiltrosBusqueda from '../components/filtrosBusqueda';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 
+
 export default function Usuarios() {
 
     const theme = useTheme();
@@ -94,7 +95,7 @@ export default function Usuarios() {
             <Typography variant="subtitle1" component="h1" color="text.secundary">
                 Control de cuentas de usuario
             </Typography>
-            <Box sx={{ m: '0px 20px', display: 'flex', justifyContent: 'flex-end' }}>
+            <Box sx={{ m: '0px 40px', display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
                     variant="contained"
                     color="primary"

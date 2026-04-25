@@ -8,3 +8,11 @@ export const getUsuarios = async (filtros) => {
     }
 };
 
+export const getUsuariosById = async (id) => {
+    try {
+        return await api.get(`Usuario/GetUsuario_byId?id=${id}`);
+    } catch (error) {
+        console.log(error);
+    }
+};
+

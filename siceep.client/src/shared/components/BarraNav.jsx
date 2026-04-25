@@ -9,14 +9,14 @@ import MenuIcon from "@mui/icons-material/Menu";
 export default function BarraNav({ toggleNav }) {
 
     return (
-        <Box sx={{ width: "100%", display: "flex"}}>
+        <Box sx={{ width: "96%", display: "flex"}}>
             <AppBar position="fixed" sx={{ width: "100%" }}>
                 <Toolbar>
                     <IconButton
                         size="large"
                         edge="start"
                         color="inherit"
-                        sx={{ mr: 2 }}
+                        sx={{ mr: 1 }}
                         onClick={toggleNav(true)}
                     >
                         <MenuIcon />

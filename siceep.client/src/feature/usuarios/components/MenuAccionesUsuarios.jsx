@@ -14,11 +14,11 @@ export default function MenuAcciones({ row, abrirPerfil }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
-
     const navigate = useNavigate();
     const location = useLocation();
 
     const handleOpen = (event) => {
+        event.stopPropagation();
         setAnchorEl(event.currentTarget);
     };
 

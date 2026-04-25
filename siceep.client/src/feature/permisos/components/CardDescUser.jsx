@@ -72,7 +72,7 @@ function CardDescUser({ perfil }) {
 
     return (
       // Información del Usuario
-        <Box sx={{ flexGrow: 1 , mb: 2 }}>
+        <Box sx={{ flexGrow: 1 , mb: 1 }}>
             <Grid container spacing={2}>
                 <Grid size={{ xs: 12, lg: 6 }}>
                     <Item>
