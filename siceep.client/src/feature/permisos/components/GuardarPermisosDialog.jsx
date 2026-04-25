@@ -10,6 +10,8 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';    
 //servicios
 import { guardarPermisos } from './../services/PermisoService';
 
@@ -84,29 +86,33 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario, cambio
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <Typography variant="h6">Permisos Agregados</Typography>
-                
-                {resultado.agregados.length === 0 && (
-                    <Typography variant="body2" color="text.secondary">No hay permisos agregados</Typography>
-                )}
-                <List>
-                    {resultado.agregados.map(p => (
-                        <ListItemButton key={p.idRecurso}>
-                            <ListItemText primary={p.recurso} secondary={p.descripcion} />
-                        </ListItemButton>
-                    ))}
-                </List>
-                <Typography variant="h6">Permisos Eliminados</Typography>
-                {resultado.quitados.length === 0 && (
-                    <Typography variant="body2" color="text.secondary">No hay permisos eliminados</Typography>
-                )}
-                <List>
-                    {resultado.quitados.map(p => (
-                        <ListItemButton key={p.idRecurso}>
-                            <ListItemText primary={p.recurso} secondary={p.descripcion} />
-                        </ListItemButton>
-                    ))}
-                </List>
+                <Box sx={{ pl: 3, pt: 2 }}>
+                    <Typography variant="h6">Permisos Agregados</Typography>
+                    <Divider />
+                    {resultado.agregados.length === 0 && (
+                        <Typography variant="body2" color="text.secondary">No hay permisos agregados</Typography>
+                    )}
+                    <List>
+                        {resultado.agregados.map(p => (
+                            <ListItemButton key={p.idRecurso}>
+                                <ListItemText primary={p.recurso} secondary={p.descripcion} />
+                            </ListItemButton>
+                        ))}
+                    </List>
+                    <Typography variant="h6">Permisos Eliminados</Typography>
+                    <Divider />
+                    {resultado.quitados.length === 0 && (
+                        <Typography variant="body2" color="text.secondary">No hay permisos eliminados</Typography>
+                    )}
+                    <List>
+                        {resultado.quitados.map(p => (
+                            <ListItemButton key={p.idRecurso}>
+                                <ListItemText primary={p.recurso} secondary={p.descripcion} />
+                            </ListItemButton>
+                        ))}
+                    </List>
+                </Box>
+               
             </Dialog>
         </React.Fragment>
     );

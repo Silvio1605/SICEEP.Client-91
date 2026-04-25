@@ -4,6 +4,20 @@ import { Outlet } from "react-router-dom";
 import Nav from "./../components/Nav";
 import BarraNav from "./../components/BarraNav";
 import Toolbar from "@mui/material/Toolbar";
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: (theme.vars ?? theme).palette.text.secondary,
+    ...theme.applyStyles('dark', {
+        backgroundColor: '#1A2027',
+    }),
+}));
 
 function Index() {
 
@@ -15,39 +29,23 @@ function Index() {
 
     return (
         <Box>
-            {/** Componente de navegación lateral */}
+            {/** Componente de navegción lateral */}
             <Nav open={open} toggleNav={toggleNav} />
-            {/** Contenedor principal que incluye la barra de navegación y el contenido */}
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    minWidth: 0  
-                }}
-            >
-                {/** Barra de navegación superior */}
-                <BarraNav toggleNav={toggleNav} />
-                {/** Espacio para el contenido principal */}
-                <Toolbar />
-                {/** Panel principal con fondo suave y espacio para el contenido */}
-                <Box
-                    sx={{
-                        width: '98vw', //esapcio para el contenido principal
-                        height: 'auto',
-                        p: 2, // Padding general para el panel
-                        bgcolor: 'grey.50', // Color de fondo suave
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 2, // Espacio entre los elementos
-                    }}
-                >
-                    {/** Aquí se renderizarán los componentes hijos según la ruta */}
-                    <Outlet />
-                </Box>
-                
-            </Box>
 
+            {/** Barra de navegación superior */}
+            <BarraNav toggleNav={toggleNav} />
+
+            {/** Espacio para el contenido principal */}
+            <Toolbar />
+
+            {/** Panel principal con fondo suave y espacio para el contenido */}
+            <Box sx={{ flexGrow: 1, width: "98vw", pl: 1 }}>
+                <Grid container spacing={2}>
+                    <Grid size={{ xs: 12, md: 12 }}>
+                        <Outlet />
+                    </Grid>
+                </Grid>
+            </Box>
         </Box>
     );
 }

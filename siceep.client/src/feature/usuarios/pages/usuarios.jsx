@@ -20,12 +20,15 @@ import Perfil from '../components/Perfil';
 // loading
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
+// media query para detectar el tamaño de pantalla y ajustar la tabla               
+import { useScreenType } from './../../../shared/hooks/useScreenType';
 
 
 export default function Usuarios() {
 
     const theme = useTheme();
     const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+    const { isMobile: mobile } = useScreenType();
 
     const { usuarios, buscar } = useUsuarios();
     // para manejar los parámetros de búsqueda en la URL (si es necesario)
@@ -95,7 +98,7 @@ export default function Usuarios() {
             <Typography variant="subtitle1" component="h1" color="text.secundary">
                 Control de cuentas de usuario
             </Typography>
-            <Box sx={{ m: '0px 40px', display: 'flex', justifyContent: 'flex-end' }}>
+            <Box sx={{ m: '0px', mr: mobile ? '10px' : '30px', display: 'flex', justifyContent: 'flex-end' }}>
                 <Button
                     variant="contained"
                     color="primary"
