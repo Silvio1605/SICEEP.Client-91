@@ -9,7 +9,6 @@ import {
 import { useTheme, useMediaQuery } from "@mui/material";
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import PerfilUsuarioDialog from './../components/MenuAccionesUsuarios';
 // React Router
 import { useSearchParams } from "react-router-dom";
 // extraer datos de la api
@@ -17,6 +16,7 @@ import { columnsUsuarios } from './../services/usuariosData';
 import { useUsuarios } from './../hooks/useUsuarios';
 // componentes
 import FiltrosBusqueda from '../components/filtrosBusqueda';
+import Perfil from '../components/Perfil';
 // loading
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
@@ -136,7 +136,8 @@ export default function Usuarios() {
                     columns={registros} // Columnas con flex: 1 aplicado
                     // Configuramos el GridToolbar
                     slots={slots}
-                    initialState={{
+                        initialState={{
+
                         pagination: { paginationModel: { pageSize: 10 } },
                     }}
                     pageSizeOptions={[5, 10, 25]}
@@ -157,7 +158,7 @@ export default function Usuarios() {
                 )}
             </Box>
 
-            <PerfilUsuarioDialog
+            <Perfil
                 open={openPerfil}
                 onClose={cerrarPerfil}
             />

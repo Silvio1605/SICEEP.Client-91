@@ -63,7 +63,9 @@ export default function MenuAcciones({ row, abrirPerfil }) {
                     <KeyIcon sx={{ mr: 1 }} /> Permisos
                 </MenuItem>
 
-                <MenuItem onClick={() => handleAction('editar')}>
+                <MenuItem
+                    onClick={() => handleAction('editar')}
+                >
                     <PasswordIcon sx={{ mr: 1 }} /> Reestablecer contraseña
                 </MenuItem>
                 <MenuItem

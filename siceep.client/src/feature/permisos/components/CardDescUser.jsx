@@ -92,7 +92,6 @@ function CardDescUser({ perfil }) {
                                         <strong>Propietario: </strong> { perfil.usuario?.propietario }
                                     </Typography>
                                 </Box>
-
                             </Box>
                         </Box>
                     </Item>

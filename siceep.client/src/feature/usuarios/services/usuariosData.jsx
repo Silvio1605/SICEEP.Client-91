@@ -1,6 +1,6 @@
 ﻿import { Chip } from '@mui/material';
 import * as React from 'react'
-import MenuAcciones from './../components/MenuAccionesUsuarios'
+import MenuAcciones from '../components/MenuAcciones'
 
 const getEstadoColor = (estado) => {
     switch (estado) {
