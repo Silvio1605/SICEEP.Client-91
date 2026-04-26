@@ -23,7 +23,6 @@ import Stack from '@mui/material/Stack';
 // media query para detectar el tamaño de pantalla y ajustar la tabla               
 import { useScreenType } from './../../../shared/hooks/useScreenType';
 
-
 export default function Usuarios() {
 
     const theme = useTheme();
@@ -59,18 +58,15 @@ export default function Usuarios() {
 
     // Cargar usuarios cada vez que cambie el filtro o los parámetros de búsqueda en la URL
     useEffect(() => {
-        const timer = setTimeout(() => {
-            const cargarDatos = async () => {
-                try {
-                    await buscar(filtro);
-                } catch (error) {
-                    console.error("Error:", error);
-                }
-            };
-            cargarDatos();
-        }, 500);
-        return () => clearTimeout(timer);
-    }, [filtro, buscar]);
+        const cargarDatos = async () => {
+            try {
+                await buscar(filtro);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+        cargarDatos();
+    }, []);
 
     //logica para abrir perfil de usuario
     const [openPerfil, setOpenPerfil] = useState(false);
@@ -81,7 +77,6 @@ export default function Usuarios() {
         setOpenPerfil(false);
     }, []);
 
-    // 
     const registros = useMemo(() => {
         return columnsUsuarios({ isMobile, abrirPerfil });
     }, [isMobile, abrirPerfil]);
@@ -89,8 +84,7 @@ export default function Usuarios() {
     const slots = useMemo(() => ({ toolbar: GridToolbar }), []);
 
     return (
-        
-        // Box con padding general y fondo suave
+
         <Box>
             <Typography variant="h5" component="h1" color="text.primary">
                 Gestion de Usuarios
@@ -127,46 +121,45 @@ export default function Usuarios() {
                 <FiltrosBusqueda
                     filtro={filtro}
                     actualizarFiltro={actualizarFiltro}
+                    buscar={buscar}
                 />
-                
-                <Typography variant="subtitle1" component="h1" color="text-secundary">
+
+                <Typography variant="subtitle1" component="h1" color="text.secundary">
                     Registros de cuentas
                 </Typography>
 
                 {usuarios ? (
                     <DataGrid
-                    rows={usuarios}
-                    columns={registros} // Columnas con flex: 1 aplicado
-                    // Configuramos el GridToolbar
-                    slots={slots}
+                        rows={usuarios}
+                        columns={registros} // Columnas con flex: 1 aplicado
+                        // Configuramos el GridToolbar
+                        slots={slots}
                         initialState={{
-
-                        pagination: { paginationModel: { pageSize: 10 } },
-                    }}
-                    pageSizeOptions={[5, 10, 25]}
-                    localeText={{
-                        noRowsLabel: "No hay datos",
-                        noResultsOverlayLabel: "No se encontraron resultados",
-                        MuiTablePagination: {
-                            labelRowsPerPage: "Filas:"
-                        }
-                    }}
+                            pagination: { paginationModel: { pageSize: 10 } },
+                        }}
+                        pageSizeOptions={[5, 10, 25]}
+                        localeText={{
+                            noRowsLabel: "No hay datos",
+                            noResultsOverlayLabel: "No se encontraron resultados",
+                            MuiTablePagination: {
+                                labelRowsPerPage: "Filas:"
+                            }
+                        }}
                     />
-                ): (
+                ) : (
                     <Stack spacing={1}>
-                         {/* For variant="text", adjust the height via font-size */}
-                          <Skeleton variant="rectangular" width={'100%'} height={20} />
-                         <Skeleton variant="rounded" width={'100%'} height={60} />
+                        {/* For variant="text", adjust the height via font-size */}
+                        <Skeleton variant="rectangular" width={'100%'} height={20} />
+                        <Skeleton variant="rounded" width={'100%'} height={60} />
                     </Stack>
                 )}
             </Box>
-
             <Perfil
                 open={openPerfil}
                 onClose={cerrarPerfil}
             />
-
         </Box>
+        
     )
 }
 

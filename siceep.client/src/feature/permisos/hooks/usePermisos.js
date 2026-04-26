@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'; 
 // servicios
-import { getPermisos, getEstructura } from './../services/PermisoService';
-import { getUsuariosById } from './../../usuarios/services/usuarioService'; 
+import { getPermisos } from './../services/PermisoService'; 
 
 export const usePermisos = (id) => {
 
@@ -9,11 +8,7 @@ export const usePermisos = (id) => {
     const permisosOriginal = useRef([]);
     //permisos actuales para mostrar en la interfaz
     const [permisos, setPermisosData] = useState([]);
-    // información del perfil (usuario y estructura)
-    const [perfil, setPerfil] = useState({
-        usuario: null,
-        estructura: null
-    });
+    
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -23,17 +18,11 @@ export const usePermisos = (id) => {
             if (!id) return;
 
             // obtener permisos y estructura del usuario
-            const [res, estructura, usuario] = await Promise.all([
+            const [res] = await Promise.all([
                 getPermisos(id),
-                getEstructura(id),
-                getUsuariosById(id)
             ]);
             // datos para mostrar permisos con su estado
             setPermisosData(res.data);
-            setPerfil({
-                usuario: usuario.data,
-                estructura: estructura.data
-            });
             // ref para mantener los permisos originales y comparar cambios
             permisosOriginal.current = JSON.parse(JSON.stringify(res.data));
             setLoading(false);
@@ -89,5 +78,5 @@ export const usePermisos = (id) => {
         return cambios;
     };
 
-    return { loading, perfil, permisos, permisosOriginal, detectarCambios, cambiarPermiso };
+    return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso };
 }

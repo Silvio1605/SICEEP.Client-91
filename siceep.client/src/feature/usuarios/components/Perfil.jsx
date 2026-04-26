@@ -7,25 +7,17 @@ import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid'
+// componente para mostrar el perfil del usuario seleccionado en la tabla de usuarios
+import Permisos from './../../permisos/pages/Permisos';
+import CardUsuario from './CardUsuario';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: (theme.vars ?? theme).palette.text.secondary,
-    ...theme.applyStyles('dark', {
-        backgroundColor: '#1A2027',
-    }),
-}));
 export default function Perfil({ open, onClose }) {
     
     return (
@@ -57,11 +49,11 @@ export default function Perfil({ open, onClose }) {
                 </AppBar>
                 <Box sx={{ flexGrow: 1, p: 2 }}>
                     <Grid container spacing={2}>
-                        <Grid size={4}>
-                            <Item>Perfil</Item>
+                        <Grid size={{ xs:12, sm: 12, md: 4 }}>
+                            <CardUsuario />
                         </Grid>
-                        <Grid size={8}>
-                            <Item>Permisos</Item>
+                        <Grid size={{ xs: 12, sm: 12, md: 8 }}>
+                            <Permisos />
                         </Grid>
                     </Grid>
                 </Box>

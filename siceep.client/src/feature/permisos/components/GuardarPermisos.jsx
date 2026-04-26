@@ -13,7 +13,7 @@ import Slide from '@mui/material/Slide';
 import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';    
 //servicios
-import { guardarPermisos } from './../services/PermisoService';
+import { guardarPermisos } from '../services/PermisoService';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
@@ -75,14 +75,14 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario, cambio
                             <CloseIcon />
                         </IconButton>
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                            SilvioJM
+                            Permisos a Guardar
                         </Typography>
                         <Button autoFocus color="inherit"
                             onClick={
                                 handleGuardar
                             }
                         >
-                            Guardar Cambios
+                            Guardar
                         </Button>
                     </Toolbar>
                 </AppBar>

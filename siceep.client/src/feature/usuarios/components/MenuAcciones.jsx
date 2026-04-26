@@ -8,7 +8,7 @@ import PasswordIcon from '@mui/icons-material/Password';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 // Importar Link y useNavigate para navegación
 import { Link, useNavigate, useLocation } from "react-router-dom";
-
+import { useBusqueda } from './../hooks/useBusqueda';
 
 export default function MenuAcciones({ row, abrirPerfil }) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -31,6 +31,14 @@ export default function MenuAcciones({ row, abrirPerfil }) {
         handleClose();
     };
 
+    // Contexto para manejar la selección del usuario
+    const { setIdSeleccionado } = useBusqueda();
+    const seleccionar = (id) => {
+        setIdSeleccionado(id); // actualiza el contexto
+        abrirPerfil(); // abre el perfil
+    };
+
+
     return (
         <>
             <IconButton size="small" onClick={handleOpen}>
@@ -44,7 +52,7 @@ export default function MenuAcciones({ row, abrirPerfil }) {
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
-                <MenuItem onClick={abrirPerfil}>
+                <MenuItem onClick={() => seleccionar(row.id)}>
                     <FaceIcon sx={{ mr: 1 }} /> Perfil
                 </MenuItem>
                 <MenuItem

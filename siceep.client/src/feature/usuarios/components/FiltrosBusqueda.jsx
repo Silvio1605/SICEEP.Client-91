@@ -9,7 +9,7 @@ import Grid from '@mui/material/Grid';
 import SelectItem from './../../../shared/components/SelectItem';
 import { useSelectUsuarios } from './../hooks/useSelectUsuarios';
 
-export default function FiltrosBusqueda({ filtro, actualizarFiltro }) {
+export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
 
     //datos para las cajas de selecciones
     const { selEstado, selAño, loading } = useSelectUsuarios();
@@ -20,7 +20,12 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        const nuevoFiltro = {
+            ...filtro,
+            propietario: inputPropietario
+        };
         actualizarFiltro({ propietario: inputPropietario });
+        buscar(nuevoFiltro);
     };
 
     return (

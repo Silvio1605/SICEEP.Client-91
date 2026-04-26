@@ -8,6 +8,10 @@ export const getUsuarios = async (filtros) => {
     }
 };
 
+export const getEstructura = async (idUsuario) => {
+    return await api.post(`Estructura/GetEstructura_byId?id=${idUsuario}`);
+};
+
 export const getUsuariosById = async (id) => {
     try {
         return await api.get(`Usuario/GetUsuario_byId?id=${id}`);

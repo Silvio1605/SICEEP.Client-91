@@ -5,17 +5,23 @@ import SaveIcon from '@mui/icons-material/Save';
 // componentes
 import CardDescUser from '../components/CardDescUser';
 import CardPermiso from "../components/CardPermiso";
-import GuardarPermisosDialog from './../components/GuardarPermisosDialog';
+import GuardarPermisosDialog from '../components/GuardarPermisos';
 // servicios
 import { useLocation } from 'react-router-dom';
 import { usePermisos } from '../hooks/usePermisos';
+import { useBusqueda } from './../../usuarios/hooks/useBusqueda'; 
 
 export default function Permisos() {
 
     //funcion para extraer el valor enviado desde usuario
     const { state } = useLocation();
+    let { idSeleccionado } = useBusqueda() || {};
+    if (!idSeleccionado) {
+        idSeleccionado = state?.user?.id;
+    }
+
     //hook personalizado para manejar permisos
-    const { perfil, permisos, permisosOriginal, detectarCambios, cambiarPermiso } = usePermisos(state?.user?.id);
+    const { permisos, permisosOriginal, detectarCambios, cambiarPermiso } = usePermisos(idSeleccionado);
 
     // Estado para controlar el diálogo de guardar permisos
     const [openDialog, setOpenDialog] = useState(false);
@@ -44,7 +50,7 @@ export default function Permisos() {
 
         <Box>
             {/* Información del Usuario */}
-            <CardDescUser perfil={ perfil } />
+            
 
             {/* Tabs */}
             <Box
@@ -140,7 +146,7 @@ export default function Permisos() {
             >
                 <SaveIcon />
             </Fab>
-            <GuardarPermisosDialog open={openDialog} onClose={handleCloseDialog} idUsuario={state?.user.id} cambios={detectarCambios} />
+            <GuardarPermisosDialog open={openDialog} onClose={handleCloseDialog} idUsuario={idSeleccionado} cambios={detectarCambios} />
         </Box>
     );
 }
