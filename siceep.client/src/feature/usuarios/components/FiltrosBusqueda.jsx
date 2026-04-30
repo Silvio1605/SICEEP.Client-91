@@ -3,12 +3,18 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
-import IconButton from '@mui/material/IconButton';
 import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid';
 import SelectItem from './../../../shared/components/SelectItem';
 import { useSelectUsuarios } from './../hooks/useSelectUsuarios';
-
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormControl from '@mui/material/FormControl';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
 
     //datos para las cajas de selecciones
@@ -27,6 +33,21 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
         actualizarFiltro({ propietario: inputPropietario });
         buscar(nuevoFiltro);
     };
+    //
+    const [open, setOpen] = useState(false);
+    
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+    const handleDialogClose = (_event, reason) => {
+        if (!['backdropClick', 'escapeKeyDown'].includes(reason)) {
+            setOpen(false);
+        }
+    };
+    const handleActionButtonClick = () => {
+        setOpen(false);
+    };
+
 
     return (
         <Box
@@ -63,62 +84,88 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                                 <InputBase
                                     sx={{ ml: 1, flex: 1 }}
                                     placeholder="Buscar por nombre del propietario"
-                                    value={inputPropietario} 
+                                    value={inputPropietario}
                                     onChange={(e) => {
                                         setInputPropietario(e.target.value);
                                     }}
                                 />
-                                <IconButton type="submit">
-                                    <SearchIcon />
-                                </IconButton>
+
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    endIcon={<SearchIcon />}
+                                    sx={{ ml: 1 }} // separación mínima
+                                >
+                                    Buscar
+                                </Button>
                             </Paper>
                         </Grid>
-
-                        {/* SELECT ESTADO */}
                         <Grid size={{ xs: 6, md: 2 }}>
                             {loading ? (
                                 <p>Cargando...</p>
                             ) : (
-                                <SelectItem
-                                   value={filtro.estado || ""}
-                                        onChange={(estado) => {
-                                            actualizarFiltro({ estado: estado });
-                                        }}
-                                   datos={selEstado}
-                                   titulo="Estados"
-                                />  
+                                <Stack direction="row" spacing={2} sx={{ mt: 1, ml: 1 }}>
+                                    <Button onClick={handleClickOpen} variant="contained" endIcon={<FilterAltIcon />}>
+                                        Filtro
+                                    </Button>
+                                </Stack>
                             )}
                         </Grid>
 
-                        {/* SELECT AÑO */}
-                        <Grid size={{ xs: 6, md: 2 }}>
-                            {loading ? (
-                                <p>Cargando...</p>
-                            ) : (
-                               <SelectItem
-                                 value={
-                                     filtro.fechaExpiracionDesde
-                                     ? filtro.fechaExpiracionDesde.split("-")[0]
-                                     : ""
-                                 }
-                                 onChange={(año) => {
-                                     if (!año) {
-                                         actualizarFiltro({
-                                             fechaExpiracionDesde: null,
-                                             fechaExpiracionHasta: null
-                                         });
-                                         return;
-                                     }
-                                     actualizarFiltro({
-                                         fechaExpiracionDesde: `${año}-01-01`,
-                                         fechaExpiracionHasta: `${año}-12-31`
-                                     });
-                                 }}
-                                 datos={selAño}
-                                 titulo="Año Vencimiento"
-                               />
-                            )}
-                        </Grid>
+                        <Dialog open={open} onClose={handleDialogClose} disableRestoreFocus>
+                            <DialogTitle>Parametros de Búsqueda</DialogTitle>
+                            <DialogContent>
+                                <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
+                                    <FormControl sx={{ m: 1, minWidth: 120 }}>
+                                        {loading ? (
+                                            <p>Cargando...</p>
+                                        ) : (
+                                            <SelectItem
+                                                value={filtro.estado || ""}
+                                                onChange={(estado) => {
+                                                    actualizarFiltro({ estado: estado });
+                                                }}
+                                                datos={selEstado}
+                                                titulo="Estados"
+                                            />
+                                        )}
+                                    </FormControl>
+                                    <FormControl sx={{ m: 1, minWidth: 120 }}>
+                                        {loading ? (
+                                            <p>Cargando...</p>
+                                        ) : (
+                                            <SelectItem
+                                                value={
+                                                    filtro.fechaExpiracionDesde
+                                                        ? filtro.fechaExpiracionDesde.split("-")[0]
+                                                        : ""
+                                                }
+                                                onChange={(año) => {
+                                                    if (!año) {
+                                                        actualizarFiltro({
+                                                            fechaExpiracionDesde: null,
+                                                            fechaExpiracionHasta: null
+                                                        });
+                                                        return;
+                                                    }
+                                                    actualizarFiltro({
+                                                        fechaExpiracionDesde: `${año}-01-01`,
+                                                        fechaExpiracionHasta: `${año}-12-31`
+                                                    });
+                                                }}
+                                                datos={selAño}
+                                                titulo="Año Vencimiento"
+                                            />
+                                        )}
+                                    </FormControl>
+                                </Box>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button onClick={handleActionButtonClick}>Aceptar</Button>
+                            </DialogActions>
+                        </Dialog>
+
+                       
                     </Grid>
                 </Box>
             </Box>

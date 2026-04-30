@@ -8,7 +8,6 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid'
 // componente para mostrar el perfil del usuario seleccionado en la tabla de usuarios
 import Permisos from './../../permisos/pages/Permisos';

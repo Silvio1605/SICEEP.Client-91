@@ -1,19 +1,16 @@
 import { Box, Typography, Divider } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
-import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import { TextField } from "@mui/material";
-import VillaIcon from '@mui/icons-material/Villa';
-import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
-import BoyIcon from '@mui/icons-material/Boy';
 import WorkIcon from '@mui/icons-material/Work';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LockClockIcon from '@mui/icons-material/LockClock';
+import SelectItem from './../../../shared/components/SelectItem';
 // servicios
 import { useBusqueda } from './../hooks/useBusqueda';
 import { usePerfil } from '../hooks/usePerfil'; 
+import { useSelectRoles } from "../hooks/useSelectRoles";
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -75,6 +72,7 @@ function CardUsuario() {
 
     const { idSeleccionado } = useBusqueda();
     const { perfil } = usePerfil(idSeleccionado);
+    const { selRol, loading } = useSelectRoles();
 
     return (
         // Información del Usuario
@@ -93,9 +91,13 @@ function CardUsuario() {
                                     <Typography variant="h5">
                                         <strong>{perfil.usuario?.usuario}</strong>
                                     </Typography>
-
+                                    <Divider />
                                     <Typography variant="body2" sx={{ pt: 1 }}>
                                         <strong>Propietario: </strong> {perfil.usuario?.propietario}
+                                    </Typography>
+                                    
+                                    <Typography variant="body2" sx={{ pt: 1 }}>
+                                        <strong>Ubicado en:</strong> {perfil.estructura?.estructura}
                                     </Typography>
                                 </Box>
                             </Box>
@@ -106,21 +108,21 @@ function CardUsuario() {
 
                 <Grid size={12}>
                     <Item>
-                        <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
-                            <WorkIcon sx={{ mr: 1 }} />
-
-                            <Typography variant="body2">
-                                <strong>Rol :</strong> {perfil.usuario?.rol}
-                            </Typography>
-                        </Box>
-
-                        <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
-                            <VillaIcon sx={{ mr: 1 }} />
-
-                            <Typography variant="body2">
-                                <strong>Ubicado en:</strong> {perfil.estructura?.estructura}
-                            </Typography>
-                        </Box>
+                        {loading ? (
+                            <p>Cargando...</p>
+                        ) : (
+                            <Box>
+                                <SelectItem
+                                    value={1}
+                                    onChange={(selRol) => {
+                                        console.log(selRol);
+                                    }}
+                                    datos={selRol}
+                                    titulo="Rol"
+                                />
+                                <WorkIcon sx={{ mr: 1 }} />
+                            </Box>
+                        )}
                     </Item>
                 </Grid>
                 <Grid size={12}>

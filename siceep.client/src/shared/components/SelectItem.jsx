@@ -8,7 +8,7 @@ export default function SelectItem({ value, onChange, datos, titulo }) {
     
     return (
         <div>
-            <FormControl variant="standard" sx={{ m: 1, minWidth: 120 }}>
+            <FormControl fullWidth variant="standard" sx={{ m: 1, minWidth: 120 }}>
                 <InputLabel id={`select-label-${titulo}`}>{ titulo }</InputLabel>
                 <Select
                     labelId="demo-simple-select-standard-label"

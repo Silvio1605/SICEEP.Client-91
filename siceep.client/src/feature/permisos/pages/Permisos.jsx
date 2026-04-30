@@ -3,7 +3,6 @@ import { Box, Grid, Tabs, Tab, Typography, Paper } from "@mui/material";
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
 // componentes
-import CardDescUser from '../components/CardDescUser';
 import CardPermiso from "../components/CardPermiso";
 import GuardarPermisosDialog from '../components/GuardarPermisos';
 // servicios
