@@ -4,11 +4,11 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 
-export default function SelectItem({ value, onChange, datos, titulo }) {
+export default function SelectItem({ value, onChange, datos, titulo, incluirTodo }) {
     
     return (
         <div>
-            <FormControl fullWidth variant="standard" sx={{ m: 1, minWidth: 120 }}>
+            <FormControl fullWidth variant="standard" sx={{ m: 0, minWidth: '60%' }}>
                 <InputLabel id={`select-label-${titulo}`}>{ titulo }</InputLabel>
                 <Select
                     labelId="demo-simple-select-standard-label"
@@ -18,9 +18,13 @@ export default function SelectItem({ value, onChange, datos, titulo }) {
                         (e) => onChange(e.target.value)
                     }
                 >
-                    <MenuItem value="">
-                        <em>{"Todos"}</em>
-                    </MenuItem>
+                    {
+                        incluirTodo && (
+                            <MenuItem value="">
+                                <em>{"Todos"}</em>
+                            </MenuItem>
+                        )
+                    }
                     {datos.map((sel) => (
                         <MenuItem value={sel.id}>{sel.nombre}</MenuItem>
                     ))}

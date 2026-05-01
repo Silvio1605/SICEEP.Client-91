@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Box, Typography, Divider } from "@mui/material";
 import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
@@ -7,10 +8,16 @@ import WorkIcon from '@mui/icons-material/Work';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LockClockIcon from '@mui/icons-material/LockClock';
 import SelectItem from './../../../shared/components/SelectItem';
+import EventAvailableIcon from '@mui/icons-material/EventAvailable';
+import { Button } from '@mui/material';
+import TextField from '@mui/material/TextField';
+import Dialog from '@mui/material/Dialog';
+import Confirm from './../../../shared/components/Confirm';
 // servicios
 import { useBusqueda } from './../hooks/useBusqueda';
 import { usePerfil } from '../hooks/usePerfil'; 
 import { useSelectRoles } from "../hooks/useSelectRoles";
+import { useFecha } from '../hooks/useFecha';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -23,56 +30,42 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-const esFechaValida = (fecha) => {
-    const f = new Date(fecha);
-    return !isNaN(f.getTime());
-};
-
-const tiempoRestante = (fecha) => {
-    // Validación de fecha
-    if (!esFechaValida(fecha)) {
-        return "Fecha inválida";
-    }
-    // Cálculo de tiempo restante
-    const ahora = new Date();
-    const objetivo = new Date(fecha);
-
-    if (objetivo <= ahora) return "Cuenta Expirada";
-
-    let anios = objetivo.getFullYear() - ahora.getFullYear();
-    let meses = objetivo.getMonth() - ahora.getMonth();
-    let dias = objetivo.getDate() - ahora.getDate();
-
-    if (dias < 0) {
-        meses--;
-        const diasMesAnterior = new Date(
-            objetivo.getFullYear(),
-            objetivo.getMonth(),
-            0
-        ).getDate();
-        dias += diasMesAnterior;
-    }
-
-    if (meses < 0) {
-        anios--;
-        meses += 12;
-    }
-
-    // Construcción dinámica
-    const partes = [];
-
-    if (anios > 0) partes.push(`${anios} año${anios > 1 ? "s" : ""}`);
-    if (meses > 0) partes.push(`${meses} mes${meses > 1 ? "es" : ""}`);
-    if (dias > 0) partes.push(`${dias} día${dias > 1 ? "s" : ""}`);
-
-    return partes.length > 0 ? partes.join(", ") : "Hoy";
-};
-
 function CardUsuario() {
+
+    // Funciones para manejo de fechas
+    const { obtenerFechaActual, tiempoRestante, convertirFecha, esMayor } = useFecha();
 
     const { idSeleccionado } = useBusqueda();
     const { perfil } = usePerfil(idSeleccionado);
     const { selRol, loading } = useSelectRoles();
+    const [fecha, setFecha] = useState("");
+
+    // Estado para controlar el diálogo de actualización de fecha
+    const [dialogo, setDialogo] = useState(null);
+
+    // Funciones para abrir los diálogos de confirmación
+    const abrirConfirmExp = () => setDialogo("confirmExpiracion");
+    const abrirConfirmRol = () => setDialogo("confirmRol");
+
+    const cerrar = () => setDialogo(null);
+
+    const confirmar = () => {
+        cerrar();
+    };
+
+    // Convertir fecha de perfil a formato YYYY-MM-DD para comparación
+    const fechaPerfil = perfil.usuario?.fechaExpiracion
+        ? convertirFecha(perfil.usuario.fechaExpiracion)
+        : "";
+
+    useEffect(() => {
+        const cargarFecha = () => {
+            setFecha(perfil.usuario?.fechaExpiracion ? convertirFecha(perfil.usuario.fechaExpiracion) : obtenerFechaActual());
+        };
+        cargarFecha();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [perfil.usuario?.fechaExpiracion]);
 
     return (
         // Información del Usuario
@@ -81,7 +74,7 @@ function CardUsuario() {
                 <Grid size={12}>
                     <Item>
                         <Box sx={{ p: 1, bgcolor: "background.default" }}>
-                            <Box display="flex" alignItems="center" sx={{ pl: 4 }}>
+                            <Box display="flex" alignItems="center" sx={{ pl: 1 }}>
 
                                 {/* Avatar */}
                                 <Avatar alt="user" src="/image/default-user.jpg" />
@@ -103,7 +96,6 @@ function CardUsuario() {
                             </Box>
                         </Box>
                     </Item>
-
                 </Grid>
 
                 <Grid size={12}>
@@ -112,39 +104,104 @@ function CardUsuario() {
                             <p>Cargando...</p>
                         ) : (
                             <Box>
-                                <SelectItem
-                                    value={1}
-                                    onChange={(selRol) => {
-                                        console.log(selRol);
-                                    }}
-                                    datos={selRol}
-                                    titulo="Rol"
-                                />
-                                <WorkIcon sx={{ mr: 1 }} />
+                                    <SelectItem
+                                        value={perfil?.usuario?.idRol}
+                                        onChange={(selRol) => {
+                                            console.log(selRol);
+                                        }}
+                                        incluirTodo={false}
+                                        datos={selRol}
+                                        titulo="Rol Actual"
+                                    />
+                                    <Button
+                                        fullWidth
+                                        sx={{ mt: 2 } }
+                                        variant="contained"
+                                        color="primary"
+                                        startIcon={<WorkIcon />}
+                                        onClick={(e) => {
+                                            // Evitar que el botón mantenga el foco después de hacer clic
+                                            e.currentTarget.blur();
+                                            abrirConfirmRol();
+                                        }}
+                                    >
+                                        Actualizar Rol
+                                    </Button>
                             </Box>
                         )}
                     </Item>
                 </Grid>
                 <Grid size={12}>
                     <Item>
-                        <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
-                            <CalendarTodayIcon sx={{ mr: 1 }} />
+                        {loading ? (
+                            <p>Cargando...</p>
+                        ) : (
+                            <Box>
+                                <TextField
+                                        type="date"
+                                        label="Fecha de Expiración"
+                                        value={fecha}
+                                        onChange={(e) => setFecha(e.target.value)}
+                                     InputLabelProps={{ shrink: true }}
+                                     fullWidth
+                                />
+                                <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
+                                     <LockClockIcon sx={{ mr: 1 }} />
 
-                            <Typography variant="body2">
-                                <strong>La cuenta expira el:</strong> {perfil.usuario?.fechaExpiracion}
-                            </Typography>
-                        </Box>
+                                     <Typography variant="body2">
+                                          <strong>Tiempo actual restante:</strong> {tiempoRestante(perfil.usuario?.fechaExpiracion)}
+                                     </Typography>
+                                </Box>
+                                    {fecha && fecha !== fechaPerfil ? (
+                                        <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
+                                            <LockClockIcon sx={{ mr: 1, color: 'primary.main' }} />
 
-                        <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
-                            <LockClockIcon sx={{ mr: 1 }} />
+                                            <Typography variant="body2" sx={{ color: 'primary.main' }}>
+                                                <strong>Tiempo nuevo periodo:</strong> {tiempoRestante(fecha)}
+                                            </Typography>
+                                        </Box>
 
-                            <Typography variant="body2">
-                                <strong>Tiempo de uso restante:</strong> {tiempoRestante(perfil.usuario?.fechaExpiracion)}
-                            </Typography>
-                        </Box>
+                                    ) : ""}
+                                   
+                                <Button
+                                    fullWidth
+                                    sx={{ mt: 2 }}
+                                    variant="contained"
+                                    color="primary"
+                                        startIcon={<CalendarTodayIcon />}
+                                    onClick={(e) => {
+                                            // Evitar que el botón mantenga el foco después de hacer clic
+                                        e.currentTarget.blur();
+                                        esMayor(perfil.usuario?.fechaExpiracion, fecha);
+                                        abrirConfirmExp();
+                                    }}
+                                >
+                                        Actualizar Fecha
+                                </Button>
+
+                            </Box>
+                        )}
                     </Item>
                 </Grid>
             </Grid>
+            <Confirm
+                open={dialogo === "confirmExpiracion"}
+                handleClose={cerrar}
+                onConfirm={confirmar}
+                title="Confirmar cambio"
+                content="¿Estás seguro de que deseas actualizar la fecha de expiración? Esta acción no se puede deshacer."
+            >
+                {/* contenido */}
+            </Confirm>
+            <Confirm
+                open={dialogo === "confirmRol"}
+                handleClose={cerrar}
+                onConfirm={confirmar}
+                title="Confirmar cambio"
+                content="¿Estás seguro de que deseas actualizar el rol del usuario? Esta acción no se puede deshacer."
+            >
+                {/* contenido */}
+            </Confirm>
         </Box>
     );
 }

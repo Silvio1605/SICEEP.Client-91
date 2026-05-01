@@ -125,6 +125,7 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                                                 onChange={(estado) => {
                                                     actualizarFiltro({ estado: estado });
                                                 }}
+                                                incluirTodo={true}
                                                 datos={selEstado}
                                                 titulo="Estados"
                                             />
@@ -153,6 +154,7 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                                                         fechaExpiracionHasta: `${año}-12-31`
                                                     });
                                                 }}
+                                                incluirTodo={true}
                                                 datos={selAño}
                                                 titulo="Año Vencimiento"
                                             />

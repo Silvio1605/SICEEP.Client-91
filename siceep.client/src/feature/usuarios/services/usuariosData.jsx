@@ -21,11 +21,11 @@ export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
         align: 'center', headerAlign: 'center'
     },
     !isMobile && {
-        field: 'id', headerName: 'Ident.', flex: 2, minWidth: 20,
+        field: 'id', headerName: 'Ident.', flex: 2, minWidth: 20, maxWidth: 80,
         align: 'center', headerAlign: 'center'
     },
     !isMobile && {
-        field: 'propietario', headerName: 'Nombre Completo', flex: 2, minWidth: 150,
+        field: 'propietario', headerName: 'Nombre Completo', flex: 2, minWidth: 180, 
         align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
     },
     {
