@@ -22,6 +22,10 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 // media query para detectar el tamaño de pantalla y ajustar la tabla               
 import { useScreenType } from './../../../shared/hooks/useScreenType';
+// hooks
+import { PermisoProvider } from './../../permisos/context/PermisoProvider';
+import { useBusqueda } from './../hooks/useBusqueda';
+
 
 export default function Usuarios() {
 
@@ -32,6 +36,8 @@ export default function Usuarios() {
     const { usuarios, buscar } = useUsuarios();
     // para manejar los parámetros de búsqueda en la URL (si es necesario)
     const [searchParams, setSearchParams] = useSearchParams();
+
+    var { idSeleccionado } = useBusqueda();
 
     //datos de la busqueda con filtro
     const filtro = useMemo(() => ({
@@ -84,7 +90,6 @@ export default function Usuarios() {
     const slots = useMemo(() => ({ toolbar: GridToolbar }), []);
 
     return (
-
         <Box>
             <Typography variant="h5" component="h1" color="text.primary">
                 Gestion de Usuarios
@@ -154,10 +159,13 @@ export default function Usuarios() {
                     </Stack>
                 )}
             </Box>
-            <Perfil
-                open={openPerfil}
-                onClose={cerrarPerfil}
-            />
+            <PermisoProvider idUsuario={idSeleccionado}>
+                <Perfil
+                    open={openPerfil}
+                    onClose={cerrarPerfil}
+                />
+            </PermisoProvider>
+
         </Box>
         
     )

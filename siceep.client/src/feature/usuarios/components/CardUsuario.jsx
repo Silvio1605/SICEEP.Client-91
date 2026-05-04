@@ -15,9 +15,10 @@ import Dialog from '@mui/material/Dialog';
 import Confirm from './../../../shared/components/Confirm';
 // servicios
 import { useBusqueda } from './../hooks/useBusqueda';
-import { usePerfil } from '../hooks/usePerfil'; 
+import { usePerfil } from '../hooks/usePerfil';
 import { useSelectRoles } from "../hooks/useSelectRoles";
 import { useFecha } from '../hooks/useFecha';
+import { useRol } from '../hooks/useRol';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -33,12 +34,16 @@ const Item = styled(Paper)(({ theme }) => ({
 function CardUsuario() {
 
     // Funciones para manejo de fechas
-    const { obtenerFechaActual, tiempoRestante, convertirFecha, esMayor } = useFecha();
+    const { obtenerFechaActual, tiempoRestante, convertirFecha, esMayor, actualizarFechaExpiracion } = useFecha();
+    const { actualizarRol } = useRol();
 
     const { idSeleccionado } = useBusqueda();
     const { perfil } = usePerfil(idSeleccionado);
+
+    // datos para las cajas de selecciones
     const { selRol, loading } = useSelectRoles();
     const [fecha, setFecha] = useState("");
+    const [rol, setRol] = useState("");
 
     // Estado para controlar el diálogo de actualización de fecha
     const [dialogo, setDialogo] = useState(null);
@@ -48,11 +53,7 @@ function CardUsuario() {
     const abrirConfirmRol = () => setDialogo("confirmRol");
 
     const cerrar = () => setDialogo(null);
-
-    const confirmar = () => {
-        cerrar();
-    };
-
+    
     // Convertir fecha de perfil a formato YYYY-MM-DD para comparación
     const fechaPerfil = perfil.usuario?.fechaExpiracion
         ? convertirFecha(perfil.usuario.fechaExpiracion)
@@ -66,6 +67,34 @@ function CardUsuario() {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [perfil.usuario?.fechaExpiracion]);
+
+    useEffect(() => {
+        const cargarRol = () => {
+            setRol(perfil.usuario?.idRol || "");
+        };
+        cargarRol();
+    }, [perfil.usuario?.idRol]);
+
+    const handleConfirmarExpiracion = async () => {
+        try {
+            const usuarioActualizado = await actualizarFechaExpiracion(perfil.usuario?.usuario, fecha);
+            console.log("Fecha de expiración actualizada:", usuarioActualizado);
+        } catch (error) {
+            console.error("Error al actualizar la fecha de expiración:", error);
+        }
+        cerrar();
+    }
+
+    const handleConfirmarRol = async () => {
+
+        try {
+            const rolActualizado = await actualizarRol(perfil.usuario?.id, rol);
+            console.log("Rol actualizado:", rolActualizado.data);
+        } catch (error) {
+            console.error("Error al actualizar el rol:", error);
+        } 
+        cerrar();
+    };
 
     return (
         // Información del Usuario
@@ -105,9 +134,9 @@ function CardUsuario() {
                         ) : (
                             <Box>
                                     <SelectItem
-                                        value={perfil?.usuario?.idRol}
+                                        value={rol}
                                         onChange={(selRol) => {
-                                            console.log(selRol);
+                                            setRol(selRol);
                                         }}
                                         incluirTodo={false}
                                         datos={selRol}
@@ -138,10 +167,10 @@ function CardUsuario() {
                         ) : (
                             <Box>
                                 <TextField
-                                        type="date"
-                                        label="Fecha de Expiración"
-                                        value={fecha}
-                                        onChange={(e) => setFecha(e.target.value)}
+                                     type="date"
+                                     label="Fecha de Expiración"
+                                     value={fecha}
+                                     onChange={(e) => setFecha(e.target.value)}
                                      InputLabelProps={{ shrink: true }}
                                      fullWidth
                                 />
@@ -187,7 +216,7 @@ function CardUsuario() {
             <Confirm
                 open={dialogo === "confirmExpiracion"}
                 handleClose={cerrar}
-                onConfirm={confirmar}
+                onConfirm={handleConfirmarExpiracion}
                 title="Confirmar cambio"
                 content="¿Estás seguro de que deseas actualizar la fecha de expiración? Esta acción no se puede deshacer."
             >
@@ -196,7 +225,7 @@ function CardUsuario() {
             <Confirm
                 open={dialogo === "confirmRol"}
                 handleClose={cerrar}
-                onConfirm={confirmar}
+                onConfirm={handleConfirmarRol}
                 title="Confirmar cambio"
                 content="¿Estás seguro de que deseas actualizar el rol del usuario? Esta acción no se puede deshacer."
             >

@@ -6,21 +6,17 @@ import SaveIcon from '@mui/icons-material/Save';
 import CardPermiso from "../components/CardPermiso";
 import GuardarPermisosDialog from '../components/GuardarPermisos';
 // servicios
-import { useLocation } from 'react-router-dom';
-import { usePermisos } from '../hooks/usePermisos';
-import { useBusqueda } from './../../usuarios/hooks/useBusqueda'; 
+import { useBusqueda } from './../../usuarios/hooks/useBusqueda';
+import { usePermisosContext } from "./../hooks/usePermisoContext";
 
 export default function Permisos() {
 
     //funcion para extraer el valor enviado desde usuario
-    const { state } = useLocation();
     let { idSeleccionado } = useBusqueda() || {};
-    if (!idSeleccionado) {
-        idSeleccionado = state?.user?.id;
-    }
-
+    
     //hook personalizado para manejar permisos
-    const { permisos, permisosOriginal, detectarCambios, cambiarPermiso } = usePermisos(idSeleccionado);
+    const { permisosHook } = usePermisosContext();
+    const { permisos, cambiarPermiso, detectarCambios, permisosOriginal } = permisosHook;
 
     // Estado para controlar el diálogo de guardar permisos
     const [openDialog, setOpenDialog] = useState(false);
@@ -32,7 +28,7 @@ export default function Permisos() {
     const sectionsRef = useRef({});
 
     const tabsChange = (event, newValue) => {
-        setValue(newValue);
+        setValue(newValue);  
 
         const idModulo = permisosOriginal.current[newValue].idModulo;
         const element = sectionsRef.current[idModulo];
@@ -48,9 +44,6 @@ export default function Permisos() {
     return (
 
         <Box>
-            {/* Información del Usuario */}
-            
-
             {/* Tabs */}
             <Box
                 sx={{

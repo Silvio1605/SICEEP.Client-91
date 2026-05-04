@@ -13,9 +13,8 @@ function App() {
               <Route path="usuarios" element={
                   <BusquedaProvider>
                       <Usuarios />
-                   </BusquedaProvider>
-                  }
-              />
+                  </BusquedaProvider>
+              } />
               <Route path="permisos" element={<Permisos />} />
           </Route>
       </Routes>

@@ -1,3 +1,4 @@
+import { updateExpiracion } from "./../services/usuarioService";
 
 export const useFecha = () => {
 
@@ -80,5 +81,26 @@ export const useFecha = () => {
     };
 
 
-    return { tiempoRestante, convertirFecha, esMayor, obtenerFechaActual };
+    const actualizarFechaExpiracion = async (nombreUsuario, nuevaFecha) => {
+
+        if (!esFechaValida(nuevaFecha)) {
+            return Promise.reject("Fecha inválida");
+        }
+
+        if (!esMayor(obtenerFechaActual(), nuevaFecha)) {
+            return Promise.reject("La nueva fecha debe ser mayor a la fecha actual");
+        }
+
+        if (!nombreUsuario) {
+            return Promise.reject("Nombre de usuario no válido");
+        }
+
+        const usuarioActualizado = {
+            usuario: nombreUsuario,
+            fechaExpiracion: nuevaFecha
+        };
+        return updateExpiracion(usuarioActualizado);
+    }
+
+    return { tiempoRestante, convertirFecha, esMayor, obtenerFechaActual, actualizarFechaExpiracion };
 };

@@ -1,6 +1,6 @@
-import { useState, useEffect, useRef } from 'react'; 
+import { useState, useEffect, useRef, useCallback } from 'react'; 
 // servicios
-import { getPermisos } from './../services/PermisoService'; 
+import { getPermisos } from './../services/PermisoService';
 
 export const usePermisos = (id) => {
 
@@ -11,26 +11,29 @@ export const usePermisos = (id) => {
     
     const [loading, setLoading] = useState(false);
 
-    useEffect(() => {
-        
-        const cargar = async () => {
-            // Si no hay ID, no hacer nada
-            if (!id) return;
+    const cargar = useCallback(async () => {
+        setLoading(true);
+        // Si no hay ID, no hacer nada
+        if (!id) return;
+        // obtener permisos y estructura del usuario
+        const res = await getPermisos(id);
+        // datos para mostrar permisos con su estado
+        setPermisosData(res.data);
+        // ref para mantener los permisos originales y comparar cambios
+        permisosOriginal.current = JSON.parse(JSON.stringify(res.data));
+        setLoading(false);
+    }, [id]);
 
-            // obtener permisos y estructura del usuario
-            const [res] = await Promise.all([
-                getPermisos(id),
-            ]);
-            // datos para mostrar permisos con su estado
-            setPermisosData(res.data);
-            // ref para mantener los permisos originales y comparar cambios
-            permisosOriginal.current = JSON.parse(JSON.stringify(res.data));
-            setLoading(false);
+
+    useEffect(() => {
+        const ejecutar = async () => {
+            await cargar();
         };
 
-        cargar();
-        
-    }, [id]);
+        ejecutar();
+    }, [cargar]);
+
+    const refetch = () => cargar();
 
     // Local - Función para cambiar el estado de un permiso
     const cambiarPermiso = (idPermiso) => {
@@ -78,5 +81,6 @@ export const usePermisos = (id) => {
         return cambios;
     };
 
-    return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso };
+    return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso, refetch };
 }
+

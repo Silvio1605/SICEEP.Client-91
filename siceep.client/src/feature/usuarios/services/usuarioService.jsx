@@ -20,3 +20,19 @@ export const getUsuariosById = async (id) => {
     }
 };
 
+export const updateExpiracion = async (cambioExpiracion) => {
+    try {
+        return await api.put(`Usuario/Actualizar_Expiracion`, cambioExpiracion);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const updateRol = async (cambioRol) => {
+    try {
+        return await api.post(`Rol/Actualizar`, cambioRol);
+    } catch (error) {
+        console.log(error);
+    }
+};
+

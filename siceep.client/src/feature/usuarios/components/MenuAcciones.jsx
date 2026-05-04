@@ -7,15 +7,11 @@ import FaceIcon from '@mui/icons-material/Face';
 import PasswordIcon from '@mui/icons-material/Password';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 // Importar Link y useNavigate para navegación
-import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useBusqueda } from './../hooks/useBusqueda';
 
 export default function MenuAcciones({ row, abrirPerfil }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
-
-    const navigate = useNavigate();
-    const location = useLocation();
 
     const handleOpen = (event) => {
         event.stopPropagation();
@@ -55,22 +51,7 @@ export default function MenuAcciones({ row, abrirPerfil }) {
                 <MenuItem onClick={() => seleccionar(row.id)}>
                     <FaceIcon sx={{ mr: 1 }} /> Perfil
                 </MenuItem>
-                <MenuItem
-                    
-                    onClick={() => {
-                        handleClose();
-
-                        navigate("/permisos", {
-                            state: {
-                                user: row,
-                                from: location // guardar filtro actual para volver después
-                            }
-                        });
-                    }}
-                >
-                    <KeyIcon sx={{ mr: 1 }} /> Permisos
-                </MenuItem>
-
+                
                 <MenuItem
                     onClick={() => handleAction('editar')}
                 >
