@@ -33,8 +33,6 @@ export const usePermisos = (id) => {
         ejecutar();
     }, [cargar]);
 
-    const refetch = () => cargar();
-
     // Local - Función para cambiar el estado de un permiso
     const cambiarPermiso = (idPermiso) => {
         setPermisosData(prev =>
@@ -52,6 +50,7 @@ export const usePermisos = (id) => {
     // Export - Función para obtener una lista plana de todos los permisos
     const obtenerPermisos = (data) =>
         data.flatMap(m => m.permisos);
+
     // Export - Función para detectar cambios entre los permisos actuales y los originales
     const detectarCambios = () => {
         const originales = obtenerPermisos(permisosOriginal.current);
@@ -81,6 +80,6 @@ export const usePermisos = (id) => {
         return cambios;
     };
 
-    return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso, refetch };
+    return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso, refetch : cargar };
 }
 

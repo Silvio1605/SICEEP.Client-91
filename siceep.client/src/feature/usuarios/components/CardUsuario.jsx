@@ -17,6 +17,7 @@ import Confirm from './../../../shared/components/Confirm';
 import { useBusqueda } from './../hooks/useBusqueda';
 import { usePerfil } from '../hooks/usePerfil';
 import { useSelectRoles } from "../hooks/useSelectRoles";
+import { usePermisosContext } from './../../permisos/hooks/usePermisoContext'; 
 import { useFecha } from '../hooks/useFecha';
 import { useRol } from '../hooks/useRol';
 
@@ -35,6 +36,7 @@ function CardUsuario() {
 
     // Funciones para manejo de fechas
     const { obtenerFechaActual, tiempoRestante, convertirFecha, esMayor, actualizarFechaExpiracion } = useFecha();
+    const { permisosHook } = usePermisosContext();
     const { actualizarRol } = useRol();
 
     const { idSeleccionado } = useBusqueda();
@@ -90,6 +92,8 @@ function CardUsuario() {
         try {
             const rolActualizado = await actualizarRol(perfil.usuario?.id, rol);
             console.log("Rol actualizado:", rolActualizado.data);
+
+            await permisosHook.refetch();
         } catch (error) {
             console.error("Error al actualizar el rol:", error);
         } 
