@@ -1,0 +1,213 @@
+import React, { useState, useId } from 'react';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+// iconos 
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+// Importar el componente SelectItem
+import SelectItem from './../../../shared/components/SelectItem';
+// importar el hook useSelectRoles para obtener los roles disponibles
+import { useSelectRoles } from "./../hooks/useSelectRoles";
+// Importar el componente de búsqueda de propietario
+import BusquedaPropietario from './BusquedaPropietario';
+
+export default function CardRegistrar({ open, onClose }) {
+
+    // datos para las cajas de selecciones
+    const { selRol, loading } = useSelectRoles();
+    
+    const [registro, setRegistro] = useState({
+        idPropietario: '',
+        nombrePropietario: '',
+        nombreUsuario: '',
+        rol:2,
+        contraseña: '',
+        contraseñaConfirmacion: '',
+        fechaExpiracion: '',
+    })
+
+
+
+    // Configuración para el diálogo responsivo
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+
+    // Generar IDs únicos para los campos de contraseña y confirmación
+    const outlinedContraId = useId();
+    const outlinedConfirmdId = useId();
+
+    // Estados para mostrar u ocultar las contraseñas
+    const [MostrarContra, setMostrarContra] = useState(false);
+    const [MostrarConfirm, setMostrarConfirm] = useState(false);
+
+    // Función para manejar el clic en el ícono de mostrar/ocultar contraseña
+    const handleClickMostrarContra = (setter) => {
+        setter((show) => !show);
+    };
+
+    // Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
+    const handleMouseDownContra = (event) => {
+        event.preventDefault();
+    };
+    const handleMouseUpContra = (event) => {
+        event.preventDefault();
+    };
+
+    // Función para manejar la búsqueda de propietario (puede ser implementada según las necesidades)
+    const handleBuscarPropietario = () => {
+        setOpenBusqueda(true);
+    };
+
+    // Estado para controlar la apertura del diálogo de búsqueda de propietario
+    const [openBusqueda, setOpenBusqueda] = React.useState(false);
+    const handleClose = () => {
+        setOpenBusqueda(false);
+    };
+
+    return (
+        <React.Fragment>
+            <Dialog
+                fullScreen={fullScreen}
+                open={open}
+                onClose={onClose}
+                aria-labelledby="responsive-dialog-title"
+                disableAutoFocus
+            >
+                <DialogTitle id="responsive-dialog-title">
+                    {"Registrar Usuario"}
+                </DialogTitle>
+                <DialogContent>
+                    
+                    <Button variant="contained" disableElevation sx={{ m: 1 }} onClick={() => handleBuscarPropietario()}>
+                        Buscar Propietario
+                    </Button>
+                    <TextField
+                        fullWidth
+                        sx={{ m: 1 }}
+                        id="propietario"
+                        label="Propietario Seleccionado"
+                        type="text"
+                        autoComplete="Propietario"
+                        variant="filled"
+                        value={registro.nombrePropietario ?? ''}
+                        slotProps={{
+                            input: {
+                                readOnly: true,
+                            },
+                        }}
+                    />
+                    
+                    <TextField
+                        fullWidth
+                        sx={{ m: 1 }}
+                        id="usuario"
+                        label="Nombre de Usuario"
+                        type="text"
+                        autoComplete="Nombre de Usuario"
+                        value={registro.nombreUsuario ?? ''}
+                        onChange={(e) => setRegistro({ ...registro, nombreUsuario: e.target.value })}
+                    />
+                    {loading ? (
+                        <p>Cargando...</p>
+                    ) : (
+                        <SelectItem
+                            value={registro.rol}
+                            onChange={(selRol) => {
+                                setRegistro({
+                                    ...registro,
+                                    rol: selRol
+                                });
+                            }}
+                            incluirTodo={false}
+                            datos={selRol}
+                            titulo="Rol Actual"
+                        />
+                    )}
+                    
+                    <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
+                        <InputLabel htmlFor={`${outlinedContraId}-input`}>Contraseña</InputLabel>
+                        <OutlinedInput
+                            id={`${outlinedContraId}-input`}
+                            type={MostrarContra ? 'text' : 'password'}
+                            value={registro.contraseña ?? ''}
+                            onChange={(e) => setRegistro({ ...registro, contraseña: e.target.value })}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        aria-label={
+                                            MostrarContra ? 'hide the password' : 'display the password'
+                                        }
+                                        onClick={() => handleClickMostrarContra(setMostrarContra)}
+                                        onMouseDown={handleMouseDownContra}
+                                        onMouseUp={handleMouseUpContra}
+                                        edge="end"
+                                    >
+                                        {MostrarContra ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="Password"
+                        />
+                    </FormControl>
+                    <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
+                        <InputLabel htmlFor={`${outlinedConfirmdId}-input`}>Confirmar Contraseña</InputLabel>
+                        <OutlinedInput
+                            id={`${outlinedConfirmdId}-input`}
+                            type={MostrarConfirm ? 'text' : 'password'}
+                            value={registro.contraseñaConfirmacion ?? ''}
+                            onChange={(e) => setRegistro({ ...registro, contraseñaConfirmacion: e.target.value })}
+                            endAdornment={
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={() => handleClickMostrarContra(setMostrarConfirm)}
+                                        onMouseDown={handleMouseDownContra}
+                                        onMouseUp={handleMouseUpContra}
+                                        edge="end"
+                                    >
+                                        {MostrarConfirm ? <VisibilityOff /> : <Visibility />}
+                                    </IconButton>
+                                </InputAdornment>
+                            }
+                            label="Password"
+                        />
+                    </FormControl>
+                    <TextField
+                        fullWidth
+                        sx={{ m: 1 }}
+                        type="date"
+                        label="Fecha de Expiración"
+                        InputLabelProps={{ shrink: true }}
+                        onChange={(e) => setRegistro({ ...registro, fechaExpiracion: e.target.value })}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={onClose}>
+                        Cancelar
+                    </Button>
+                    <Button onClick={onClose}>
+                        Registrar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
+            <BusquedaPropietario
+                open={openBusqueda}
+                onClose={handleClose}
+                setRegistro={setRegistro}
+            />
+        </React.Fragment>
+    );
+}

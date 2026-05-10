@@ -1,4 +1,14 @@
+/* eslint-disable react-refresh/only-export-components */
 import api from "./../../../api/api";
+
+export const registrarUsuario = async (registro) => {
+    try {
+        const { nombrePropietario: _, ...data } = registro;
+        return await api.post(`Usuario/Registrar`, data);
+    } catch (error) {
+        console.log(error);
+    }
+};
 
 export const getUsuarios = async (filtros) => {
     try {
@@ -31,6 +41,14 @@ export const updateExpiracion = async (cambioExpiracion) => {
 export const updateRol = async (cambioRol) => {
     try {
         return await api.post(`Rol/Actualizar`, cambioRol);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const BuscarPropietario = async (busqueda) => {
+    try {
+        return await api.get(`Empleado/EmpleadoByNombre?busqueda=${busqueda}`);
     } catch (error) {
         console.log(error);
     }

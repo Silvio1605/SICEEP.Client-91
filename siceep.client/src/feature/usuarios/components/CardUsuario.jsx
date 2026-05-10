@@ -46,7 +46,6 @@ function CardUsuario() {
     // Notificaciones
     const { mostrarNotificacion } = useNotificacionContext();
 
-
     // datos para las cajas de selecciones
     const { selRol, loading } = useSelectRoles();
     const [fecha, setFecha] = useState("");
@@ -157,7 +156,7 @@ function CardUsuario() {
                             <p>Cargando...</p>
                         ) : (
                             <Box>
-                                    <SelectItem
+                                   <SelectItem
                                         value={rol}
                                         onChange={(selRol) => {
                                             setRol(selRol);
@@ -168,7 +167,7 @@ function CardUsuario() {
                                     />
                                     <Button
                                         fullWidth
-                                        sx={{ mt: 2 } }
+                                        sx={{ mt: 2 }}
                                         variant="contained"
                                         color="primary"
                                         startIcon={<WorkIcon />}

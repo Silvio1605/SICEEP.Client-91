@@ -17,6 +17,7 @@ import { useUsuarios } from './../hooks/useUsuarios';
 // componentes
 import FiltrosBusqueda from '../components/filtrosBusqueda';
 import Perfil from '../components/Perfil';
+import CardRegistrar from '../components/CardRegistrar';
 // loading
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
@@ -82,6 +83,14 @@ export default function Usuarios() {
         setOpenPerfil(false);
     }, []);
 
+    const [openReg, setOpenReg] = useState(false);
+    const abrirReg = () => {
+        setOpenReg(true);
+    };
+    const closeReg = () => {
+        setOpenReg(false);
+    };
+
     const registros = useMemo(() => {
         return columnsUsuarios({ isMobile, abrirPerfil });
     }, [isMobile, abrirPerfil]);
@@ -101,8 +110,9 @@ export default function Usuarios() {
                     variant="contained"
                     color="primary"
                     startIcon={<AddIcon />}
+                    onClick={abrirReg}
                 >
-                    Nuevo Usuario
+                    Registrar
                 </Button>
             </Box>
             <Box
@@ -164,7 +174,10 @@ export default function Usuarios() {
                     onClose={cerrarPerfil}
                 />
             </PermisoProvider>
-
+            <CardRegistrar
+                open={openReg}
+                onClose={closeReg}
+            />
         </Box>
         
     )
