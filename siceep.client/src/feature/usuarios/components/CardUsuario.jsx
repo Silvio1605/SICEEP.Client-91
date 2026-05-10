@@ -14,10 +14,11 @@ import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
 import Confirm from './../../../shared/components/Confirm';
 // servicios
-import { useBusqueda } from './../hooks/useBusqueda';
+import { useNotificacionContext } from '../../../providers/Notificacion/useNotificacionContext';
+import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePerfil } from '../hooks/usePerfil';
 import { useSelectRoles } from "../hooks/useSelectRoles";
-import { usePermisosContext } from './../../permisos/hooks/usePermisoContext'; 
+import { usePermisosContext } from './../../../providers/Permisos/usePermisoContext'; 
 import { useFecha } from '../hooks/useFecha';
 import { useRol } from '../hooks/useRol';
 
@@ -39,8 +40,12 @@ function CardUsuario() {
     const { permisosHook } = usePermisosContext();
     const { actualizarRol } = useRol();
 
-    const { idSeleccionado } = useBusqueda();
+    const { idSeleccionado } = useBusquedaContext();
     const { perfil } = usePerfil(idSeleccionado);
+
+    // Notificaciones
+    const { mostrarNotificacion } = useNotificacionContext();
+
 
     // datos para las cajas de selecciones
     const { selRol, loading } = useSelectRoles();
@@ -79,10 +84,18 @@ function CardUsuario() {
 
     const handleConfirmarExpiracion = async () => {
         try {
-            const usuarioActualizado = await actualizarFechaExpiracion(perfil.usuario?.usuario, fecha);
-            console.log("Fecha de expiración actualizada:", usuarioActualizado);
+            await actualizarFechaExpiracion(perfil.usuario?.usuario, fecha);
+
+            mostrarNotificacion({
+                message: "Fecha de expiración actualizada correctamente",
+                severity: "success",
+            });
+
         } catch (error) {
-            console.error("Error al actualizar la fecha de expiración:", error);
+            mostrarNotificacion({
+                message: "Error al actualizar la fecha de expiración: " + error,
+                severity: "error",
+            });
         }
         cerrar();
     }
@@ -90,12 +103,19 @@ function CardUsuario() {
     const handleConfirmarRol = async () => {
 
         try {
-            const rolActualizado = await actualizarRol(perfil.usuario?.id, rol);
-            console.log("Rol actualizado:", rolActualizado.data);
+            await actualizarRol(perfil.usuario?.id, rol);
+
+            mostrarNotificacion({
+                message: "Rol actualizado correctamente",
+                severity: "success",
+            });
 
             await permisosHook.refetch();
-        } catch (error) {
-            console.error("Error al actualizar el rol:", error);
+        } catch {
+            mostrarNotificacion({
+                message: "Error al actualizar el rol",
+                severity: "error",
+            });
         } 
         cerrar();
     };

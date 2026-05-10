@@ -1,7 +1,5 @@
-import { createContext, useState } from "react";
-
-// eslint-disable-next-line react-refresh/only-export-components
-export const BusquedaContext = createContext();
+import { useState } from "react";
+import { BusquedaContext } from "./BusquedaContext"; 
 
 export function BusquedaProvider({ children }) {
     const [idSeleccionado, setIdSeleccionado] = useState(null);

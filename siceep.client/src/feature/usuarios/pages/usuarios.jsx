@@ -23,9 +23,8 @@ import Stack from '@mui/material/Stack';
 // media query para detectar el tamaño de pantalla y ajustar la tabla               
 import { useScreenType } from './../../../shared/hooks/useScreenType';
 // hooks
-import { PermisoProvider } from './../../permisos/context/PermisoProvider';
-import { useBusqueda } from './../hooks/useBusqueda';
-
+import { PermisoProvider } from './../../../providers/Permisos/PermisoProvider';
+import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 
 export default function Usuarios() {
 
@@ -37,7 +36,7 @@ export default function Usuarios() {
     // para manejar los parámetros de búsqueda en la URL (si es necesario)
     const [searchParams, setSearchParams] = useSearchParams();
 
-    var { idSeleccionado } = useBusqueda();
+    var { idSeleccionado } = useBusquedaContext();
 
     //datos de la busqueda con filtro
     const filtro = useMemo(() => ({

@@ -6,13 +6,13 @@ import SaveIcon from '@mui/icons-material/Save';
 import CardPermiso from "../components/CardPermiso";
 import GuardarPermisosDialog from '../components/GuardarPermisos';
 // servicios
-import { useBusqueda } from './../../usuarios/hooks/useBusqueda';
-import { usePermisosContext } from "./../hooks/usePermisoContext";
+import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
+import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
 
 export default function Permisos() {
 
     //funcion para extraer el valor enviado desde usuario
-    let { idSeleccionado } = useBusqueda() || {};
+    let { idSeleccionado } = useBusquedaContext() || {};
     
     //hook personalizado para manejar permisos
     const { permisosHook } = usePermisosContext();

@@ -7,7 +7,7 @@ import FaceIcon from '@mui/icons-material/Face';
 import PasswordIcon from '@mui/icons-material/Password';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 // Importar Link y useNavigate para navegación
-import { useBusqueda } from './../hooks/useBusqueda';
+import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 
 export default function MenuAcciones({ row, abrirPerfil }) {
     const [anchorEl, setAnchorEl] = useState(null);
@@ -28,7 +28,7 @@ export default function MenuAcciones({ row, abrirPerfil }) {
     };
 
     // Contexto para manejar la selección del usuario
-    const { setIdSeleccionado } = useBusqueda();
+    const { setIdSeleccionado } = useBusquedaContext();
     const seleccionar = (id) => {
         setIdSeleccionado(id); // actualiza el contexto
         abrirPerfil(); // abre el perfil

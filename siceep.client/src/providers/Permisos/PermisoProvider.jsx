@@ -1,4 +1,4 @@
-import { usePermisos } from "./../hooks/usePermisos";
+import { usePermisos } from "./../../feature/permisos/hooks/usePermisos";
 import { PermisoContext } from "./PermisoContext";
 
 export const PermisoProvider = ({ children, idUsuario }) => {
