@@ -1,12 +1,11 @@
 /* eslint-disable react-refresh/only-export-components */
 import api from "./../../../api/api";
 
-export const registrarUsuario = async (registro) => {
+export const registrarUsuario = async (usuario) => {
     try {
-        const { nombrePropietario: _, ...data } = registro;
-        return await api.post(`Usuario/Registrar`, data);
+        return await api.post(`Usuario/Registrar`, usuario);
     } catch (error) {
-        console.log(error);
+        console.log(error.response.data);
     }
 };
 

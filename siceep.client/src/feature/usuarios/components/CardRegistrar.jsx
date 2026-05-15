@@ -3,11 +3,9 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -21,6 +19,7 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import SelectItem from './../../../shared/components/SelectItem';
 // importar el hook useSelectRoles para obtener los roles disponibles
 import { useSelectRoles } from "./../hooks/useSelectRoles";
+import { useRegistrar } from "./../hooks/useRegistrar";
 // Importar el componente de búsqueda de propietario
 import BusquedaPropietario from './BusquedaPropietario';
 
@@ -28,18 +27,17 @@ export default function CardRegistrar({ open, onClose }) {
 
     // datos para las cajas de selecciones
     const { selRol, loading } = useSelectRoles();
-    
+    const { nuevoUsuario } = useRegistrar();
+
     const [registro, setRegistro] = useState({
         idPropietario: '',
         nombrePropietario: '',
         nombreUsuario: '',
         rol:2,
-        contraseña: '',
-        contraseñaConfirmacion: '',
+        contrasena: '',
+        contrasenaConfirmacion: '',
         fechaExpiracion: '',
     })
-
-
 
     // Configuración para el diálogo responsivo
     const theme = useTheme();
@@ -73,8 +71,50 @@ export default function CardRegistrar({ open, onClose }) {
 
     // Estado para controlar la apertura del diálogo de búsqueda de propietario
     const [openBusqueda, setOpenBusqueda] = React.useState(false);
+
     const handleClose = () => {
         setOpenBusqueda(false);
+    };
+
+    const limpiar = () => {
+        setRegistro({
+            idPropietario: '',
+            nombrePropietario: '',
+            nombreUsuario: '',
+            rol: 2,
+            contrasena: '',
+            contrasenaConfirmacion: '',
+            fechaExpiracion: '',
+        });
+    };
+
+    //funcion para registrar usuario
+    const handleRegistrar = async () => {
+
+        if (registro.idPropietario === 0) {
+            alert("Seleccione un propietario");
+            return;
+        }
+        if (registro.contrasena  == "") {
+            alert("Ingrese una contraseña");
+            return;
+        }
+        if (registro.contrasenaConfirmacion == "") {
+            alert("Confirme la contraseña");
+            return;
+        }
+        if (registro.fechaExpiracion == "") {
+            alert("Seleccione una fecha");
+            return;
+        }
+        const result = await nuevoUsuario(registro);
+
+        if (result === undefined) return;
+
+        if (result > 0) {
+            limpiar();
+        };
+
     };
 
     return (
@@ -142,8 +182,8 @@ export default function CardRegistrar({ open, onClose }) {
                         <OutlinedInput
                             id={`${outlinedContraId}-input`}
                             type={MostrarContra ? 'text' : 'password'}
-                            value={registro.contraseña ?? ''}
-                            onChange={(e) => setRegistro({ ...registro, contraseña: e.target.value })}
+                            value={registro.contrasena ?? ''}
+                            onChange={(e) => setRegistro({ ...registro, contrasena: e.target.value })}
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton
@@ -167,8 +207,8 @@ export default function CardRegistrar({ open, onClose }) {
                         <OutlinedInput
                             id={`${outlinedConfirmdId}-input`}
                             type={MostrarConfirm ? 'text' : 'password'}
-                            value={registro.contraseñaConfirmacion ?? ''}
-                            onChange={(e) => setRegistro({ ...registro, contraseñaConfirmacion: e.target.value })}
+                            value={registro.contrasenaConfirmacion ?? ''}
+                            onChange={(e) => setRegistro({ ...registro, contrasenaConfirmacion: e.target.value })}
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton
@@ -197,7 +237,7 @@ export default function CardRegistrar({ open, onClose }) {
                     <Button onClick={onClose}>
                         Cancelar
                     </Button>
-                    <Button onClick={onClose}>
+                    <Button onClick={handleRegistrar}>
                         Registrar
                     </Button>
                 </DialogActions>
