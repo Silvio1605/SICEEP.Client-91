@@ -22,12 +22,16 @@ import { useSelectRoles } from "./../hooks/useSelectRoles";
 import { useRegistrar } from "./../hooks/useRegistrar";
 // Importar el componente de búsqueda de propietario
 import BusquedaPropietario from './BusquedaPropietario';
+import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
 
 export default function CardRegistrar({ open, onClose }) {
 
     // datos para las cajas de selecciones
     const { selRol, loading } = useSelectRoles();
     const { nuevoUsuario } = useRegistrar();
+
+    // Notificaciones
+    const { mostrarNotificacion } = useNotificacionContext();
 
     const [registro, setRegistro] = useState({
         idPropietario: '',
@@ -95,7 +99,7 @@ export default function CardRegistrar({ open, onClose }) {
             alert("Seleccione un propietario");
             return;
         }
-        if (registro.contrasena  == "") {
+        if (registro.contrasena == "") {
             alert("Ingrese una contraseña");
             return;
         }
@@ -108,13 +112,25 @@ export default function CardRegistrar({ open, onClose }) {
             return;
         }
         const result = await nuevoUsuario(registro);
-
+      
         if (result === undefined) return;
 
-        if (result > 0) {
-            limpiar();
-        };
+        if (result.data === undefined) {
+            mostrarNotificacion({
+                message: result[0].propertyName + ". " + result[0].errorMessage,
+                severity: "error",
+            });
+            return;
+        }
 
+        mostrarNotificacion({
+            message: result.data,
+            severity: "success",
+        });
+
+        limpiar();
+        onClose();
+    
     };
 
     return (

@@ -8,10 +8,8 @@ import WorkIcon from '@mui/icons-material/Work';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LockClockIcon from '@mui/icons-material/LockClock';
 import SelectItem from './../../../shared/components/SelectItem';
-import EventAvailableIcon from '@mui/icons-material/EventAvailable';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
-import Dialog from '@mui/material/Dialog';
 import Confirm from './../../../shared/components/Confirm';
 // servicios
 import { useNotificacionContext } from '../../../providers/Notificacion/useNotificacionContext';
