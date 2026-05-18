@@ -4,12 +4,12 @@ import MenuAcciones from '../components/MenuAcciones'
 
 const getEstadoColor = (estado) => {
     switch (estado) {
-        case "Activo":
+        case 1:
             return 'success';
-        case "Inactivo":
+        case 2:
             return 'warning';
-        case 'Expirado':
-            return 'default';
+        case 3:
+            return 'error';
         default:
             return 'default';
     }
@@ -40,7 +40,7 @@ export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
         headerAlign: 'center',
         renderCell: (params) => (
             <Chip
-                label={params.value}
+                label={params.value === 1 ? "Activo" : params.value === 3 ? "Inactivo" : "Expirado"}
                 color={getEstadoColor(params.value)}
                 size="small"
                 variant="filled"

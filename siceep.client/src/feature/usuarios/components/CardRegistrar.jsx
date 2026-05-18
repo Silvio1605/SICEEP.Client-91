@@ -92,45 +92,84 @@ export default function CardRegistrar({ open, onClose }) {
         });
     };
 
-    //funcion para registrar usuario
     const handleRegistrar = async () => {
 
         if (registro.idPropietario === 0) {
-            alert("Seleccione un propietario");
-            return;
-        }
-        if (registro.contrasena == "") {
-            alert("Ingrese una contraseña");
-            return;
-        }
-        if (registro.contrasenaConfirmacion == "") {
-            alert("Confirme la contraseña");
-            return;
-        }
-        if (registro.fechaExpiracion == "") {
-            alert("Seleccione una fecha");
-            return;
-        }
-        const result = await nuevoUsuario(registro);
-      
-        if (result === undefined) return;
-
-        if (result.data === undefined) {
             mostrarNotificacion({
-                message: result[0].propertyName + ". " + result[0].errorMessage,
+                message: "Seleccione un propietario",
+                severity: "warning",
+            });
+            return;
+        }
+
+        if (registro.contrasena === "") {
+            mostrarNotificacion({
+                message: "Ingrese una contraseña",
+                severity: "warning",
+            });
+            return;
+        }
+
+        if (registro.contrasenaConfirmacion === "") {
+            mostrarNotificacion({
+                message: "Confirme la contraseña",
+                severity: "warning",
+            });
+            return;
+        }
+
+        if (registro.fechaExpiracion === "") {
+            mostrarNotificacion({
+                message: "Seleccione una fecha",
+                severity: "warning",
+            });
+            return;
+        }
+
+        if (registro.contrasena !== registro.contrasenaConfirmacion) {
+            mostrarNotificacion({
+                message: "Las contraseñas no coinciden",
                 severity: "error",
             });
             return;
         }
 
-        mostrarNotificacion({
-            message: result.data,
-            severity: "success",
-        });
+        try {
 
-        limpiar();
-        onClose();
-    
+            const result = await nuevoUsuario(registro);
+
+            if (!result) return;
+
+            // errores de validación
+            if (!result.data) {
+
+                mostrarNotificacion({
+                    message:
+                        result[0]?.propertyName + ". " +
+                        result[0]?.errorMessage,
+                    severity: "error",
+                });
+
+                return;
+            }
+
+            mostrarNotificacion({
+                message: result.data,
+                severity: "success",
+            });
+
+            limpiar();
+            onClose();
+
+        } catch (error) {
+
+            console.error(error);
+
+            mostrarNotificacion({
+                message: "Ocurrió un error al registrar el usuario",
+                severity: "error",
+            });
+        }
     };
 
     return (

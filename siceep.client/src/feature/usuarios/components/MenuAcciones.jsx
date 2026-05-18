@@ -5,7 +5,6 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import KeyIcon from '@mui/icons-material/Key';
 import FaceIcon from '@mui/icons-material/Face';
 import PasswordIcon from '@mui/icons-material/Password';
-import PersonOffIcon from '@mui/icons-material/PersonOff';
 // Importar Link y useNavigate para navegación
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 
@@ -56,12 +55,6 @@ export default function MenuAcciones({ row, abrirPerfil }) {
                     onClick={() => handleAction('editar')}
                 >
                     <PasswordIcon sx={{ mr: 1 }} /> Reestablecer contraseña
-                </MenuItem>
-                <MenuItem
-                    onClick={() => handleAction('eliminar')}
-                    sx={{ color: 'error.main' }}
-                >
-                    <PersonOffIcon sx={{ mr: 1 }} /> deshabilitar usuario
                 </MenuItem>
             </Menu>
         </>

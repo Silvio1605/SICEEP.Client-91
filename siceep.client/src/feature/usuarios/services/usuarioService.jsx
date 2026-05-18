@@ -9,6 +9,14 @@ export const registrarUsuario = async (usuario) => {
     }
 };
 
+export const deshabilitarUsuario = async (usuario) => {
+    try {
+        return await api.put(`Usuario/Actualizar_Estado`, usuario);
+    } catch (error) {
+        console.log(error.response.data);
+    }
+};
+
 export const getUsuarios = async (filtros) => {
     try {
         return await api.post(`Usuario/Busqueda`, filtros);

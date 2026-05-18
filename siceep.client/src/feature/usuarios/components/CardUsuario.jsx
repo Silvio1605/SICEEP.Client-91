@@ -7,6 +7,8 @@ import Paper from '@mui/material/Paper';
 import WorkIcon from '@mui/icons-material/Work';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LockClockIcon from '@mui/icons-material/LockClock';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import PersonIcon from '@mui/icons-material/Person';
 import SelectItem from './../../../shared/components/SelectItem';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
@@ -19,6 +21,7 @@ import { useSelectRoles } from "../hooks/useSelectRoles";
 import { usePermisosContext } from './../../../providers/Permisos/usePermisoContext'; 
 import { useFecha } from '../hooks/useFecha';
 import { useRol } from '../hooks/useRol';
+import { useUsuarios } from './../hooks/useUsuarios';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -51,9 +54,12 @@ function CardUsuario() {
 
     // Estado para controlar el diálogo de actualización de fecha
     const [dialogo, setDialogo] = useState(null);
+    
+    const { ActualizarEstado } = useUsuarios();
 
     // Funciones para abrir los diálogos de confirmación
     const abrirConfirmExp = () => setDialogo("confirmExpiracion");
+    const abrirConfirmDes = () => setDialogo("confirmDesactivar");
     const abrirConfirmRol = () => setDialogo("confirmRol");
 
     const cerrar = () => setDialogo(null);
@@ -81,7 +87,7 @@ function CardUsuario() {
 
     const handleConfirmarExpiracion = async () => {
         try {
-            await actualizarFechaExpiracion(perfil.usuario?.usuario, fecha);
+            await actualizarFechaExpiracion(perfil.usuario?.id, fecha);
 
             mostrarNotificacion({
                 message: "Fecha de expiración actualizada correctamente",
@@ -117,6 +123,26 @@ function CardUsuario() {
         cerrar();
     };
 
+    const handleActEstado = async () => {
+
+        try {
+            await ActualizarEstado(perfil.usuario?.id, perfil.usuario?.estado);
+
+            mostrarNotificacion({
+                message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Usuario activado correctamente" : "Usuario deshabilitado correctamente",
+                severity: "success",
+            });
+
+            await permisosHook.refetch();
+        } catch {
+            mostrarNotificacion({
+                message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Error al activar el usuario" : "Error al deshabilitar el usuario",
+                severity: "error",
+            });
+        }
+        cerrar();
+    };
+    
     return (
         // Información del Usuario
         <Box sx={{ flexGrow: 1, mb: 1 }}>
@@ -145,6 +171,32 @@ function CardUsuario() {
                                 </Box>
                             </Box>
                         </Box>
+                    </Item>
+                </Grid>
+
+                <Grid size={12}>
+                    <Item>
+                        {loading ? (
+                            <p>Cargando...</p>
+                        ) : (
+                            <Box>
+                                <Button
+                                    fullWidth
+                                    sx={{ mt: 2 }}
+                                    variant="contained"
+                                    color={perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "primary" : "error"}
+                                    startIcon={perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? <PersonIcon /> : <PersonOffIcon />}
+                                    onClick={(e) => {
+                                        // Evitar que el botón mantenga el foco después de hacer clic
+                                        e.currentTarget.blur();
+                                        abrirConfirmDes();
+                                    }}
+                                >
+                                        {perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Activar Usuario" : "Desactivar Usuario"}
+                                </Button>
+
+                            </Box>
+                        )}
                     </Item>
                 </Grid>
 
@@ -233,13 +285,14 @@ function CardUsuario() {
                         )}
                     </Item>
                 </Grid>
+                
             </Grid>
             <Confirm
                 open={dialogo === "confirmExpiracion"}
                 handleClose={cerrar}
                 onConfirm={handleConfirmarExpiracion}
                 title="Confirmar cambio"
-                content="¿Estás seguro de que deseas actualizar la fecha de expiración? Esta acción no se puede deshacer."
+                content="¿Estás seguro de que deseas actualizar la fecha de expiración? Esta acción no se puede deshacer.?"
             >
                 {/* contenido */}
             </Confirm>
@@ -248,7 +301,16 @@ function CardUsuario() {
                 handleClose={cerrar}
                 onConfirm={handleConfirmarRol}
                 title="Confirmar cambio"
-                content="¿Estás seguro de que deseas actualizar el rol del usuario? Esta acción no se puede deshacer."
+                content="¿Estás seguro de que deseas actualizar el rol del usuario? Esta acción no se puede deshacer.?"
+            >
+                {/* contenido */}
+            </Confirm>
+            <Confirm
+                open={dialogo === "confirmDesactivar"}
+                handleClose={cerrar}
+                onConfirm={handleActEstado}
+                title="Desactivar Cambios"
+                content="¿Esta seguro que desea deshabilitar el usuario?"
             >
                 {/* contenido */}
             </Confirm>

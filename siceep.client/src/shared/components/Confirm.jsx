@@ -21,7 +21,6 @@ function Confirm({ open, handleClose, onConfirm, title, content }) {
 
     return (
         <React.Fragment>
-            
             <Dialog
                 open={open}
                 onClose={handleClose}

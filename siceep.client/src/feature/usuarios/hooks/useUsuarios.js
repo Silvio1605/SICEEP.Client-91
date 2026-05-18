@@ -1,5 +1,5 @@
 ﻿import * as React from 'react';
-import { getUsuarios } from '../services/usuarioService';
+import { getUsuarios, deshabilitarUsuario } from '../services/usuarioService';
 
 export const useUsuarios = () => {
     const [usuarios, setUsuariosData] = React.useState([]);
@@ -18,6 +18,15 @@ export const useUsuarios = () => {
         setUsuariosData(res.data.data);
     };
 
-    return { usuarios, buscar };
-}
+    const ActualizarEstado = async (id, estado) => {
 
+        const usuario = {
+            idUsuario: id,
+            estado: estado === 2 || estado === 3 ? 1 : 3
+        }
+
+        const res = await deshabilitarUsuario(usuario);
+        return res.data;
+    };
+    return { usuarios, buscar, ActualizarEstado };
+}

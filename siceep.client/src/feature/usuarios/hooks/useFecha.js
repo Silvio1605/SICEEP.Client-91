@@ -81,7 +81,7 @@ export const useFecha = () => {
     };
 
 
-    const actualizarFechaExpiracion = async (nombreUsuario, nuevaFecha) => {
+    const actualizarFechaExpiracion = async (id, nuevaFecha) => {
 
         if (!esFechaValida(nuevaFecha)) {
             return Promise.reject("Fecha inválida");
@@ -91,12 +91,12 @@ export const useFecha = () => {
             return Promise.reject("La nueva fecha debe ser mayor a la fecha actual");
         }
 
-        if (!nombreUsuario) {
-            return Promise.reject("Nombre de usuario no válido");
+        if (!id) {
+            return Promise.reject("Identificador de usuario no válido");
         }
 
         const usuarioActualizado = {
-            usuario: nombreUsuario,
+            idUsuario: id,
             fechaExpiracion: nuevaFecha
         };
         return updateExpiracion(usuarioActualizado);
