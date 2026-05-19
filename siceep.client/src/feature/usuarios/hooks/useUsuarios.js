@@ -28,5 +28,6 @@ export const useUsuarios = () => {
         const res = await deshabilitarUsuario(usuario);
         return res.data;
     };
+
     return { usuarios, buscar, ActualizarEstado };
 }

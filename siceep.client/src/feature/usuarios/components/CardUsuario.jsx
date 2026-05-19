@@ -42,7 +42,7 @@ function CardUsuario() {
     const { actualizarRol } = useRol();
 
     const { idSeleccionado } = useBusquedaContext();
-    const { perfil } = usePerfil(idSeleccionado);
+    const { perfil, reload } = usePerfil(idSeleccionado);
 
     // Notificaciones
     const { mostrarNotificacion } = useNotificacionContext();
@@ -51,6 +51,8 @@ function CardUsuario() {
     const { selRol, loading } = useSelectRoles();
     const [fecha, setFecha] = useState("");
     const [rol, setRol] = useState("");
+
+    const [EstadoComp, setEstadoComp] = useState();
 
     // Estado para controlar el diálogo de actualización de fecha
     const [dialogo, setDialogo] = useState(null);
@@ -68,6 +70,14 @@ function CardUsuario() {
     const fechaPerfil = perfil.usuario?.fechaExpiracion
         ? convertirFecha(perfil.usuario.fechaExpiracion)
         : "";
+
+    useEffect(() => {
+        const cargarEstado = () => {
+            setEstadoComp(perfil.usuario?.estado);
+        };
+        cargarEstado();
+
+    }, [perfil.usuario?.estado]);
 
     useEffect(() => {
         const cargarFecha = () => {
@@ -133,7 +143,12 @@ function CardUsuario() {
                 severity: "success",
             });
 
+            // recargar datos
             await permisosHook.refetch();
+            const nuevoEstado = perfil.usuario?.estado === 1 ? 3 : 1;
+            setEstadoComp(nuevoEstado);
+            await reload();
+
         } catch {
             mostrarNotificacion({
                 message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Error al activar el usuario" : "Error al deshabilitar el usuario",
@@ -141,6 +156,7 @@ function CardUsuario() {
             });
         }
         cerrar();
+
     };
     
     return (
@@ -184,15 +200,15 @@ function CardUsuario() {
                                     fullWidth
                                     sx={{ mt: 2 }}
                                     variant="contained"
-                                    color={perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "primary" : "error"}
-                                    startIcon={perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? <PersonIcon /> : <PersonOffIcon />}
+                                        color={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
+                                        startIcon={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
                                     onClick={(e) => {
                                         // Evitar que el botón mantenga el foco después de hacer clic
                                         e.currentTarget.blur();
                                         abrirConfirmDes();
                                     }}
                                 >
-                                        {perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Activar Usuario" : "Desactivar Usuario"}
+                                        {EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
                                 </Button>
 
                             </Box>
