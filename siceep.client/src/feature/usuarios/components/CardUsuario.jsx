@@ -34,7 +34,7 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-function CardUsuario() {
+function CardUsuario({ actualizar }) {
 
     // Funciones para manejo de fechas
     const { obtenerFechaActual, tiempoRestante, convertirFecha, esMayor, actualizarFechaExpiracion } = useFecha();
@@ -148,12 +148,14 @@ function CardUsuario() {
             const nuevoEstado = perfil.usuario?.estado === 1 ? 3 : 1;
             setEstadoComp(nuevoEstado);
             await reload();
+            await actualizar();
 
-        } catch {
+        } catch (error){
             mostrarNotificacion({
                 message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Error al activar el usuario" : "Error al deshabilitar el usuario",
                 severity: "error",
             });
+            console.log(error);
         }
         cerrar();
 

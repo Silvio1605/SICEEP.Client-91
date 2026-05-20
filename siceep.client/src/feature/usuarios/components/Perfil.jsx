@@ -18,7 +18,12 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function Perfil({ open, onClose }) {
+export default function Perfil({ open, onClose, buscar, filtro }) {
+
+    const actualizarTabla = async () => {
+
+        await buscar(filtro);
+    };
 
     return (
         <React.Fragment>
@@ -51,7 +56,7 @@ export default function Perfil({ open, onClose }) {
                 <Box sx={{ flexGrow: 1, p: 2 }}>
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12, sm: 12, md: 4 }}>
-                            <CardUsuario />
+                            <CardUsuario actualizar = { actualizarTabla } />
                         </Grid>
                         <Grid size={{ xs: 12, sm: 12, md: 8 }}>
                             <Permisos />

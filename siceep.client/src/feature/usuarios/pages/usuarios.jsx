@@ -172,6 +172,8 @@ export default function Usuarios() {
                 <Perfil
                     open={openPerfil}
                     onClose={cerrarPerfil}
+                    buscar={buscar}
+                    filtro={ filtro }
                 />
             </PermisoProvider>
             <CardRegistrar

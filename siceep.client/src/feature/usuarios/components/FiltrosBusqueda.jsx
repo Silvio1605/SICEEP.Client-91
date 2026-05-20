@@ -13,8 +13,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+
 export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
 
     //datos para las cajas de selecciones
@@ -90,14 +92,14 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                                     }}
                                 />
 
-                                <Button
+                                <IconButton
+                                    aria-label="delete"
+                                    color="primary"
                                     type="submit"
-                                    variant="contained"
-                                    endIcon={<SearchIcon />}
-                                    sx={{ ml: 1 }} // separación mínima
                                 >
-                                    Buscar
-                                </Button>
+                                    <SearchIcon />
+                                </IconButton>
+
                             </Paper>
                         </Grid>
                         <Grid size={{ xs: 6, md: 2 }}>
