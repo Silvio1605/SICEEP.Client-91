@@ -16,7 +16,7 @@ export default function Permisos() {
     
     //hook personalizado para manejar permisos
     const { permisosHook } = usePermisosContext();
-    const { permisos, cambiarPermiso, detectarCambios, permisosOriginal } = permisosHook;
+    const { permisos, cambiarPermiso, permisosOriginal } = permisosHook;
 
     // Estado para controlar el diálogo de guardar permisos
     const [openDialog, setOpenDialog] = useState(false);
@@ -30,7 +30,7 @@ export default function Permisos() {
     const tabsChange = (event, newValue) => {
         setValue(newValue);  
 
-        const idModulo = permisosOriginal.current[newValue].idModulo;
+        const idModulo = permisosOriginal[newValue]?.idModulo;
         const element = sectionsRef.current[idModulo];
 
         if (element) {
@@ -138,7 +138,7 @@ export default function Permisos() {
             >
                 <SaveIcon />
             </Fab>
-            <GuardarPermisosDialog open={openDialog} onClose={handleCloseDialog} idUsuario={idSeleccionado} cambios={detectarCambios} />
+            <GuardarPermisosDialog open={openDialog} onClose={handleCloseDialog} idUsuario={idSeleccionado} />
         </Box>
     );
 }

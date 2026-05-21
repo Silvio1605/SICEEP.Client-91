@@ -1,11 +1,12 @@
-import { useState, useEffect, useRef, useCallback } from 'react'; 
+import { useState, useEffect, useCallback } from 'react'; 
 // servicios
 import { getPermisos } from './../services/PermisoService';
 
 export const usePermisos = (id) => {
 
     //permisos originales para comparar cambios
-    const permisosOriginal = useRef([]);
+    const [permisosOriginal, setPermisosOriginal] = useState([]);
+
     //permisos actuales para mostrar en la interfaz
     const [permisos, setPermisosData] = useState([]);
     
@@ -20,10 +21,11 @@ export const usePermisos = (id) => {
         // datos para mostrar permisos con su estado
         setPermisosData(res.data);
         // ref para mantener los permisos originales y comparar cambios
-        permisosOriginal.current = JSON.parse(JSON.stringify(res.data));
+        setPermisosOriginal(
+            structuredClone(res.data)
+        );
         setLoading(false);
     }, [id]);
-
 
     useEffect(() => {
         const ejecutar = async () => {
@@ -53,7 +55,7 @@ export const usePermisos = (id) => {
 
     // Export - Función para detectar cambios entre los permisos actuales y los originales
     const detectarCambios = () => {
-        const originales = obtenerPermisos(permisosOriginal.current);
+        const originales = obtenerPermisos(permisosOriginal);
         const actuales = obtenerPermisos(permisos);
 
         // Convertir originales a mapa
@@ -80,6 +82,19 @@ export const usePermisos = (id) => {
         return cambios;
     };
 
-    return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso, refetch : cargar };
+    const PermisosModificados = (() => {
+
+        const lista = detectarCambios();
+
+        return {
+            cambios: lista,
+            agregados: lista.filter(x => x.estado === 1),
+            quitados: lista.filter(x => x.estado === 0)
+        };
+
+    })();
+
+
+    return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso, refetch: cargar, PermisosModificados };
 }
 

@@ -14,32 +14,26 @@ import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';    
 //servicios
 import { guardarPermisos } from '../services/PermisoService';
+import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext'
+import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-export default function GuardarPermisosDialog({ open, onClose, idUsuario, cambios }) {
+export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
 
-    const resultado = React.useMemo(() => {
-        if (!open) return { cambios: [], agregados: [], quitados: [] };
+    // Notificaciones
+    const { mostrarNotificacion } = useNotificacionContext();
 
-        const lista = cambios(); // tu función
-
-        const agregados = lista.filter(x => x.estado === 1);
-        const quitados = lista.filter(x => x.estado === 0);
-        return {
-            cambios: lista,
-            agregados,
-            quitados
-        };
-
-    }, [open, cambios]);
+    //hook personalizado para manejar permisos
+    const { permisosHook } = usePermisosContext();
+    const { refetch, PermisosModificados } = permisosHook;
 
     const handleGuardar = async () => {
         onClose();
 
-        const permisosCambiados = resultado.cambios.map(x => ({
+        const permisosCambiados = PermisosModificados.cambios.map(x => ({
             idRecurso: x.idRecurso,
             permitido: x.estado === 1 // mejor booleano
         }));
@@ -49,9 +43,21 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario, cambio
             permisos: permisosCambiados
         };
 
-        const result = await guardarPermisos(dataEnvio);
-        console.log(result);
+        try {
+            const result = await guardarPermisos(dataEnvio);
 
+            mostrarNotificacion({
+                message: result,
+                severity: "success",
+            });
+            await refetch();
+           
+        } catch {
+            mostrarNotificacion({
+                message: "No se pueden guardar los permios",
+                severity: "warning",
+            });
+        }
     };
 
     return (
@@ -89,11 +95,11 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario, cambio
                 <Box sx={{ pl: 3, pt: 2 }}>
                     <Typography variant="h6">Permisos Agregados</Typography>
                     <Divider />
-                    {resultado.agregados.length === 0 && (
+                    {PermisosModificados?.agregados?.length === 0 && (
                         <Typography variant="body2" color="text.secondary">No hay permisos agregados</Typography>
                     )}
                     <List>
-                        {resultado.agregados.map(p => (
+                        {PermisosModificados?.agregados?.map(p => (
                             <ListItemButton key={p.idRecurso}>
                                 <ListItemText primary={p.recurso} secondary={p.descripcion} />
                             </ListItemButton>
@@ -101,11 +107,11 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario, cambio
                     </List>
                     <Typography variant="h6">Permisos Eliminados</Typography>
                     <Divider />
-                    {resultado.quitados.length === 0 && (
+                    {PermisosModificados?.quitados?.length === 0 && (
                         <Typography variant="body2" color="text.secondary">No hay permisos eliminados</Typography>
                     )}
                     <List>
-                        {resultado.quitados.map(p => (
+                        {PermisosModificados?.quitados?.map(p => (
                             <ListItemButton key={p.idRecurso}>
                                 <ListItemText primary={p.recurso} secondary={p.descripcion} />
                             </ListItemButton>
