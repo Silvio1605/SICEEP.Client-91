@@ -4,19 +4,33 @@ import { BusquedaProvider } from './../../providers/BusquedaUsers/BusquedaProvid
 import Permisos from './../../feature/permisos/pages/Permisos.jsx';
 import Home from "./Home.jsx";
 import Index from "./Index.jsx";
+import Login from './../../feature/auth/pages/Login.jsx';
 
 function App() {
   return (
       <Routes>
-          <Route path="/" element={<Index />}>
-              <Route index element={<Home />} />
-              <Route path="usuarios" element={
-                  <BusquedaProvider>
-                      <Usuarios />
-                  </BusquedaProvider>
-              } />
-              <Route path="permisos" element={<Permisos />} />
+
+          {/* Login independiente */}
+          <Route path="/" element={<Login />} />
+
+          {/* Layout principal */}
+          <Route path="/home" element={<Index />}>
+
+              <Route
+                  path="usuarios"
+                  element={
+                      <BusquedaProvider>
+                          <Usuarios />
+                      </BusquedaProvider>
+                  }
+              />
+              <Route
+                  path="permiso"
+                  element={<Permisos />}
+              />
+
           </Route>
+
       </Routes>
   )
 }

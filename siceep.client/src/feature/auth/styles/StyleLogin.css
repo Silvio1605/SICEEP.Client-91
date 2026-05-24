@@ -1,0 +1,220 @@
+/* Resetea los margenes y rellenos por defecto del navegador para asegurar que la pagina ocupe todo el espacio. */
+
+/* Contenedor principal de la pagina de login. 
+   Por defecto (en movil) se apila verticalmente (column). */
+.login-page {
+    display: flex;
+    width: 98vw;
+    min-height: 98vh;
+    flex-direction: column;
+    background-color: white;
+}
+
+/* --- SECCION DEL FORMULARIO --- */
+/* Contenedor que ocupa el resto del espacio disponible (flex: 1) y centra su contenido. */
+.form-section {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+    background-color: white;
+    box-sizing: border-box; /* Evita que el padding sume al ancho total. */
+}
+
+/* Envoltorio para que el formulario no crezca demasiado en pantallas anchas. */
+.form-wrapper {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* --- CABECERA Y TEXTOS --- */
+.header {
+    text-align: left;
+    margin-bottom: 2rem;
+}
+
+/* Contenedor para el logo y nombre de la empresa, alineados a la derecha. */
+.brand {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.5rem;
+    color: #0B2F5C;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+    .brand img {
+        height: 40px;
+        width: auto;
+    }
+
+.welcome-text {
+    font-size: 2.5rem;
+    color: #0B2F5C; /* Azul corporativo. */
+    margin: 0;
+    font-weight: 800;
+}
+
+.sub-text {
+    color: #666;
+    margin-top: 5px;
+}
+
+/* --- ESTILOS DE LOS INPUTS --- */
+/* Separacion entre cada grupo de etiqueta + input. */
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.label-text {
+    display: block;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #333;
+}
+
+/* Contenedor relativo para poder posicionar los iconos de forma absoluta dentro del input. */
+.input-container {
+    position: relative;
+}
+
+/* Boton para revelar u ocultar la contraseña, posicionado a la derecha. */
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6b7280;
+    padding: 0;
+    display: flex;
+    align-items: center;
+}
+
+.password-toggle:hover {
+    color: #0B2F5C;
+}
+
+/* Caja de texto principal. 
+   Usa padding asimetrico (mas espacio a los lados) para no pisar los iconos. */
+input {
+    width: 100%;
+    padding: 14px 40px 14px 45px; /* Arriba, Derecha (para ojo), Abajo, Izquierda (para icono) */
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    font-size: 1rem;
+    box-sizing: border-box;
+    transition: border-color 0.2s;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+    input::placeholder {
+        color: #9ca3af;
+        opacity: 1;
+    }
+
+    /* Estilo cuando el usuario hace clic o navega con la tecla Tab al input. */
+    input:focus {
+        outline: none;
+        border-color: #0B2F5C;
+        background-color: #ffffff;
+    }
+
+/* --- BOTONES --- */
+.btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-bottom: 1rem;
+}
+
+/* Boton principal lleno (ej. Iniciar Sesion). */
+.btn-primary {
+    background-color: #0B2F5C;
+    color: white;
+    border: none;
+}
+
+    .btn-primary:hover {
+        background-color: #09254a;
+    }
+
+/* Boton secundario con contorno (ej. Crear Cuenta o Cancelar). */
+.btn-secondary {
+    background-color: white;
+    color: #0B2F5C;
+    border: 2px solid #0B2F5C;
+}
+
+    .btn-secondary:hover {
+        background-color: #f0f9ff;
+    }
+
+/* --- MEDIA QUERIES (RESPONSIVE) --- */
+
+/* Ajustes para pantallas de laptops o tablets en horizontal (minimo 1024px). */
+@media (min-width: 1024px) {
+    /* Cambia la orientacion: ahora la imagen y el formulario se ponen uno al lado del otro. */
+    .login-page {
+        flex-direction: row;
+        overflow: hidden; /* Evita barras de scroll innecesarias. */
+    }
+
+    /* La imagen pasa a ser una columna izquierda del 65% del ancho. */
+    .image-section {
+        width: 65%;
+        height: 100vh;
+        background-size: cover;
+        background-position: center top;
+    }
+
+    /* El formulario pasa a ser la columna derecha del 35%. */
+    .form-section {
+        width: 35%;
+        height: 100vh;
+        padding: 4rem;
+    }
+
+    /* Se amplian un poco los limites maximos y los textos para aprovechar el espacio en PC. */
+    .form-wrapper {
+        max-width: 500px;
+    }
+
+    h2.welcome-text {
+        font-size: 3.5rem;
+    }
+
+    input {
+        padding: 18px 45px 18px 50px;
+        font-size: 1.1rem;
+    }
+
+    .btn {
+        padding: 18px;
+        font-size: 1.1rem;
+    }
+}
+
+/* Ajustes adicionales para monitores muy grandes (minimo 1600px). */
+@media (min-width: 1600px) {
+    /* Le da mas espacio a la imagen corporativa para no ensanchar exageradamente el formulario. */
+    .image-section {
+        width: 70%;
+    }
+
+    .form-section {
+        width: 30%;
+    }
+}

@@ -18,10 +18,9 @@ import BarChartIcon from '@mui/icons-material/BarChart';
 export default function Nav({ open, toggleNav }) {
 
     const menuItems = [
-        { text: "Usuarios", icon: <PersonIcon />, path: "/usuarios" },
-        { text: "Permisos", icon: <KeyIcon />, path: "/permisos" },
-        { text: "Reportes", icon: <ContentPasteIcon />, path: "" },
-        { text: "Estadisticas", icon: <BarChartIcon />, path: "" },
+        { text: "Usuarios", icon: <PersonIcon />, path: "/home/usuarios" },
+        { text: "Permisos", icon: <KeyIcon />, path: "/home/permisos" },
+        { text: "Login", icon: <ContentPasteIcon />, path: "/" },
     ];
 
     const NavList = (
