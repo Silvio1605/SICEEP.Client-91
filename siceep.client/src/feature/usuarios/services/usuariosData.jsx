@@ -7,9 +7,9 @@ const getEstadoColor = (estado) => {
         case 1:
             return 'success';
         case 2:
-            return 'warning';
-        case 3:
             return 'error';
+        case 3:
+            return 'warning';
         default:
             return 'default';
     }
@@ -40,7 +40,7 @@ export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
         headerAlign: 'center',
         renderCell: (params) => (
             <Chip
-                label={params.value === 1 ? "Activo" : params.value === 3 ? "Inactivo" : "Expirado"}
+                label={params.value === 1 ? "Activo" : params.value === 3 ? "Expirado" : "Inactivo" }
                 color={getEstadoColor(params.value)}
                 size="small"
                 variant="filled"

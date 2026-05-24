@@ -124,7 +124,7 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                                         ) : (
                                             <SelectItem
                                                 value={filtro.estado || ""}
-                                                onChange={(estado) => {
+                                                    onChange={(estado) => {
                                                     actualizarFiltro({ estado: estado });
                                                 }}
                                                 incluirTodo={true}

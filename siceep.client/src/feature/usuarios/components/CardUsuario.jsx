@@ -152,7 +152,7 @@ function CardUsuario({ actualizar }) {
 
         } catch (error){
             mostrarNotificacion({
-                message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Error al activar el usuario" : "Error al deshabilitar el usuario",
+                message: error.message ?? "Error al actualizar el estado del usuario",
                 severity: "error",
             });
             console.log(error);

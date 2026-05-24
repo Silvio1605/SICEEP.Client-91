@@ -52,9 +52,9 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
             });
             await refetch();
            
-        } catch {
+        } catch (error) {
             mostrarNotificacion({
-                message: "No se pueden guardar los permios",
+                message: error.message || error || "Error",
                 severity: "warning",
             });
         }
