@@ -10,7 +10,5 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="src\feature\auth\components\" />
-    <Folder Include="src\feature\auth\hooks\" />
-    <Folder Include="src\feature\auth\services\" />
   </ItemGroup>
 </Project>

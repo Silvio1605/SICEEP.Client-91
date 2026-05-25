@@ -8,6 +8,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import KeyIcon from '@mui/icons-material/Key';
 import './../styles/StyleLogin.css';
+import { useAuth } from './../hooks/useAuth';
 
 function Login() {
     // Estados para almacenar lo que el usuario escribe en los campos de texto.
@@ -22,6 +23,19 @@ function Login() {
 
     // Hook para redirigir al usuario a otras paginas tras un login exitoso.
     const navigate = useNavigate();
+    const { login } = useAuth();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        const response = await login(username, password);
+        if (response && response.mensaje) {
+            // Redirigir a la página principal o mostrar mensaje de éxito
+            navigate('/home');
+        } else {
+            // Mostrar mensaje de error
+            console.log("nombre de usuario o contraseña incorrectos");
+        }
+    }
 
     return (
         <div className="login-page">
@@ -111,7 +125,7 @@ function Login() {
                         <button
                             className="btn btn-primary"
                             variant="contained"
-                            onClick={() => navigate("/home")}
+                            onClick={handleLogin}
                         >
                             Iniciar sesion
                         </button>
