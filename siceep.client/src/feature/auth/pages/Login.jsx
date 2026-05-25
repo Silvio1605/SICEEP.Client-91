@@ -8,7 +8,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import KeyIcon from '@mui/icons-material/Key';
 import './../styles/StyleLogin.css';
-import { useAuth } from './../hooks/useAuth';
+import { useAuth } from './../../../providers/Authenticacion/useAuth';
 
 function Login() {
     // Estados para almacenar lo que el usuario escribe en los campos de texto.
@@ -28,9 +28,12 @@ function Login() {
     const handleLogin = async (e) => {
         e.preventDefault();
         const response = await login(username, password);
-        if (response && response.mensaje) {
+        if (response.valid) {
             // Redirigir a la página principal o mostrar mensaje de éxito
+            console.log(response.mensaje);
+            setTimeout(() => { }, 5000);
             navigate('/home');
+
         } else {
             // Mostrar mensaje de error
             console.log("nombre de usuario o contraseña incorrectos");

@@ -5,17 +5,16 @@ import Permisos from './../../feature/permisos/pages/Permisos.jsx';
 import Home from "./Home.jsx";
 import Index from "./Index.jsx";
 import Login from './../../feature/auth/pages/Login.jsx';
+import ProtectedRoute from "../../providers/Router/ProtectedRoute.jsx";
 
 function App() {
   return (
       <Routes>
-
           {/* Login independiente */}
           <Route path="/" element={<Login />} />
 
           {/* Layout principal */}
-          <Route path="/home" element={<Index />}>
-
+          <Route path="/home" element={<ProtectedRoute />}>
               <Route
                   path="usuarios"
                   element={
@@ -28,7 +27,6 @@ function App() {
                   path="permiso"
                   element={<Permisos />}
               />
-
           </Route>
 
       </Routes>

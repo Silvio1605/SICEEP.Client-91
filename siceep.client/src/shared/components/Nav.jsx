@@ -12,15 +12,19 @@ import Typography from '@mui/material/Typography';
 import MobileFriendlyIcon from '@mui/icons-material/MobileFriendly';
 import PersonIcon from '@mui/icons-material/Person';
 import KeyIcon from '@mui/icons-material/Key';
+import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import BarChartIcon from '@mui/icons-material/BarChart';
+import { useAuth } from "../../providers/Authenticacion/useAuth";
 
 export default function Nav({ open, toggleNav }) {
+
+    const { logout } = useAuth();
 
     const menuItems = [
         { text: "Usuarios", icon: <PersonIcon />, path: "/home/usuarios" },
         { text: "Permisos", icon: <KeyIcon />, path: "/home/permisos" },
-        { text: "Login", icon: <ContentPasteIcon />, path: "/" },
+        { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true },
     ];
 
     const NavList = (
@@ -28,7 +32,15 @@ export default function Nav({ open, toggleNav }) {
             <List>
                 {menuItems.map((item) => (
                     <ListItem key={item.text} disablePadding>
-                        <ListItemButton component={Link} to={item.path}>
+                        <ListItemButton
+                            component={Link}
+                            to={item.path}
+                            onClick={() => {
+                                if (item.isLogout) {
+                                    logout();
+                                }
+                            }}
+                        >
                             <ListItemIcon>
                                 {item.icon}
                             </ListItemIcon>

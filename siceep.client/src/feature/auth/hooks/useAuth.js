@@ -1,11 +1,15 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Login } from './../services/authService';
 
 export const useAuth = () => {
+
     const [auth, setAuth] = useState({
         nombreUsuario: "",
         contraseña: "",
     });
+
+    const navigate = useNavigate();
 
     const login = async (nombreUsuario, contraseña) => {
 
@@ -23,5 +27,11 @@ export const useAuth = () => {
         }
     };
 
-    return { auth, login };
+    const logout = () => {
+
+        localStorage.removeItem("token");
+        navigate("/");
+    };
+
+    return { auth, login, logout };
 }
