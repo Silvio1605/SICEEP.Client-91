@@ -21,7 +21,7 @@
     align-items: center;
     padding: 1rem;
     background-color: white;
-    box-sizing: border-box; /* Evita que el padding sume al ancho total. */
+    box-sizing: border-box;
 }
 
 /* Envoltorio para que el formulario no crezca demasiado en pantallas anchas. */
@@ -140,7 +140,7 @@ input {
     margin-bottom: 1rem;
 }
 
-/* Boton principal lleno (ej. Iniciar Sesion). */
+/* Boton principal lleno */
 .btn-primary {
     background-color: #0B2F5C;
     color: white;
@@ -150,13 +150,6 @@ input {
     .btn-primary:hover {
         background-color: #09254a;
     }
-
-/* Boton secundario con contorno (ej. Crear Cuenta o Cancelar). */
-.btn-secondary {
-    background-color: white;
-    color: #0B2F5C;
-    border: 2px solid #0B2F5C;
-}
 
     .btn-secondary:hover {
         background-color: #f0f9ff;

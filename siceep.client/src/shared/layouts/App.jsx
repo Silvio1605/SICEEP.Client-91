@@ -14,21 +14,22 @@ function App() {
           <Route path="/" element={<Login />} />
 
           {/* Layout principal */}
-          <Route path="/home" element={<ProtectedRoute />}>
-              <Route
-                  path="usuarios"
-                  element={
-                      <BusquedaProvider>
-                          <Usuarios />
-                      </BusquedaProvider>
-                  }
-              />
-              <Route
-                  path="permiso"
-                  element={<Permisos />}
-              />
+          <Route element={<ProtectedRoute />}>
+              <Route path="/index" element={<Index />}>
+                  <Route
+                      path="usuarios"
+                      element={
+                          <BusquedaProvider>
+                              <Usuarios />
+                          </BusquedaProvider>
+                      }
+                  />
+                  <Route
+                      path="permiso"
+                      element={<Permisos />}
+                  /> 
+              </Route>
           </Route>
-
       </Routes>
   )
 }

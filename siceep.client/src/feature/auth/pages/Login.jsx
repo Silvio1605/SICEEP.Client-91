@@ -32,7 +32,7 @@ function Login() {
             // Redirigir a la página principal o mostrar mensaje de éxito
             console.log(response.mensaje);
             setTimeout(() => { }, 5000);
-            navigate('/home');
+            navigate('/index');
 
         } else {
             // Mostrar mensaje de error
@@ -83,14 +83,13 @@ function Login() {
                                     id="username"
                                     type="text"
                                     placeholder="Usuario"
-                                    // Vincula el valor del input al estado de React (Componente Controlado).
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
                                 />
                             </div>
                         </div>
 
-                        {/* --- CAMPO DE CONTRASEÑA --- */}
+                        {/* --- CONTRASEÑA --- */}
                         <div className="input-group">
                             <label htmlFor="password" className="label-text">Contraseña</label>
                             <div className="input-container">
@@ -103,7 +102,6 @@ function Login() {
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
-                                {/* Boton interactivo para alternar el estado visual de la contraseña */}
                                 <button
                                     type="button"
                                     className="password-toggle"

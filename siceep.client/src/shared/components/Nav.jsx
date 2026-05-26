@@ -16,37 +16,41 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { useAuth } from "../../providers/Authenticacion/useAuth";
+import { tienePermiso } from "./../../helper/JwtValidarPermiso";
 
 export default function Nav({ open, toggleNav }) {
 
     const { logout } = useAuth();
 
+    // Definir los elementos del menú con sus respectivos permisos
     const menuItems = [
-        { text: "Usuarios", icon: <PersonIcon />, path: "/home/usuarios" },
-        { text: "Permisos", icon: <KeyIcon />, path: "/home/permisos" },
-        { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true },
+        { text: "Usuarios", icon: <PersonIcon />, path: "/index/usuarios", idPermiso: 1 },
+        { text: "Permisos", icon: <KeyIcon />, path: "/index/permisos", idPermiso: 10 },
+        { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true, idPermiso: 3 },
     ];
 
     const NavList = (
         <Box sx={{ width: 250 }} role="presentation" onClick={toggleNav(false)}>
             <List>
                 {menuItems.map((item) => (
-                    <ListItem key={item.text} disablePadding>
-                        <ListItemButton
-                            component={Link}
-                            to={item.path}
-                            onClick={() => {
-                                if (item.isLogout) {
-                                    logout();
-                                }
-                            }}
-                        >
-                            <ListItemIcon>
-                                {item.icon}
-                            </ListItemIcon>
-                            <ListItemText primary={item.text} />
-                        </ListItemButton>
-                    </ListItem>
+                    tienePermiso(item.idPermiso) && (
+                        <ListItem key={item.text} disablePadding>
+                            <ListItemButton
+                                component={Link}
+                                to={item.path}
+                                onClick={() => {
+                                    if (item.isLogout) {
+                                        logout();
+                                    }
+                                }}
+                            >
+                                <ListItemIcon>
+                                    {item.icon}
+                                </ListItemIcon>
+                                <ListItemText primary={item.text} />
+                            </ListItemButton>
+                        </ListItem>
+                    )
                 ))}
 
             </List>
