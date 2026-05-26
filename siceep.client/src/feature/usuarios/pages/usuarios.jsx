@@ -44,7 +44,7 @@ export default function Usuarios() {
         propietario: searchParams.get("propietario") || null,
         fechaExpiracionDesde: searchParams.get("fechaExpiracionDesde") || null,
         fechaExpiracionHasta: searchParams.get("fechaExpiracionHasta") || null,
-        estado: searchParams.get("estado") || 2,
+        estado: searchParams.get("estado") || null,
         pagina: Number(searchParams.get("pagina")) || 1,
         tamañoPagina: Number(searchParams.get("tamañoPagina")) || 10
     }), [searchParams]);

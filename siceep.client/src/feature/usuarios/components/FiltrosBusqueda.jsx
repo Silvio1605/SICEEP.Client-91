@@ -62,16 +62,12 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                 borderRadius: 2
             }}
         >
-            <Typography variant="subtitle1" component="h1">
-                Búsqueda de cuentas
-            </Typography>
-
             <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
                 <Box sx={{ flexGrow: 1 }}>
                     <Grid container spacing={2}>
 
                         {/* INPUT */}
-                        <Grid size={{ xs: 12, md: 8 }}>
+                        <Grid size={{ xs: 12, md: 10 }}>
                             <Paper
                                 component="form"
                                 onSubmit={handleSubmit}
@@ -80,7 +76,7 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                                     px: 1,
                                     display: 'flex',
                                     alignItems: 'center',
-                                    width: '100%'
+                                    width: '98%'
                                 }}
                             >
                                 <InputBase
@@ -91,9 +87,8 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                                         setInputPropietario(e.target.value);
                                     }}
                                 />
-
                                 <IconButton
-                                    aria-label="delete"
+                                    aria-label="search"
                                     color="primary"
                                     type="submit"
                                 >
@@ -117,52 +112,50 @@ export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
                         <Dialog open={open} onClose={handleDialogClose} disableRestoreFocus>
                             <DialogTitle>Parametros de Búsqueda</DialogTitle>
                             <DialogContent>
-                                <Box component="form" sx={{ display: 'flex', flexWrap: 'wrap' }}>
-                                    <FormControl sx={{ m: 1, minWidth: 120 }}>
-                                        {loading ? (
-                                            <p>Cargando...</p>
-                                        ) : (
-                                            <SelectItem
-                                                value={filtro.estado || ""}
-                                                    onChange={(estado) => {
-                                                    actualizarFiltro({ estado: estado });
-                                                }}
-                                                incluirTodo={true}
-                                                datos={selEstado}
-                                                titulo="Estados"
-                                            />
-                                        )}
-                                    </FormControl>
-                                    <FormControl sx={{ m: 1, minWidth: 120 }}>
-                                        {loading ? (
-                                            <p>Cargando...</p>
-                                        ) : (
-                                            <SelectItem
-                                                value={
-                                                    filtro.fechaExpiracionDesde
-                                                        ? filtro.fechaExpiracionDesde.split("-")[0]
-                                                        : ""
-                                                }
-                                                onChange={(año) => {
-                                                    if (!año) {
-                                                        actualizarFiltro({
-                                                            fechaExpiracionDesde: null,
-                                                            fechaExpiracionHasta: null
-                                                        });
-                                                        return;
-                                                    }
+                                <Grid size={{ xs: 12, md: 12 }}>
+                                    {loading ? (
+                                        <p>Cargando...</p>
+                                    ) : (
+                                        <SelectItem
+                                            value={filtro.estado || ""}
+                                            onChange={(estado) => {
+                                                actualizarFiltro({ estado: estado });
+                                            }}
+                                            incluirTodo={true}
+                                            datos={selEstado}
+                                            titulo="Estados"
+                                        />
+                                    )}
+                                </Grid>
+                                <Grid size={{ xs: 12, md: 12 }}>
+                                    {loading ? (
+                                        <p>Cargando...</p>
+                                    ) : (
+                                        <SelectItem
+                                            value={
+                                                filtro.fechaExpiracionDesde
+                                                    ? filtro.fechaExpiracionDesde.split("-")[0]
+                                                    : ""
+                                            }
+                                            onChange={(año) => {
+                                                if (!año) {
                                                     actualizarFiltro({
-                                                        fechaExpiracionDesde: `${año}-01-01`,
-                                                        fechaExpiracionHasta: `${año}-12-31`
+                                                        fechaExpiracionDesde: null,
+                                                        fechaExpiracionHasta: null
                                                     });
-                                                }}
-                                                incluirTodo={true}
-                                                datos={selAño}
-                                                titulo="Año Vencimiento"
-                                            />
-                                        )}
-                                    </FormControl>
-                                </Box>
+                                                    return;
+                                                }
+                                                actualizarFiltro({
+                                                    fechaExpiracionDesde: `${año}-01-01`,
+                                                    fechaExpiracionHasta: `${año}-12-31`
+                                                });
+                                            }}
+                                            incluirTodo={true}
+                                            datos={selAño}
+                                            titulo="Año Vencimiento"
+                                        />
+                                    )}
+                                </Grid>
                             </DialogContent>
                             <DialogActions>
                                 <Button onClick={handleActionButtonClick}>Aceptar</Button>
