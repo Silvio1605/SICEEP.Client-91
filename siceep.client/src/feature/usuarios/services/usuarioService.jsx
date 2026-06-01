@@ -3,9 +3,23 @@ import api from "./../../../api/api";
 
 export const registrarUsuario = async (usuario) => {
     try {
-        return await api.post(`Usuario/Registrar`, usuario);
+        const response = await api.post(
+            "Usuario/Registrar",
+            usuario
+        );
+
+        return {
+            status: response.data.status,
+            message: response.data.message || "Usuario registrado exitosamente"
+        };
+
     } catch (error) {
-        console.log(error.response.data);
+        return {
+            status: error.response?.status || error.status,
+            message:
+                error.response?.data?.message ||
+                error.message
+        };
     }
 };
 

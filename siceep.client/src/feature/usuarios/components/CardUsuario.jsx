@@ -34,7 +34,7 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-function CardUsuario({ actualizar }) {
+function CardUsuario() {
 
     // Funciones para manejo de fechas
     const { obtenerFechaActual, tiempoRestante, convertirFecha, esMayor, actualizarFechaExpiracion } = useFecha();
@@ -42,7 +42,7 @@ function CardUsuario({ actualizar }) {
     const { actualizarRol } = useRol();
 
     const { idSeleccionado } = useBusquedaContext();
-    const { perfil, reload } = usePerfil(idSeleccionado);
+    const { perfil } = usePerfil(idSeleccionado);
 
     // Notificaciones
     const { mostrarNotificacion } = useNotificacionContext();
@@ -61,7 +61,6 @@ function CardUsuario({ actualizar }) {
 
     // Funciones para abrir los diálogos de confirmación
     const abrirConfirmExp = () => setDialogo("confirmExpiracion");
-    const abrirConfirmDes = () => setDialogo("confirmDesactivar");
     const abrirConfirmRol = () => setDialogo("confirmRol");
 
     const cerrar = () => setDialogo(null);
@@ -133,41 +132,14 @@ function CardUsuario({ actualizar }) {
         cerrar();
     };
 
-    const handleActEstado = async () => {
-
-        try {
-            await ActualizarEstado(perfil.usuario?.id, perfil.usuario?.estado);
-
-            mostrarNotificacion({
-                message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Usuario activado correctamente" : "Usuario deshabilitado correctamente",
-                severity: "success",
-            });
-
-            // recargar datos
-            await permisosHook.refetch();
-            const nuevoEstado = perfil.usuario?.estado === 1 ? 3 : 1;
-            setEstadoComp(nuevoEstado);
-            await reload();
-            await actualizar();
-
-        } catch (error){
-            mostrarNotificacion({
-                message: error.message ?? "Error al actualizar el estado del usuario",
-                severity: "error",
-            });
-            console.log(error);
-        }
-        cerrar();
-
-    };
-    
     return (
+        
         // Información del Usuario
         <Box sx={{ flexGrow: 1, mb: 1 }}>
             <Grid container spacing={2}>
                 <Grid size={12}>
                     <Item>
-                        <Box sx={{ p: 1, bgcolor: "background.default" }}>
+                        <Box sx={{ p: 1, bgcolor: 'background.paper'}}>
                             <Box display="flex" alignItems="center" sx={{ pl: 1 }}>
 
                                 {/* Avatar */}
@@ -189,32 +161,6 @@ function CardUsuario({ actualizar }) {
                                 </Box>
                             </Box>
                         </Box>
-                    </Item>
-                </Grid>
-
-                <Grid size={12}>
-                    <Item>
-                        {loading ? (
-                            <p>Cargando...</p>
-                        ) : (
-                            <Box>
-                                <Button
-                                    fullWidth
-                                    sx={{ mt: 2 }}
-                                    variant="contained"
-                                        color={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
-                                        startIcon={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
-                                    onClick={(e) => {
-                                        // Evitar que el botón mantenga el foco después de hacer clic
-                                        e.currentTarget.blur();
-                                        abrirConfirmDes();
-                                    }}
-                                >
-                                        {EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
-                                </Button>
-
-                            </Box>
-                        )}
                     </Item>
                 </Grid>
 
@@ -323,15 +269,7 @@ function CardUsuario({ actualizar }) {
             >
                 {/* contenido */}
             </Confirm>
-            <Confirm
-                open={dialogo === "confirmDesactivar"}
-                handleClose={cerrar}
-                onConfirm={handleActEstado}
-                title="Desactivar Cambios"
-                content="¿Esta seguro que desea deshabilitar el usuario?"
-            >
-                {/* contenido */}
-            </Confirm>
+            
         </Box>
     );
 }

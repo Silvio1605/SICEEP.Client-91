@@ -16,6 +16,7 @@ export const useUsuarios = () => {
 
         const res = await getUsuarios(filtro);
         setUsuariosData(res.data.data);
+
     };
 
     const ActualizarEstado = async (id, estado) => {

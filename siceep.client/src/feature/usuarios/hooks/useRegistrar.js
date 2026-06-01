@@ -15,18 +15,12 @@ export const useRegistrar = () => {
 
     const nuevoUsuario = async (registro) => {
 
-        console.log(registro);
-
         const {
             nombrePropietario: _,
             ...usuario
         } = registro;
 
-        console.log(usuario);
-        const result = await registrarUsuario(usuario);
-        console.log(result);
-
-        return result;
+        return await registrarUsuario(usuario);
     };
 
     return { propietarios, buscar, nuevoUsuario };

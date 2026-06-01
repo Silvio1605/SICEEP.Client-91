@@ -134,42 +134,23 @@ export default function CardRegistrar({ open, onClose }) {
             return;
         }
 
-        try {
+        const result = await nuevoUsuario(registro);
 
-            const result = await nuevoUsuario(registro);
-
-            if (!result) return;
-
-            // errores de validación
-            if (!result.data) {
-
-                mostrarNotificacion({
-                    message:
-                        result[0]?.propertyName + ". " +
-                        result[0]?.errorMessage,
-                    severity: "error",
-                });
-
-                return;
-            }
-
+        if (result.status === 200) {
             mostrarNotificacion({
-                message: result.data,
-                severity: "success",
+                message: result.message,
+                severity: "success"
             });
-
-            limpiar();
-            onClose();
-
-        } catch (error) {
-
-            console.error(error);
-
+        } else {
             mostrarNotificacion({
-                message: "Ocurrió un error al registrar el usuario",
-                severity: "error",
+                message: result.message,
+                severity: "error"
             });
+            return;
         }
+
+        limpiar();
+        onClose();
     };
 
     return (
