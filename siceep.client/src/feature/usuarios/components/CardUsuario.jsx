@@ -15,6 +15,7 @@ import TextField from '@mui/material/TextField';
 import Confirm from './../../../shared/components/Confirm';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
+import CardReestrablecerContra from './CardReestrablecerContra';
 // servicios
 import { useNotificacionContext } from '../../../providers/Notificacion/useNotificacionContext';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
@@ -64,6 +65,7 @@ function CardUsuario({ actualizar }) {
     const abrirConfirmExp = () => setDialogo("confirmExpiracion");
     const abrirConfirmRol = () => setDialogo("confirmRol");
     const abrirConfirmDes = () => setDialogo("confirmDesactivar");
+    const abrirReestrablecerContra = () => setDialogo("reestrablecerContra");
 
     const cerrar = () => setDialogo(null);
     
@@ -133,7 +135,6 @@ function CardUsuario({ actualizar }) {
         } 
         cerrar();
     };
-
 
     const handleActEstado = async () => {
 
@@ -376,7 +377,6 @@ function CardUsuario({ actualizar }) {
                         <Button
                             fullWidth
                             variant="contained"
-                            startIcon={<WorkIcon />}
                             sx={{
                                 mb: 2,
                                 mt: 2,
@@ -464,8 +464,41 @@ function CardUsuario({ actualizar }) {
 
                             </Box>
                         )}
+
                     </Item>
                 </Grid>
+                <Grid size={12}>
+                    <Item>
+                        <Typography
+                            variant="h7"
+                            sx={{
+                                fontWeight: 600,
+                                color: '#1565C0',
+                                letterSpacing: '0.5px',
+                                ml: 2
+                            }}
+                        >
+                            Reestablecer Contraseña
+                        </Typography>
+                        <Button
+                            fullWidth
+                            sx={{
+                                mb: 2,
+                                mt: 2
+                            }}
+                            variant="contained"
+                            color="secondary"
+                            onClick={(e) => {
+                                // Evitar que el botón mantenga el foco después de hacer clic
+                                e.currentTarget.blur();
+                                abrirReestrablecerContra();
+                            }}
+                        >
+                            Reestablecer Contraseña
+                        </Button>
+                    </Item>
+                </Grid>
+
                 
             </Grid>
             <Confirm
@@ -495,6 +528,11 @@ function CardUsuario({ actualizar }) {
             >
                 {/* contenido */}
             </Confirm>
+            <CardReestrablecerContra
+                open={dialogo === "reestrablecerContra"}
+                onClose={cerrar}
+                id={perfil.usuario?.id}
+            />
         </Box>
     );
 }

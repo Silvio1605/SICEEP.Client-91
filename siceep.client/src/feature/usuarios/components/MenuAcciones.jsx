@@ -8,7 +8,7 @@ import PasswordIcon from '@mui/icons-material/Password';
 // Importar Link y useNavigate para navegación
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 
-export default function MenuAcciones({ row, abrirPerfil }) {
+export default function MenuAcciones({ row, abrirPerfil, abrirCambioContra }) {
     const [anchorEl, setAnchorEl] = useState(null);
     const open = Boolean(anchorEl);
 
@@ -21,9 +21,10 @@ export default function MenuAcciones({ row, abrirPerfil }) {
         setAnchorEl(null);
     };
 
-    const handleAction = (action) => {
-        console.log(action, row);
-        handleClose();
+
+    const handleAction = (id) => {
+        setIdSeleccionado(id); // actualiza el contexto
+        abrirCambioContra(); // abre el diálogo de cambio de contraseña
     };
 
     // Contexto para manejar la selección del usuario
@@ -52,7 +53,7 @@ export default function MenuAcciones({ row, abrirPerfil }) {
                 </MenuItem>
                 
                 <MenuItem
-                    onClick={() => handleAction('editar')}
+                    onClick={() => handleAction(row.id, row.nombreUsuario)}
                 >
                     <PasswordIcon sx={{ mr: 1 }} /> Reestablecer contraseña
                 </MenuItem>

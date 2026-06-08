@@ -17,6 +17,7 @@ import { useUsuarios } from './../hooks/useUsuarios';
 // componentes
 import FiltrosBusqueda from '../components/filtrosBusqueda';
 import Perfil from '../components/Perfil';
+import CardReestrablecerContra from '../components/CardReestrablecerContra';
 import CardRegistrar from '../components/CardRegistrar';
 // loading
 import Skeleton from '@mui/material/Skeleton';
@@ -28,6 +29,7 @@ import { PermisoProvider } from './../../../providers/Permisos/PermisoProvider';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 // componentes personalizados
 import AppButton from './../../../shared/components/AppButton';
+
 export default function Usuarios() {
 
     const theme = useTheme();
@@ -75,6 +77,15 @@ export default function Usuarios() {
         cargarDatos();
     }, []);
 
+    //logica para abrir card de reestablecer contraseña
+    const [openCambioContra, setOpenCambioContra] = useState(false);
+    const abrirCambioContra = useCallback(() => {
+        setOpenCambioContra(true);
+    }, []);
+    const cerrarCambioContra = useCallback(() => {
+        setOpenCambioContra(false);
+    }, []);
+
     //logica para abrir perfil de usuario
     const [openPerfil, setOpenPerfil] = useState(false);
     const abrirPerfil = useCallback(() => {
@@ -85,6 +96,7 @@ export default function Usuarios() {
     }, []);
 
     const [openReg, setOpenReg] = useState(false);
+
     const abrirReg = () => {
         setOpenReg(true);
     };
@@ -93,8 +105,8 @@ export default function Usuarios() {
     };
 
     const registros = useMemo(() => {
-        return columnsUsuarios({ isMobile, abrirPerfil });
-    }, [isMobile, abrirPerfil]);
+        return columnsUsuarios({ isMobile, abrirPerfil, abrirCambioContra });
+    }, [isMobile, abrirPerfil, abrirCambioContra]);
 
     const slots = useMemo(() => ({ toolbar: GridToolbar }), []);
 
@@ -175,6 +187,12 @@ export default function Usuarios() {
                     onClose={cerrarPerfil}
                     buscar={buscar}
                     filtro={ filtro }
+                />
+
+                <CardReestrablecerContra
+                    open={openCambioContra}
+                    onClose={cerrarCambioContra}
+                    id={idSeleccionado}
                 />
             </PermisoProvider>
             <CardRegistrar

@@ -15,7 +15,7 @@ const getEstadoColor = (estado) => {
     }
 };
 
-export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
+export const columnsUsuarios = ({ isMobile, abrirPerfil, abrirCambioContra }) => [
     {
         field: 'index', headerName: 'No.', flex: 2, minWidth: 20, maxWidth: 80,
         align: 'center', headerAlign: 'center'
@@ -58,7 +58,8 @@ export const columnsUsuarios = ({ isMobile, abrirPerfil }) => [
         align: 'center',
         headerAlign: 'center',
         renderCell: (params) => (
-            <MenuAcciones row={params.row} abrirPerfil={abrirPerfil} />
+            <MenuAcciones row={params.row} abrirPerfil={abrirPerfil}  abrirCambioContra={abrirCambioContra} />
+
         ),
     },
 

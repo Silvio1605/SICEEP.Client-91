@@ -15,7 +15,6 @@ import { styled } from '@mui/material/styles';
 import Permisos from './../../permisos/pages/Permisos';
 import CardUsuario from './CardUsuario';
 import Confirm from './../../../shared/components/Confirm';
-import CardReestrablecerContra from './CardReestrablecerContra';
 //iconos para el botón de activar/desactivar usuario
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import PersonIcon from '@mui/icons-material/Person';
@@ -46,12 +45,6 @@ export default function Perfil({ open, onClose, buscar, filtro }) {
     const { ActualizarEstado } = useUsuarios();
 
     const [EstadoComp, setEstadoComp] = useState();
-    // Estado para controlar el diálogo de actualización de fecha
-    const [dialogo, setDialogo] = useState(null);
-
-    const abrirReestrablecerContra = () => setDialogo("reestrablecerContra");
-    
-    const cerrar = () => setDialogo(null);
 
     useEffect(() => {
         const cargarEstado = () => {
@@ -94,32 +87,7 @@ export default function Perfil({ open, onClose, buscar, filtro }) {
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <Box sx={{ p: 2, m: 0 }}>
-                    <Item>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                gap: 2,
-                                justifyContent: 'flex-end',
-                            }}
-                        >
-                            <Button
-                                sx={{ mt: 2, ml: 1 }}
-                                variant="contained"
-                                color="secondary"
-                                onClick={(e) => {
-                                    // Evitar que el botón mantenga el foco después de hacer clic
-                                    e.currentTarget.blur();
-                                    abrirReestrablecerContra();
-                                }}
-                            >
-                                Reestablecer Contraseña
-                            </Button>
-
-                        </Box>
-                    </Item>
-                    
-                </Box>
+                
                 <Box sx={{ flexGrow: 1, p: 2 }}>
                     <Grid container spacing={2}>
                         <Grid size={{ xs: 12, sm: 12, md: 4 }}>
@@ -131,12 +99,6 @@ export default function Perfil({ open, onClose, buscar, filtro }) {
                     </Grid>
                 </Box>
             </Dialog>
-            <CardReestrablecerContra
-                open={dialogo === "reestrablecerContra"}
-                onClose={cerrar}
-                nombreUsuario={perfil.usuario?.usuario}
-            />
-            
         </React.Fragment>
     );
 }

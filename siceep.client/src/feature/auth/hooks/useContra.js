@@ -4,6 +4,7 @@ export const ContraUsuario = () => {
 
     const ReestablecerContraseña = async (usuario) => {
 
+        console.log(usuario);
         if (usuario.nuevaContraseña !== usuario.contraseñaConfirmacion) {
             return {
                 status: 400,
@@ -12,7 +13,7 @@ export const ContraUsuario = () => {
         }
 
         const result = await Reestablecer(usuario);
-        console.log(result);
+        
         return result;
     };
 

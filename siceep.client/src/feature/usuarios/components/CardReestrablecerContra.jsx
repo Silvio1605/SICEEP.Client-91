@@ -19,8 +19,11 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 // hooks
 import { ContraUsuario } from './../../auth/hooks/useContra';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
+import { usePerfil } from '../hooks/usePerfil';
 
-export default function CardReestrablecerContra({ open, onClose, nombreUsuario }) {
+export default function CardReestrablecerContra({ open, onClose, id }) {
+
+    const { perfil } = usePerfil(id);
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -48,7 +51,7 @@ export default function CardReestrablecerContra({ open, onClose, nombreUsuario }
     };
 
     const [actualizar, setActualizar] = useState({
-        nombreUsuario: nombreUsuario ?? '',
+        id: id ?? '',
         nuevaContraseña: '',
         contraseñaConfirmacion: ''
     })
@@ -57,7 +60,7 @@ export default function CardReestrablecerContra({ open, onClose, nombreUsuario }
 
         const datos = {
             ...actualizar,
-            nombreUsuario: nombreUsuario
+            id : id
         };
 
         const result = await ReestablecerContraseña(datos);
@@ -83,7 +86,7 @@ export default function CardReestrablecerContra({ open, onClose, nombreUsuario }
         }));
 
     };
-
+   
   return (
       <React.Fragment>
           <Dialog
@@ -110,7 +113,7 @@ export default function CardReestrablecerContra({ open, onClose, nombreUsuario }
                           label="Nombre de Usuario"
                           type="text"
                           autoComplete="Nombre de Usuario"
-                          value={nombreUsuario}
+                          value={perfil?.usuario?.usuario ?? ''}
                       />
                       <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
                           <InputLabel htmlFor={`${outlinedContraId}-input`}>Contraseña</InputLabel>

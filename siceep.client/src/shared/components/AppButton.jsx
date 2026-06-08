@@ -23,7 +23,6 @@ function AppButton({ colorBtn, iconBtn, isfullWidth, content, ...props }) {
               }
           }}
           color={colorBtn}
-          startIcon={iconBtn}
           {...props }
       >
           {content}
