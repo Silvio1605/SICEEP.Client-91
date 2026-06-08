@@ -28,11 +28,11 @@ export default function MenuAcciones({ row, abrirPerfil }) {
 
     // Contexto para manejar la selección del usuario
     const { setIdSeleccionado } = useBusquedaContext();
+
     const seleccionar = (id) => {
         setIdSeleccionado(id); // actualiza el contexto
         abrirPerfil(); // abre el perfil
     };
-
 
     return (
         <>

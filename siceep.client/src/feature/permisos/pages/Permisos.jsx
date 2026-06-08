@@ -2,18 +2,32 @@
 import { Box, Grid, Tabs, Tab, Typography, Paper } from "@mui/material";
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
+import { styled } from '@mui/material/styles';
 // componentes
 import CardPermiso from "../components/CardPermiso";
 import GuardarPermisosDialog from '../components/GuardarPermisos';
+
 // servicios
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
+
+const Item = styled(Paper)(({ theme }) => ({
+    backgroundColor: '#fff',
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'left',
+    color: (theme.vars ?? theme).palette.text.secondary,
+    ...theme.applyStyles('dark', {
+        backgroundColor: '#1A2027',
+    }),
+}));
 
 export default function Permisos() {
 
     //funcion para extraer el valor enviado desde usuario
     let { idSeleccionado } = useBusquedaContext() || {};
-    
+
+
     //hook personalizado para manejar permisos
     const { permisosHook } = usePermisosContext();
     const { permisos, cambiarPermiso, permisosOriginal } = permisosHook;
@@ -44,6 +58,45 @@ export default function Permisos() {
     return (
 
         <Box>
+            <Box
+                sx={{
+                    bgcolor: "background.paper",
+                    borderBottom: 1,
+                    borderColor: "divider",
+                    boxShadow: 2,
+                    px: 4,
+                    pb: 1,
+                    pt: 1,
+                    mb: 2,
+                    borderRadius: '12px 12px 0 0',
+                }}
+            >
+                <Typography
+                    variant="h6"
+                    sx={{
+                        fontWeight: 700,
+                        color: '#1565C0',
+                        letterSpacing: '0.5px',
+                        textTransform: 'uppercase',
+                        fontSize: '1rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        '&::before': {
+                            content: '""',
+                            width: '4px',
+                            height: '20px',
+                            backgroundColor: '#1565C0',
+                            borderRadius: '2px',
+                            display: 'inline-block',
+                        }
+                    }}
+                >
+                    Permisos del Usuario
+                </Typography>
+            </Box>
+
+            
             {/* Tabs */}
             <Box
                 sx={{
@@ -109,7 +162,7 @@ export default function Permisos() {
                     >
                         <Grid container spacing={2}>
                             {modulo.permisos.map((permiso) => (
-                                <Grid key={permiso.idRecurso} size={{ xs: 12, md: 6 }}>
+                                <Grid key={permiso.idRecurso} size={{ xs: 12, md: 12 }}>
                                     <CardPermiso
                                         id={permiso.idRecurso}
                                         nombrePermiso={permiso.recurso}

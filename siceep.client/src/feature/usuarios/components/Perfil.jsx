@@ -20,9 +20,7 @@ import CardReestrablecerContra from './CardReestrablecerContra';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import PersonIcon from '@mui/icons-material/Person';
 // hooks y contextos
-import { useNotificacionContext } from '../../../providers/Notificacion/useNotificacionContext';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
-import { usePermisosContext } from './../../../providers/Permisos/usePermisoContext';
 import { usePerfil } from '../hooks/usePerfil';
 import { useUsuarios } from './../hooks/useUsuarios';
 
@@ -44,16 +42,13 @@ const Transition = forwardRef(function Transition(props, ref) {
 export default function Perfil({ open, onClose, buscar, filtro }) {
 
     const { idSeleccionado } = useBusquedaContext();
-    const { permisosHook } = usePermisosContext();
-    const { perfil, reload } = usePerfil(idSeleccionado);
+    const { perfil } = usePerfil(idSeleccionado);
     const { ActualizarEstado } = useUsuarios();
-    const { mostrarNotificacion } = useNotificacionContext();
 
     const [EstadoComp, setEstadoComp] = useState();
     // Estado para controlar el diálogo de actualización de fecha
     const [dialogo, setDialogo] = useState(null);
 
-    const abrirConfirmDes = () => setDialogo("confirmDesactivar");
     const abrirReestrablecerContra = () => setDialogo("reestrablecerContra");
     
     const cerrar = () => setDialogo(null);
@@ -65,34 +60,6 @@ export default function Perfil({ open, onClose, buscar, filtro }) {
         cargarEstado();
 
     }, [perfil.usuario?.estado]);
-
-    const handleActEstado = async () => {
-
-        try {
-            await ActualizarEstado(perfil.usuario?.id, perfil.usuario?.estado);
-
-            mostrarNotificacion({
-                message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Usuario activado correctamente" : "Usuario deshabilitado correctamente",
-                severity: "success",
-            });
-
-            // recargar datos
-            await permisosHook.refetch();
-            const nuevoEstado = perfil.usuario?.estado === 1 ? 3 : 1;
-            setEstadoComp(nuevoEstado);
-            await reload();
-            await actualizarTabla();
-
-        } catch (error) {
-            mostrarNotificacion({
-                message: error.message ?? "Error al actualizar el estado del usuario",
-                severity: "error",
-            });
-            console.log(error);
-        }
-        cerrar();
-
-    };
 
     const actualizarTabla = async () => {
 
@@ -149,20 +116,6 @@ export default function Perfil({ open, onClose, buscar, filtro }) {
                                 Reestablecer Contraseña
                             </Button>
 
-                            <Button
-                                sx={{ mt: 2 }}
-                                variant="contained"
-                                color={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
-                                startIcon={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
-                                onClick={(e) => {
-                                    // Evitar que el botón mantenga el foco después de hacer clic
-                                    e.currentTarget.blur();
-                                    abrirConfirmDes();
-                                }}
-                            >
-                                {EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
-                            </Button>
-
                         </Box>
                     </Item>
                     
@@ -183,15 +136,7 @@ export default function Perfil({ open, onClose, buscar, filtro }) {
                 onClose={cerrar}
                 nombreUsuario={perfil.usuario?.usuario}
             />
-            <Confirm
-                open={dialogo === "confirmDesactivar"}
-                handleClose={cerrar}
-                onConfirm={handleActEstado}
-                title="Desactivar Cambios"
-                content="¿Esta seguro que desea deshabilitar el usuario?"
-            >
-                {/* contenido */}
-            </Confirm>
+            
         </React.Fragment>
     );
 }

@@ -13,6 +13,8 @@ import SelectItem from './../../../shared/components/SelectItem';
 import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Confirm from './../../../shared/components/Confirm';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 // servicios
 import { useNotificacionContext } from '../../../providers/Notificacion/useNotificacionContext';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
@@ -34,15 +36,14 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-function CardUsuario() {
+function CardUsuario({ actualizar }) {
 
     // Funciones para manejo de fechas
     const { obtenerFechaActual, tiempoRestante, convertirFecha, esMayor, actualizarFechaExpiracion } = useFecha();
     const { permisosHook } = usePermisosContext();
     const { actualizarRol } = useRol();
-
     const { idSeleccionado } = useBusquedaContext();
-    const { perfil } = usePerfil(idSeleccionado);
+    const { perfil, reload } = usePerfil(idSeleccionado);
 
     // Notificaciones
     const { mostrarNotificacion } = useNotificacionContext();
@@ -62,6 +63,7 @@ function CardUsuario() {
     // Funciones para abrir los diálogos de confirmación
     const abrirConfirmExp = () => setDialogo("confirmExpiracion");
     const abrirConfirmRol = () => setDialogo("confirmRol");
+    const abrirConfirmDes = () => setDialogo("confirmDesactivar");
 
     const cerrar = () => setDialogo(null);
     
@@ -132,40 +134,186 @@ function CardUsuario() {
         cerrar();
     };
 
+
+    const handleActEstado = async () => {
+
+        try {
+            await ActualizarEstado(perfil.usuario?.id, perfil.usuario?.estado);
+
+            mostrarNotificacion({
+                message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Usuario activado correctamente" : "Usuario deshabilitado correctamente",
+                severity: "success",
+            });
+
+            // recargar datos
+            await permisosHook.refetch();
+            const nuevoEstado = perfil.usuario?.estado === 1 ? 3 : 1;
+            setEstadoComp(nuevoEstado);
+            await reload();
+            await actualizar();
+
+        } catch (error) {
+            mostrarNotificacion({
+                message: error.message ?? "Error al actualizar el estado del usuario",
+                severity: "error",
+            });
+        }
+        cerrar();
+
+    };
+    const obtenerEstado = (estado) => {
+        switch (estado) {
+            case 1:
+                return <Chip label="Activo" color="success" />;
+            case 2:
+                return <Chip label="Inactivo" color="error" />;
+            case 3:
+                return <Chip label="Expirado" color="warning" />;
+            default:
+                return <Chip label="Desconocido" />;
+        }
+    };
+
+
     return (
         
         // Información del Usuario
         <Box sx={{ flexGrow: 1, mb: 1 }}>
             <Grid container spacing={2}>
+
                 <Grid size={12}>
+                    <Box
+                        sx={{
+                            bgcolor: "background.paper",
+                            borderBottom: 1,
+                            borderColor: "divider",
+                            boxShadow: 2,
+                            px: 4,
+                            pb: 1,
+                            pt: 1,
+                            mb: 2,
+                            borderRadius: '12px 12px 0 0',
+                        }}
+                    >
+                        <Typography
+                            variant="h6"
+                            sx={{
+                                fontWeight: 700,
+                                color: '#1565C0',
+                                letterSpacing: '0.5px',
+                                textTransform: 'uppercase',
+                                fontSize: '1rem',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 1,
+                                '&::before': {
+                                    content: '""',
+                                    width: '4px',
+                                    height: '20px',
+                                    backgroundColor: '#1565C0',
+                                    borderRadius: '2px',
+                                    display: 'inline-block',
+                                }
+                            }}
+                        >
+                                Información del Usuario
+                        </Typography>
+                    </Box>
+
                     <Item>
-                        <Box sx={{ p: 1, bgcolor: 'background.paper'}}>
+                        <Box sx={{
+                            p: 2,
+                            bgcolor: 'background.paper',
+                            borderRadius: '0 0 12px 12px',
+                            transition: 'all 0.3s ease',
+                            '&:hover': {
+                                boxShadow: 3,
+                            }
+                        }}>
                             <Box display="flex" alignItems="center" sx={{ pl: 1 }}>
 
                                 {/* Avatar */}
-                                <Avatar alt="user" src="/image/default-user.jpg" />
+                                <Avatar
+                                    alt="user"
+                                    src="/image/default-user.jpg"
+                                    sx={{
+                                        width: 80,
+                                        height: 80,
+                                        border: '3px',
+                                        boxShadow: 2
+                                    }}
+                                />
 
                                 {/* Textos */}
-                                <Box sx={{ ml: 2 }}>
-                                    <Typography variant="h5">
-                                        <strong>{perfil.usuario?.usuario}</strong>
-                                    </Typography>
-                                    <Divider />
-                                    <Typography variant="body2" sx={{ pt: 1 }}>
-                                        <strong>Propietario: </strong> {perfil.usuario?.propietario}
-                                    </Typography>
-                                    
-                                    <Typography variant="body2" sx={{ pt: 1 }}>
-                                        <strong>Ubicado en:</strong> {perfil.estructura?.estructura}
-                                    </Typography>
+                                <Box sx={{ ml: 3, flex: 1 }}>
+                                    <Box sx={{ mb: 1.5 }}>
+                                        <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
+                                            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
+                                                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
+                                                    {perfil.usuario?.usuario}
+                                                </Typography>
+                                                {obtenerEstado(EstadoComp)}
+                                            </Stack>
+                                        </Stack>
+                                    </Box>
+
+                                    <Divider sx={{ my: 1.5 }} />
+
+                                    <Box sx={{ mt: 1.5 }}>
+                                        <Box display="flex" alignItems="baseline" sx={{ mb: 1 }}>
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    fontWeight: 700,
+                                                    color: '#1565C0',
+                                                    minWidth: '100px',
+                                                    fontSize: '0.85rem'
+                                                }}
+                                            >
+                                                Propietario:
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ color: '#424242', fontWeight: 500 }}>
+                                                {perfil.usuario?.propietario}
+                                            </Typography>
+                                        </Box>
+
+                                        <Box display="flex" alignItems="baseline">
+                                            <Typography
+                                                variant="body2"
+                                                sx={{
+                                                    fontWeight: 700,
+                                                    color: '#1565C0',
+                                                    minWidth: '100px',
+                                                    fontSize: '0.85rem'
+                                                }}
+                                            >
+                                                Ubicado en:
+                                            </Typography>
+                                            <Typography variant="body2" sx={{ color: '#424242', fontWeight: 500 }}>
+                                                {perfil.estructura?.estructura}
+                                            </Typography>
+                                        </Box>
+                                    </Box>
                                 </Box>
                             </Box>
                         </Box>
                     </Item>
                 </Grid>
-
                 <Grid size={12}>
                     <Item>
+                        <Typography
+                            variant="h7"
+                            sx={{
+                                fontWeight: 600,
+                                color: '#1565C0',
+                                letterSpacing: '0.5px',
+                                ml: 2 
+
+                            }}
+                        >
+                            Rol
+                        </Typography>
+
                         {loading ? (
                             <p>Cargando...</p>
                         ) : (
@@ -177,14 +325,27 @@ function CardUsuario() {
                                         }}
                                         incluirTodo={false}
                                         datos={selRol}
-                                        titulo="Rol Actual"
+                                        titulo=""
                                     />
+                                    
                                     <Button
                                         fullWidth
-                                        sx={{ mt: 2 }}
                                         variant="contained"
-                                        color="primary"
                                         startIcon={<WorkIcon />}
+                                        sx={{
+                                            mt: 2,
+                                            py: 1.2,
+                                            borderRadius: 2,
+                                            fontWeight: 600,
+                                            textTransform: 'none',
+                                            fontSize: '0.95rem',
+                                            boxShadow: 2,
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: 4
+                                            }
+                                        }}
                                         onClick={(e) => {
                                             // Evitar que el botón mantenga el foco después de hacer clic
                                             e.currentTarget.blur();
@@ -193,12 +354,55 @@ function CardUsuario() {
                                     >
                                         Actualizar Rol
                                     </Button>
+                                    
                             </Box>
                         )}
                     </Item>
                 </Grid>
                 <Grid size={12}>
                     <Item>
+                        <Typography
+                            variant="h7"
+                            sx={{
+                                fontWeight: 600,
+                                color: '#1565C0',
+                                letterSpacing: '0.5px',
+                                ml: 2
+                            }}
+                        >
+                            Cuenta
+                        </Typography>
+
+                        <Button
+                            fullWidth
+                            variant="contained"
+                            startIcon={<WorkIcon />}
+                            sx={{
+                                mb: 2,
+                                mt: 2,
+                                py: 1.2,
+                                borderRadius: 2,
+                                fontWeight: 600,
+                                textTransform: 'none',
+                                fontSize: '0.95rem',
+                                boxShadow: 2,
+                                transition: 'all 0.2s ease',
+                                '&:hover': {
+                                    transform: 'translateY(-2px)',
+                                    boxShadow: 4
+                                }
+                            }}
+                            color={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
+                            startIcon={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
+                            onClick={(e) => {
+                                // Evitar que el botón mantenga el foco después de hacer clic
+                                e.currentTarget.blur();
+                                abrirConfirmDes();
+                            }}
+                        >
+                            {EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
+                        </Button>
+
                         {loading ? (
                             <p>Cargando...</p>
                         ) : (
@@ -211,7 +415,7 @@ function CardUsuario() {
                                      InputLabelProps={{ shrink: true }}
                                      fullWidth
                                 />
-                                <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
+                                <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
                                      <LockClockIcon sx={{ mr: 1 }} />
 
                                      <Typography variant="body2">
@@ -219,7 +423,7 @@ function CardUsuario() {
                                      </Typography>
                                 </Box>
                                     {fecha && fecha !== fechaPerfil ? (
-                                        <Box display="flex" alignItems="center" sx={{ ml: 3, pb: 1, pt: 1 }}>
+                                        <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
                                             <LockClockIcon sx={{ mr: 1, color: 'primary.main' }} />
 
                                             <Typography variant="body2" sx={{ color: 'primary.main' }}>
@@ -231,7 +435,20 @@ function CardUsuario() {
                                    
                                 <Button
                                     fullWidth
-                                    sx={{ mt: 2 }}
+                                        sx={{
+                                            mt: 2,
+                                            py: 1.2,
+                                            borderRadius: 2,
+                                            fontWeight: 600,
+                                            textTransform: 'none',
+                                            fontSize: '0.95rem',
+                                            boxShadow: 2,
+                                            transition: 'all 0.2s ease',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                boxShadow: 4
+                                            }
+                                        }}
                                     variant="contained"
                                     color="primary"
                                         startIcon={<CalendarTodayIcon />}
@@ -269,7 +486,15 @@ function CardUsuario() {
             >
                 {/* contenido */}
             </Confirm>
-            
+            <Confirm
+                open={dialogo === "confirmDesactivar"}
+                handleClose={cerrar}
+                onConfirm={handleActEstado}
+                title="Desactivar Cambios"
+                content="¿Esta seguro que desea deshabilitar el usuario?"
+            >
+                {/* contenido */}
+            </Confirm>
         </Box>
     );
 }

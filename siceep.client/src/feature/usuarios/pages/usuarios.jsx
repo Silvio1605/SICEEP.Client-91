@@ -26,7 +26,8 @@ import { useScreenType } from './../../../shared/hooks/useScreenType';
 // hooks
 import { PermisoProvider } from './../../../providers/Permisos/PermisoProvider';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
-
+// componentes personalizados
+import AppButton from './../../../shared/components/AppButton';
 export default function Usuarios() {
 
     const theme = useTheme();
@@ -106,14 +107,14 @@ export default function Usuarios() {
                 Control de cuentas de usuario
             </Typography>
             <Box sx={{ m: '0px', mr: mobile ? '10px' : '30px', display: 'flex', justifyContent: 'flex-end' }}>
-                <Button
-                    variant="contained"
-                    color="primary"
-                    startIcon={<AddIcon />}
+                <AppButton 
+                    isfullWidth={false}
+                    colorBtn="primary"
+                    iconBtn={<AddIcon />}
+                    content="Registrar"
                     onClick={abrirReg}
-                >
-                    Registrar
-                </Button>
+                />
+
             </Box>
             <Box
                 sx={{

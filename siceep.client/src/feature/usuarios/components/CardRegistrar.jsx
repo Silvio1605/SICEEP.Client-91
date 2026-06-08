@@ -15,6 +15,7 @@ import IconButton from '@mui/material/IconButton';
 // iconos 
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import SearchIcon from '@mui/icons-material/Search';
 // Importar el componente SelectItem
 import SelectItem from './../../../shared/components/SelectItem';
 // importar el hook useSelectRoles para obtener los roles disponibles
@@ -23,6 +24,9 @@ import { useRegistrar } from "./../hooks/useRegistrar";
 // Importar el componente de búsqueda de propietario
 import BusquedaPropietario from './BusquedaPropietario';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
+// componentes personalizados
+import AppInput from './../../../shared/components/AppInput';
+import AppButton from './../../../shared/components/AppButton';
 
 export default function CardRegistrar({ open, onClose }) {
 
@@ -167,33 +171,25 @@ export default function CardRegistrar({ open, onClose }) {
                 </DialogTitle>
                 <DialogContent>
                     
-                    <Button variant="contained" disableElevation sx={{ m: 1 }} onClick={() => handleBuscarPropietario()}>
-                        Buscar Propietario
-                    </Button>
-                    <TextField
-                        fullWidth
-                        sx={{ m: 1 }}
-                        id="propietario"
+                    <AppButton
+                        isfullWidth={true}
+                        colorBtn="primary"
+                        iconBtn={<SearchIcon />}
+                        content="Buscar Propietario"
+                        onClick={() => handleBuscarPropietario()}>
+                    </AppButton>
+
+                    <AppInput
+                        id="propietarioSeleccionado"
                         label="Propietario Seleccionado"
-                        type="text"
-                        autoComplete="Propietario"
-                        variant="filled"
                         value={registro.nombrePropietario ?? ''}
-                        slotProps={{
-                            input: {
-                                readOnly: true,
-                            },
-                        }}
+                        isReadOnly={true}
                     />
-                    
-                    <TextField
-                        fullWidth
-                        sx={{ m: 1 }}
+                    <AppInput
                         id="usuario"
                         label="Nombre de Usuario"
-                        type="text"
-                        autoComplete="Nombre de Usuario"
                         value={registro.nombreUsuario ?? ''}
+                        isReadOnly={false}
                         onChange={(e) => setRegistro({ ...registro, nombreUsuario: e.target.value })}
                     />
                     {loading ? (
@@ -212,12 +208,28 @@ export default function CardRegistrar({ open, onClose }) {
                             titulo="Rol Actual"
                         />
                     )}
-                    
-                    <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
+                    <FormControl
+                        fullWidth
+                        sx={{
+                            mt: 1,
+
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                                backgroundColor: 'grey.50',
+                            },
+                            '& .MuiInputBase-input': {
+                                fontWeight: 500,
+                            },
+                            '& .MuiInputLabel-root': {
+                                fontWeight: 600,
+                            }
+                        }}
+                        variant="outlined">
                         <InputLabel htmlFor={`${outlinedContraId}-input`}>Contraseña</InputLabel>
                         <OutlinedInput
                             id={`${outlinedContraId}-input`}
                             type={MostrarContra ? 'text' : 'password'}
+                            
                             value={registro.contrasena ?? ''}
                             onChange={(e) => setRegistro({ ...registro, contrasena: e.target.value })}
                             endAdornment={
@@ -238,7 +250,22 @@ export default function CardRegistrar({ open, onClose }) {
                             label="Password"
                         />
                     </FormControl>
-                    <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
+                    <FormControl fullWidth
+                        sx={{
+                            mt: 1,
+
+                            '& .MuiOutlinedInput-root': {
+                                borderRadius: 2,
+                                backgroundColor: 'grey.50',
+                            },
+                            '& .MuiInputBase-input': {
+                                fontWeight: 500,
+                            },
+                            '& .MuiInputLabel-root': {
+                                fontWeight: 600,
+                            }
+                        }}
+                        variant="outlined">
                         <InputLabel htmlFor={`${outlinedConfirmdId}-input`}>Confirmar Contraseña</InputLabel>
                         <OutlinedInput
                             id={`${outlinedConfirmdId}-input`}
@@ -260,11 +287,12 @@ export default function CardRegistrar({ open, onClose }) {
                             label="Password"
                         />
                     </FormControl>
-                    <TextField
-                        fullWidth
-                        sx={{ m: 1 }}
-                        type="date"
+                    <AppInput
+                        id="fechaExpiracion"
                         label="Fecha de Expiración"
+                        value={registro.fechaExpiracion ?? ''}
+                        isReadOnly={false}
+                        type="date"
                         InputLabelProps={{ shrink: true }}
                         onChange={(e) => setRegistro({ ...registro, fechaExpiracion: e.target.value })}
                     />

@@ -28,25 +28,6 @@ const CardPermiso = ({ id, nombrePermiso, descripcion, checked, cambiarPermiso }
             <CardContent sx={{ px: 2, py: 1.5 }}>
                 <Grid container alignItems="center">
 
-                    {/* Texto */}
-                    <Grid size={{ xs: 10 }}>
-                        <Typography
-                            variant="subtitle1"
-                            fontWeight="600"
-                            color="text.primary"
-                        >
-                            {nombrePermiso}
-                        </Typography>
-
-                        <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mt: 0.3 }}
-                        >
-                            {descripcion}
-                        </Typography>
-                    </Grid>
-
                     {/* Checkbox */}
                     <Grid
                         size={{ xs: 2 }}
@@ -66,6 +47,27 @@ const CardPermiso = ({ id, nombrePermiso, descripcion, checked, cambiarPermiso }
                             }}
                         />
                     </Grid>
+
+                    {/* Texto */}
+                    <Grid size={{ xs: 10 }}>
+                        <Typography
+                            variant="subtitle1"
+                            fontWeight="600"
+                            color="text.primary"
+                        >
+                            {nombrePermiso}
+                        </Typography>
+
+                        <Typography
+                            variant="body2"
+                            color="text.secondary"
+                            sx={{ mt: 0.3 }}
+                        >
+                            {descripcion}
+                        </Typography>
+                    </Grid>
+
+                   
 
                 </Grid>
             </CardContent>
