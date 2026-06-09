@@ -2,7 +2,6 @@ import { Routes, Route } from "react-router-dom";
 import Usuarios from './../../feature/usuarios/pages/Usuarios.jsx';
 import { BusquedaProvider } from './../../providers/BusquedaUsers/BusquedaProvider.jsx';
 import Permisos from './../../feature/permisos/pages/Permisos.jsx';
-import Home from "./Home.jsx";
 import Index from "./Index.jsx";
 import Login from './../../feature/auth/pages/Login.jsx';
 import ProtectedRoute from "../../providers/Router/ProtectedRoute.jsx";

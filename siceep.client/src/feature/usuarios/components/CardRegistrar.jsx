@@ -6,16 +6,19 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import { Typography, Paper } from "@mui/material";
+import Grid from '@mui/material/Grid';
+
 // iconos 
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import SearchIcon from '@mui/icons-material/Search';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
 // Importar el componente SelectItem
 import SelectItem from './../../../shared/components/SelectItem';
 // importar el hook useSelectRoles para obtener los roles disponibles
@@ -163,14 +166,32 @@ export default function CardRegistrar({ open, onClose }) {
                 fullScreen={fullScreen}
                 open={open}
                 onClose={onClose}
-                aria-labelledby="responsive-dialog-title"
+                fullWidth
+                maxWidth="md"
                 disableAutoFocus
             >
-                <DialogTitle id="responsive-dialog-title">
-                    {"Registrar Usuario"}
+                <DialogTitle sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1,
+                    borderBottom: 1,
+                    borderColor: 'divider'
+                }}>
+                    <PersonAddIcon color="primary" />
+                    Registrar Usuario
                 </DialogTitle>
                 <DialogContent>
-                    
+                    <Typography
+                        variant="subtitle2"
+                        sx={{
+                            mt: 2,
+                            mb: 1,
+                            color: 'primary.main',
+                            fontWeight: 600
+                        }}
+                    >
+                        Datos del Propietario
+                    </Typography>
                     <AppButton
                         isfullWidth={true}
                         colorBtn="primary"
@@ -178,115 +199,160 @@ export default function CardRegistrar({ open, onClose }) {
                         content="Buscar Propietario"
                         onClick={() => handleBuscarPropietario()}>
                     </AppButton>
-
-                    <AppInput
-                        id="propietarioSeleccionado"
-                        label="Propietario Seleccionado"
-                        value={registro.nombrePropietario ?? ''}
-                        isReadOnly={true}
-                    />
-                    <AppInput
-                        id="usuario"
-                        label="Nombre de Usuario"
-                        value={registro.nombreUsuario ?? ''}
-                        isReadOnly={false}
-                        onChange={(e) => setRegistro({ ...registro, nombreUsuario: e.target.value })}
-                    />
-                    {loading ? (
-                        <p>Cargando...</p>
-                    ) : (
-                        <SelectItem
-                            value={registro.rol}
-                            onChange={(selRol) => {
-                                setRegistro({
-                                    ...registro,
-                                    rol: selRol
-                                });
-                            }}
-                            incluirTodo={false}
-                            datos={selRol}
-                            titulo="Rol Actual"
-                        />
-                    )}
-                    <FormControl
-                        fullWidth
+                    <Paper
+                        variant="outlined"
                         sx={{
-                            mt: 1,
-
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: 2,
-                                backgroundColor: 'grey.50',
-                            },
-                            '& .MuiInputBase-input': {
-                                fontWeight: 500,
-                            },
-                            '& .MuiInputLabel-root': {
-                                fontWeight: 600,
-                            }
+                            p: 1,
+                            bgcolor: 'grey.50'
                         }}
-                        variant="outlined">
-                        <InputLabel htmlFor={`${outlinedContraId}-input`}>Contraseña</InputLabel>
-                        <OutlinedInput
-                            id={`${outlinedContraId}-input`}
-                            type={MostrarContra ? 'text' : 'password'}
-                            
-                            value={registro.contrasena ?? ''}
-                            onChange={(e) => setRegistro({ ...registro, contrasena: e.target.value })}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        aria-label={
-                                            MostrarContra ? 'hide the password' : 'display the password'
-                                        }
-                                        onClick={() => handleClickMostrarContra(setMostrarContra)}
-                                        onMouseDown={handleMouseDownContra}
-                                        onMouseUp={handleMouseUpContra}
-                                        edge="end"
-                                    >
-                                        {MostrarContra ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            label="Password"
-                        />
-                    </FormControl>
-                    <FormControl fullWidth
+                    >
+                        <Typography variant="caption">
+                            Propietario seleccionado
+                        </Typography>
+
+                        <Typography fontWeight={600}>
+                            {registro.nombrePropietario || 'Ninguno seleccionado'}
+                        </Typography>
+                    </Paper>
+
+                    <Typography
+                        variant="subtitle2"
                         sx={{
-                            mt: 1,
-
-                            '& .MuiOutlinedInput-root': {
-                                borderRadius: 2,
-                                backgroundColor: 'grey.50',
-                            },
-                            '& .MuiInputBase-input': {
-                                fontWeight: 500,
-                            },
-                            '& .MuiInputLabel-root': {
-                                fontWeight: 600,
-                            }
+                            mt: 2,
+                            mb: 1,
+                            color: 'primary.main',
+                            fontWeight: 600
                         }}
-                        variant="outlined">
-                        <InputLabel htmlFor={`${outlinedConfirmdId}-input`}>Confirmar Contraseña</InputLabel>
-                        <OutlinedInput
-                            id={`${outlinedConfirmdId}-input`}
-                            type={MostrarConfirm ? 'text' : 'password'}
-                            value={registro.contrasenaConfirmacion ?? ''}
-                            onChange={(e) => setRegistro({ ...registro, contrasenaConfirmacion: e.target.value })}
-                            endAdornment={
-                                <InputAdornment position="end">
-                                    <IconButton
-                                        onClick={() => handleClickMostrarContra(setMostrarConfirm)}
-                                        onMouseDown={handleMouseDownContra}
-                                        onMouseUp={handleMouseUpContra}
-                                        edge="end"
-                                    >
-                                        {MostrarConfirm ? <VisibilityOff /> : <Visibility />}
-                                    </IconButton>
-                                </InputAdornment>
-                            }
-                            label="Password"
-                        />
-                    </FormControl>
+                    >
+                        Datos de Acceso
+                    </Typography>
+                    <Grid container spacing={2}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <AppInput
+                                id="usuario"
+                                label="Nombre de Usuario"
+                                value={registro.nombreUsuario ?? ''}
+                                isReadOnly={false}
+                                onChange={(e) => setRegistro({ ...registro, nombreUsuario: e.target.value })}
+                            />
+                        </Grid>
+
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            {loading ? (
+                                <p>Cargando...</p>
+                            ) : (
+                                <SelectItem
+                                    value={registro.rol}
+                                    onChange={(selRol) => {
+                                        setRegistro({
+                                            ...registro,
+                                            rol: selRol
+                                        });
+                                    }}
+                                    incluirTodo={false}
+                                    datos={selRol}
+                                    titulo="Rol Actual"
+                                />
+                            )}
+                        </Grid>
+                    </Grid>
+                    <Grid container spacing={2}>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <FormControl
+                                fullWidth
+                                sx={{
+                                    mt: 1,
+
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: 2,
+                                        backgroundColor: 'grey.50',
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        fontWeight: 500,
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                        fontWeight: 600,
+                                    }
+                                }}
+                                variant="outlined">
+                                <InputLabel htmlFor={`${outlinedContraId}-input`}>Contraseña</InputLabel>
+                                <OutlinedInput
+                                    id={`${outlinedContraId}-input`}
+                                    type={MostrarContra ? 'text' : 'password'}
+
+                                    value={registro.contrasena ?? ''}
+                                    onChange={(e) => setRegistro({ ...registro, contrasena: e.target.value })}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                aria-label={
+                                                    MostrarContra ? 'hide the password' : 'display the password'
+                                                }
+                                                onClick={() => handleClickMostrarContra(setMostrarContra)}
+                                                onMouseDown={handleMouseDownContra}
+                                                onMouseUp={handleMouseUpContra}
+                                                edge="end"
+                                            >
+                                                {MostrarContra ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    label="Password"
+                                />
+                            </FormControl>
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 6 }}>
+                            <FormControl fullWidth
+                                sx={{
+                                    mt: 1,
+
+                                    '& .MuiOutlinedInput-root': {
+                                        borderRadius: 2,
+                                        backgroundColor: 'grey.50',
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        fontWeight: 500,
+                                    },
+                                    '& .MuiInputLabel-root': {
+                                        fontWeight: 600,
+                                    }
+                                }}
+                                variant="outlined">
+                                <InputLabel htmlFor={`${outlinedConfirmdId}-input`}>Confirmar Contraseña</InputLabel>
+                                <OutlinedInput
+                                    id={`${outlinedConfirmdId}-input`}
+                                    type={MostrarConfirm ? 'text' : 'password'}
+                                    value={registro.contrasenaConfirmacion ?? ''}
+                                    onChange={(e) => setRegistro({ ...registro, contrasenaConfirmacion: e.target.value })}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton
+                                                onClick={() => handleClickMostrarContra(setMostrarConfirm)}
+                                                onMouseDown={handleMouseDownContra}
+                                                onMouseUp={handleMouseUpContra}
+                                                edge="end"
+                                            >
+                                                {MostrarConfirm ? <VisibilityOff /> : <Visibility />}
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                    label="Password"
+                                />
+                            </FormControl>
+                        </Grid>
+                    </Grid>
+                    <Typography
+                        variant="subtitle2"
+                        sx={{
+                            mt: 2,
+                            mb: 1,
+                            color: 'primary.main',
+                            fontWeight: 600
+                        }}
+                    >
+                        Vigencia
+                    </Typography>
+
                     <AppInput
                         id="fechaExpiracion"
                         label="Fecha de Expiración"

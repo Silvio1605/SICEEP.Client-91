@@ -14,10 +14,7 @@ import { styled } from '@mui/material/styles';
 // componente para mostrar el perfil del usuario seleccionado en la tabla de usuarios
 import Permisos from './../../permisos/pages/Permisos';
 import CardUsuario from './CardUsuario';
-import Confirm from './../../../shared/components/Confirm';
 //iconos para el botón de activar/desactivar usuario
-import PersonOffIcon from '@mui/icons-material/PersonOff';
-import PersonIcon from '@mui/icons-material/Person';
 // hooks y contextos
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePerfil } from '../hooks/usePerfil';

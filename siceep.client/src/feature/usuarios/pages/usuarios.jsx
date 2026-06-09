@@ -7,7 +7,7 @@ import {
     GridToolbar,
 } from '@mui/x-data-grid';
 import { useTheme, useMediaQuery } from "@mui/material";
-import { Button } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 // React Router
 import { useSearchParams } from "react-router-dom";
@@ -112,21 +112,28 @@ export default function Usuarios() {
 
     return (
         <Box>
-            <Typography variant="h5" component="h1" color="text.primary">
-                Gestion de Usuarios
-            </Typography>
-            <Typography variant="subtitle1" component="h1" color="text.secundary">
-                Control de cuentas de usuario
-            </Typography>
-            <Box sx={{ m: '0px', mr: mobile ? '10px' : '30px', display: 'flex', justifyContent: 'flex-end' }}>
-                <AppButton 
-                    isfullWidth={false}
-                    colorBtn="primary"
-                    iconBtn={<AddIcon />}
-                    content="Registrar"
-                    onClick={abrirReg}
-                />
-
+            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
+                <Box sx={{ flexGrow: 1 }}>
+                    <Grid container spacing={2}>
+                        <Grid size={{ xs: 7, sm: 9, md: 10 }}>
+                            <Typography variant="h5" component="h1" color="text.primary">
+                                Gestion de Usuarios
+                            </Typography>
+                            <Typography variant="subtitle1" component="h1" color="text.secundary">
+                                Control de cuentas de usuario
+                            </Typography>
+                        </Grid>
+                        <Grid size={{ xs: 5, sm: 3, md: 2 }}>
+                            <AppButton
+                                isfullWidth={false}
+                                colorBtn="primary"
+                                iconBtn={<AddIcon />}
+                                content="Registrar"
+                                onClick={abrirReg}
+                            />
+                        </Grid>
+                    </Grid>
+                </Box>
             </Box>
             <Box
                 sx={{

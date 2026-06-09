@@ -10,7 +10,6 @@ import LockClockIcon from '@mui/icons-material/LockClock';
 import PersonOffIcon from '@mui/icons-material/PersonOff';
 import PersonIcon from '@mui/icons-material/Person';
 import SelectItem from './../../../shared/components/SelectItem';
-import { Button } from '@mui/material';
 import TextField from '@mui/material/TextField';
 import Confirm from './../../../shared/components/Confirm';
 import Chip from '@mui/material/Chip';
@@ -25,6 +24,7 @@ import { usePermisosContext } from './../../../providers/Permisos/usePermisoCont
 import { useFecha } from '../hooks/useFecha';
 import { useRol } from '../hooks/useRol';
 import { useUsuarios } from './../hooks/useUsuarios';
+import AppButton from './../../../shared/components/AppButton';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -162,6 +162,7 @@ function CardUsuario({ actualizar }) {
         cerrar();
 
     };
+
     const obtenerEstado = (estado) => {
         switch (estado) {
             case 1:
@@ -218,7 +219,7 @@ function CardUsuario({ actualizar }) {
                             }}
                         >
                                 Información del Usuario
-                        </Typography>
+                        </Typography> 
                     </Box>
 
                     <Item>
@@ -328,34 +329,17 @@ function CardUsuario({ actualizar }) {
                                         datos={selRol}
                                         titulo=""
                                     />
-                                    
-                                    <Button
-                                        fullWidth
-                                        variant="contained"
-                                        startIcon={<WorkIcon />}
-                                        sx={{
-                                            mt: 2,
-                                            py: 1.2,
-                                            borderRadius: 2,
-                                            fontWeight: 600,
-                                            textTransform: 'none',
-                                            fontSize: '0.95rem',
-                                            boxShadow: 2,
-                                            transition: 'all 0.2s ease',
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                boxShadow: 4
-                                            }
-                                        }}
+                                    <AppButton
+                                        colorBtn={ 'primary' }
+                                        iconBtn={<WorkIcon /> }
+                                        isfullWidth={ true }
+                                        content={"Actualizar Rol"}
                                         onClick={(e) => {
                                             // Evitar que el botón mantenga el foco después de hacer clic
                                             e.currentTarget.blur();
                                             abrirConfirmRol();
                                         }}
-                                    >
-                                        Actualizar Rol
-                                    </Button>
-                                    
+                                    />
                             </Box>
                         )}
                     </Item>
@@ -374,35 +358,17 @@ function CardUsuario({ actualizar }) {
                             Cuenta
                         </Typography>
 
-                        <Button
-                            fullWidth
-                            variant="contained"
-                            sx={{
-                                mb: 2,
-                                mt: 2,
-                                py: 1.2,
-                                borderRadius: 2,
-                                fontWeight: 600,
-                                textTransform: 'none',
-                                fontSize: '0.95rem',
-                                boxShadow: 2,
-                                transition: 'all 0.2s ease',
-                                '&:hover': {
-                                    transform: 'translateY(-2px)',
-                                    boxShadow: 4
-                                }
-                            }}
-                            color={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
-                            startIcon={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
+                        <AppButton
+                            colorBtn={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
+                            iconBtn={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
+                            isfullWidth={true}
+                            content={ EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
                             onClick={(e) => {
                                 // Evitar que el botón mantenga el foco después de hacer clic
                                 e.currentTarget.blur();
                                 abrirConfirmDes();
                             }}
-                        >
-                            {EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
-                        </Button>
-
+                        />
                         {loading ? (
                             <p>Cargando...</p>
                         ) : (
@@ -414,7 +380,8 @@ function CardUsuario({ actualizar }) {
                                      onChange={(e) => setFecha(e.target.value)}
                                      InputLabelProps={{ shrink: true }}
                                      fullWidth
-                                />
+                                    />
+
                                 <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
                                      <LockClockIcon sx={{ mr: 1 }} />
 
@@ -422,8 +389,8 @@ function CardUsuario({ actualizar }) {
                                           <strong>Tiempo actual restante:</strong> {tiempoRestante(perfil.usuario?.fechaExpiracion)}
                                      </Typography>
                                 </Box>
-                                    {fecha && fecha !== fechaPerfil ? (
-                                        <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
+                                {fecha && fecha !== fechaPerfil ? (
+                                     <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
                                             <LockClockIcon sx={{ mr: 1, color: 'primary.main' }} />
 
                                             <Typography variant="body2" sx={{ color: 'primary.main' }}>
@@ -431,37 +398,21 @@ function CardUsuario({ actualizar }) {
                                             </Typography>
                                         </Box>
 
-                                    ) : ""}
-                                   
-                                <Button
-                                    fullWidth
-                                        sx={{
-                                            mt: 2,
-                                            py: 1.2,
-                                            borderRadius: 2,
-                                            fontWeight: 600,
-                                            textTransform: 'none',
-                                            fontSize: '0.95rem',
-                                            boxShadow: 2,
-                                            transition: 'all 0.2s ease',
-                                            '&:hover': {
-                                                transform: 'translateY(-2px)',
-                                                boxShadow: 4
-                                            }
-                                        }}
-                                    variant="contained"
-                                    color="primary"
-                                        startIcon={<CalendarTodayIcon />}
-                                    onClick={(e) => {
-                                            // Evitar que el botón mantenga el foco después de hacer clic
-                                        e.currentTarget.blur();
-                                        esMayor(perfil.usuario?.fechaExpiracion, fecha);
-                                        abrirConfirmExp();
-                                    }}
-                                >
-                                        Actualizar Fecha
-                                </Button>
+                                     ) : ("")
+                                }
 
+                                <AppButton
+                                    colorBtn={"primary"}
+                                    iconBtn={<CalendarTodayIcon />}
+                                    isfullWidth={true}
+                                    content={"Actualizar Fecha"}
+                                    onClick={(e) => {
+                                          // Evitar que el botón mantenga el foco después de hacer clic
+                                         e.currentTarget.blur();
+                                         esMayor(perfil.usuario?.fechaExpiracion, fecha);
+                                         abrirConfirmExp();
+                                    }}
+                                />
                             </Box>
                         )}
 
@@ -480,22 +431,18 @@ function CardUsuario({ actualizar }) {
                         >
                             Reestablecer Contraseña
                         </Typography>
-                        <Button
-                            fullWidth
-                            sx={{
-                                mb: 2,
-                                mt: 2
-                            }}
-                            variant="contained"
-                            color="secondary"
+                        <AppButton
+                            colorBtn={"secondary"}
+                            isfullWidth={true}
+                            content={"Reestablecer Contraseña"}
                             onClick={(e) => {
                                 // Evitar que el botón mantenga el foco después de hacer clic
                                 e.currentTarget.blur();
                                 abrirReestrablecerContra();
                             }}
                         >
-                            Reestablecer Contraseña
-                        </Button>
+                        </AppButton>  
+                        
                     </Item>
                 </Grid>
 
