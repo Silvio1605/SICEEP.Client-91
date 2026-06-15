@@ -74,14 +74,13 @@ export default function CardRegistrar({ open, onClose }) {
     const handleMouseUpContra = (event) => {
         event.preventDefault();
     };
+    // Estado para controlar la apertura del diálogo de búsqueda de propietario
+    const [openBusqueda, setOpenBusqueda] = React.useState(false);
 
     // Función para manejar la búsqueda de propietario (puede ser implementada según las necesidades)
     const handleBuscarPropietario = () => {
         setOpenBusqueda(true);
     };
-
-    // Estado para controlar la apertura del diálogo de búsqueda de propietario
-    const [openBusqueda, setOpenBusqueda] = React.useState(false);
 
     const handleClose = () => {
         setOpenBusqueda(false);
@@ -377,6 +376,7 @@ export default function CardRegistrar({ open, onClose }) {
                 open={openBusqueda}
                 onClose={handleClose}
                 setRegistro={setRegistro}
+                OriginRegistro={true}
             />
         </React.Fragment>
     );

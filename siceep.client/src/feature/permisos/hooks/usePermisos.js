@@ -15,7 +15,10 @@ export const usePermisos = (id) => {
     const cargar = useCallback(async () => {
         setLoading(true);
         // Si no hay ID, no hacer nada
-        if (!id) return;
+        if (!id) {
+            setLoading(false);
+            return;
+        }
         // obtener permisos y estructura del usuario
         const res = await getPermisos(id);
         // datos para mostrar permisos con su estado
@@ -24,7 +27,6 @@ export const usePermisos = (id) => {
         setPermisosOriginal(
             structuredClone(res.data)
         );
-        setLoading(false);
     }, [id]);
 
     useEffect(() => {

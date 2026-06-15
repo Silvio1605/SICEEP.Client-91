@@ -6,7 +6,6 @@ import { styled } from '@mui/material/styles';
 // componentes
 import CardPermiso from "../components/CardPermiso";
 import GuardarPermisosDialog from '../components/GuardarPermisos';
-
 // servicios
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
@@ -22,15 +21,18 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
-export default function Permisos() {
+export default function Permisos({ idUsuario }) {
 
     //funcion para extraer el valor enviado desde usuario
-    let { idSeleccionado } = useBusquedaContext() || {};
+    const busquedaContext = useBusquedaContext?.() ?? {};
 
+    const idSeleccionado =
+        idUsuario ??
+        busquedaContext.idSeleccionado;
 
     //hook personalizado para manejar permisos
-    const { permisosHook } = usePermisosContext();
-    const { permisos, cambiarPermiso, permisosOriginal } = permisosHook;
+    const { permisosHook } = usePermisosContext() ?? {};
+    const { permisos, cambiarPermiso, permisosOriginal } = permisosHook ?? {};
 
     // Estado para controlar el diálogo de guardar permisos
     const [openDialog, setOpenDialog] = useState(false);
@@ -122,7 +124,7 @@ export default function Permisos() {
                         px: 2
                     }}
                 >
-                    {permisos.map((m) => (
+                    {permisos?.map((m) => (
                         <Tab key={m.idModulo} label={m.modulo} />
                     ))}
                 </Tabs>
@@ -130,7 +132,7 @@ export default function Permisos() {
             </Box>
 
             {/* LISTA COMPLETA DE PERMISOS */}
-            {permisos.map((modulo) => (
+            {permisos?.map((modulo) => (
                 <Box key={modulo.idModulo} sx={{ mb: 4  }} >
 
                     {/* HEADER DEL MÓDULO */}

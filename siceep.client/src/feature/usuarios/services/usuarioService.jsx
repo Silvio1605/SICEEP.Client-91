@@ -75,3 +75,10 @@ export const BuscarPropietario = async (busqueda) => {
     }
 };
 
+export const BuscarUsuario = async (busqueda) => {
+    try {
+        return await api.get(`Usuario/GetUsuario_byUsername?nombreUsuario=${busqueda}`);
+    } catch (error) {
+        console.log(error);
+    }
+};

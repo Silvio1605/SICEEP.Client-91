@@ -9,6 +9,6 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\feature\auth\components\" />
+    <Folder Include="src\feature\Expediente\" />
   </ItemGroup>
 </Project>

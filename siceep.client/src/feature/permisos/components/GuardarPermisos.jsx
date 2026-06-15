@@ -27,8 +27,8 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
     const { mostrarNotificacion } = useNotificacionContext();
 
     //hook personalizado para manejar permisos
-    const { permisosHook } = usePermisosContext();
-    const { refetch, PermisosModificados } = permisosHook;
+    const { permisosHook } = usePermisosContext() ?? {};
+    const { refetch, PermisosModificados } = permisosHook ?? {};
 
     const handleGuardar = async () => {
         onClose();

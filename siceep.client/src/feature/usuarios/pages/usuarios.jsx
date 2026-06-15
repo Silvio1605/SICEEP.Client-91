@@ -1,12 +1,10 @@
-﻿/* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useState, useCallback, useMemo } from 'react'
+﻿import { useEffect, useState, useCallback, useMemo } from 'react'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import {
     DataGrid,
     GridToolbar,
 } from '@mui/x-data-grid';
-import { useTheme, useMediaQuery } from "@mui/material";
 import Grid from '@mui/material/Grid';
 import AddIcon from '@mui/icons-material/Add';
 // React Router
@@ -32,9 +30,7 @@ import AppButton from './../../../shared/components/AppButton';
 
 export default function Usuarios() {
 
-    const theme = useTheme();
-    const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-    const { isMobile: mobile } = useScreenType();
+    const { isMobile } = useScreenType();
 
     const { usuarios, buscar } = useUsuarios();
     // para manejar los parámetros de búsqueda en la URL (si es necesario)

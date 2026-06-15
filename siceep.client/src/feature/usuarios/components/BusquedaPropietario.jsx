@@ -25,7 +25,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useRegistrar } from './../hooks/useRegistrar';
 import { columnsPropietarios } from './../services/propietarioData';
 
-export default function BusquedaPropietario({ open, onClose, setRegistro }) {
+export default function BusquedaPropietario({ open, onClose, setRegistro, OriginRegistro }) {
     
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -58,14 +58,13 @@ export default function BusquedaPropietario({ open, onClose, setRegistro }) {
                 open={open}
                 onClose={onClose}
                 aria-labelledby="responsive-dialog-title"
-                disableAutoFocus
             >
                 <DialogTitle id="responsive-dialog-title">
-                    {"Seleccione el propietario de la cuenta"}
+                    {"Seleccione la cuenta"}
                 </DialogTitle>
                 <DialogContent>
                     <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
-                        <InputLabel htmlFor={`buscar-propietario-input`}>Buscar Propietario</InputLabel>
+                        <InputLabel htmlFor={`buscar-propietario-input`}>Buscar</InputLabel>
                         <OutlinedInput
                             id={`buscar-propietario-input`}
                             type={'text'}
@@ -74,7 +73,7 @@ export default function BusquedaPropietario({ open, onClose, setRegistro }) {
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton
-                                        onClick={() => buscar(buscarPropietario)}
+                                        onClick={() => buscar(buscarPropietario, OriginRegistro)}
                                         onMouseDown={handleMouseDownContra}
                                         onMouseUp={handleMouseUpContra}
                                         edge="end"
@@ -117,7 +116,7 @@ export default function BusquedaPropietario({ open, onClose, setRegistro }) {
                     <Button onClick={onClose}>
                         Cancelar
                     </Button>
-                    <Button onClick={onClose}>
+                    <Button onClick={onClose} autoFocus>
                         Seleccionar
                     </Button>
                 </DialogActions>

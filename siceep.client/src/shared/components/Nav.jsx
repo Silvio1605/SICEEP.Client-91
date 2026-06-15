@@ -2,6 +2,7 @@
 import Box from "@mui/material/Box";
 import { Link } from "react-router-dom";
 import List from "@mui/material/List";
+import ListSubheader from "@mui/material/ListSubheader";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
@@ -17,43 +18,132 @@ import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import { useAuth } from "../../providers/Authenticacion/useAuth";
 import { tienePermiso } from "./../../helper/JwtValidarPermiso";
+import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
+import TopicIcon from '@mui/icons-material/Topic';
+import Collapse from "@mui/material/Collapse";
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
+// 
+import { Rutas } from "./../../routes/routes";
 
 export default function Nav({ open, toggleNav }) {
 
+    const [openSections, setOpenSections] = React.useState({});
+
+    const handleToggleSection = (titulo) => {
+        setOpenSections((prev) => ({
+            ...prev,
+            [titulo]: !prev[titulo],
+        }));
+    };
+
     const { logout } = useAuth();
 
-    // Definir los elementos del menú con sus respectivos permisos
-    const menuItems = [
-        { text: "Usuarios", icon: <PersonIcon />, path: "/index/usuarios", idPermiso: 1 },
-        { text: "Permisos", icon: <KeyIcon />, path: "/index/permisos", idPermiso: 10 },
-        { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true, idPermiso: 3 },
+    const menuSections = [
+        {
+            titulo: "Seguridad",
+            items: [
+                { text: "Usuarios", icon: <PersonIcon />, path: Rutas.USUARIOS, idPermiso: 1 },
+                { text: "Permisos", icon: <KeyIcon />, path: Rutas.PERMISOS, idPermiso: 1 },
+                { text: "Historial", icon: <HistoryEduIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
+            ]
+        },
+        {
+            titulo: "Expediente",
+            items: [
+                { text: "Info. Personal", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+                { text: "Info. Familiar", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+                { text: "Info. Laboral", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+                { text: "Info. Académica", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 }
+            ]
+        },
+        {
+            titulo: "Tramites y Atención",
+            items: [
+                { text: "Busqueda Rapida", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+                { text: "Gestion Documentos", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 }
+            ]
+        },
+        {
+            titulo: "Reportes y estadisticas",
+            items: [
+                { text: "Reportes", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+                { text: "Estadisticas", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+                { text: "Herramientas de Ayuda", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+                
+            ]
+        },
+        {
+            titulo: "Sesión",
+            items: [
+                { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true, idPermiso: 4 },
+            ]
+        }
     ];
 
     const NavList = (
-        <Box sx={{ width: 250 }} role="presentation" onClick={toggleNav(false)}>
-            <List>
-                {menuItems.map((item) => (
-                    tienePermiso(item.idPermiso) && (
-                        <ListItem key={item.text} disablePadding>
-                            <ListItemButton
-                                component={Link}
-                                to={item.path}
-                                onClick={() => {
-                                    if (item.isLogout) {
-                                        logout();
-                                    }
-                                }}
-                            >
-                                <ListItemIcon>
-                                    {item.icon}
-                                </ListItemIcon>
-                                <ListItemText primary={item.text} />
-                            </ListItemButton>
-                        </ListItem>
-                    )
-                ))}
+        <Box sx={{ width: 280 }} role="presentation">
+            {menuSections.map((section) => (
+                <List key={section.titulo}>
+                    <ListItemButton
+                        onClick={() => handleToggleSection(section.titulo)}
+                        sx={{
+                            borderLeft: 4,
+                            borderColor: "primary.main",
+                            bgcolor: "background.paper",
+                            mx: 1,
+                            borderRadius: 1,
+                            boxShadow: 1,
+                        }}
+                    >
+                        <ListItemText
+                            primary={section.titulo}
+                            primaryTypographyProps={{
+                                fontWeight: 600,
+                            }}
+                        />
+                        {openSections[section.titulo] ? (
+                            <ExpandLess />
+                        ) : (
+                            <ExpandMore />
+                        )}
+                    </ListItemButton>
 
-            </List>
+                    <Collapse
+                        in={openSections[section.titulo]}
+                        timeout="auto"
+                        unmountOnExit
+                    >
+                        <List component="div" disablePadding>
+                            {section.items.map(
+                                (item) =>
+                                    tienePermiso(item.idPermiso) && (
+                                        <ListItem
+                                            key={item.text}
+                                            disablePadding
+                                            sx={{ pl: 2 }}
+                                        >
+                                            <ListItemButton
+                                                component={Link}
+                                                to={item.path}
+                                                onClick={() => {
+                                                    if (item.isLogout) {
+                                                        logout();
+                                                    }
+                                                }}
+                                            >
+                                                <ListItemIcon>
+                                                    {item.icon}
+                                                </ListItemIcon>
+                                                <ListItemText primary={item.text} />
+                                            </ListItemButton>
+                                        </ListItem>
+                                    )
+                            )}
+                        </List>
+                    </Collapse>
+                </List>
+            ))}
         </Box>
     );
 
