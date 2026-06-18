@@ -15,6 +15,7 @@ export const useUsuarios = () => {
         filtro.tamañoPagina = 10;
 
         const res = await getUsuarios(filtro);
+
         setUsuariosData(res.data.data);
 
     };

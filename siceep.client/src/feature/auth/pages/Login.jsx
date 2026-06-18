@@ -1,4 +1,5 @@
 ﻿import React, { useState } from 'react';
+import './../styles/StyleLogin.css';
 import { useNavigate } from 'react-router-dom';
 import { Box } from "@mui/material";
 import bgImage from './../../../assets/imagen_izquierda.png';
@@ -7,7 +8,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import KeyIcon from '@mui/icons-material/Key';
-import './../styles/StyleLogin.css';
+import LinearProgress from '@mui/material/LinearProgress';
+import Alerta from '../../../shared/components/Alerta';
 import { useAuth } from './../../../providers/Authenticacion/useAuth';
 
 function Login() {
@@ -19,7 +21,8 @@ function Login() {
     const [showPassword, setShowPassword] = useState(false);
 
     // Almacena y controla la visibilidad de los mensajes de error en pantalla.
-    const [errorMessage, ] = useState('');
+    const [errorMessage, setErrorMessage ] = useState('');
+    const [loading, setLoading] = useState(false);
 
     // Hook para redirigir al usuario a otras paginas tras un login exitoso.
     const navigate = useNavigate();
@@ -27,16 +30,18 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setLoading(true);
         const response = await login(username, password);
         if (response.valid) {
             // Redirigir a la página principal o mostrar mensaje de éxito
-            console.log(response.mensaje);
             setTimeout(() => { }, 5000);
+            setLoading(false);
             navigate('/index');
 
         } else {
             // Mostrar mensaje de error
-            console.log("nombre de usuario o contraseña incorrectos");
+            setErrorMessage(response.mensaje);
+            setLoading(false);
         }
     }
 
@@ -117,7 +122,7 @@ function Login() {
                         {/* Renderizado condicional: Solo existe en el DOM si hay un mensaje de error que mostrar. */}
                         {errorMessage && (
                             <div style={{ color: '#d32f2f', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 'bold' }}>
-                                {errorMessage}
+                                <Alerta severity="error" mensaje={errorMessage} />
                             </div>
                         )}
 
@@ -130,10 +135,11 @@ function Login() {
                         >
                             Iniciar sesion
                         </button>
-                        {/* Boton secundario estatico, listo para agregarle logica de recuperacion de clave a futuro. */}
-                        <button className="btn btn-secondary">
-                            Solicitar cambio de clave
-                        </button>
+                        {loading == true && (
+                            <Box sx={{ width: '100%' }}>
+                                <LinearProgress aria-label="Loading…" />
+                            </Box>
+                        )}
                     </form>
 
                 </div>

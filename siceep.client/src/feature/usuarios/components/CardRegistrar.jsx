@@ -30,6 +30,8 @@ import { useNotificacionContext } from './../../../providers/Notificacion/useNot
 // componentes personalizados
 import AppInput from './../../../shared/components/AppInput';
 import AppButton from './../../../shared/components/AppButton';
+import { Box } from "@mui/material";
+import LinearProgress from '@mui/material/LinearProgress';
 
 export default function CardRegistrar({ open, onClose }) {
 
@@ -39,6 +41,7 @@ export default function CardRegistrar({ open, onClose }) {
 
     // Notificaciones
     const { mostrarNotificacion } = useNotificacionContext();
+    const [guardando, setGuardando] = useState(false);
 
     const [registro, setRegistro] = useState({
         idPropietario: '',
@@ -100,35 +103,17 @@ export default function CardRegistrar({ open, onClose }) {
 
     const handleRegistrar = async () => {
 
-        if (registro.idPropietario === 0) {
-            mostrarNotificacion({
-                message: "Seleccione un propietario",
-                severity: "warning",
-            });
-            return;
-        }
+        setGuardando(true);
 
-        if (registro.contrasena === "") {
+        if (registro.idPropietario === 0 || 
+            registro.contrasena === "" ||
+            registro.contrasenaConfirmacion === "" ||
+            registro.fechaExpiracion === "") {
             mostrarNotificacion({
-                message: "Ingrese una contraseña",
+                message: "Complete los datos del formulario",
                 severity: "warning",
             });
-            return;
-        }
-
-        if (registro.contrasenaConfirmacion === "") {
-            mostrarNotificacion({
-                message: "Confirme la contraseña",
-                severity: "warning",
-            });
-            return;
-        }
-
-        if (registro.fechaExpiracion === "") {
-            mostrarNotificacion({
-                message: "Seleccione una fecha",
-                severity: "warning",
-            });
+            setGuardando(false);
             return;
         }
 
@@ -137,26 +122,27 @@ export default function CardRegistrar({ open, onClose }) {
                 message: "Las contraseñas no coinciden",
                 severity: "error",
             });
+            setGuardando(false);
             return;
         }
 
         const result = await nuevoUsuario(registro);
 
+        setGuardando(false);
         if (result.status === 200) {
             mostrarNotificacion({
                 message: result.message,
                 severity: "success"
             });
+            limpiar();
+            onClose();
         } else {
             mostrarNotificacion({
                 message: result.message,
                 severity: "error"
             });
-            return;
         }
-
-        limpiar();
-        onClose();
+        
     };
 
     return (
@@ -366,10 +352,15 @@ export default function CardRegistrar({ open, onClose }) {
                     <Button onClick={onClose}>
                         Cancelar
                     </Button>
-                    <Button onClick={handleRegistrar}>
-                        Registrar
+                    <Button onClick={handleRegistrar} disabled={guardando}>
+                        {guardando ? "Guardando..." : "Guardar"}
                     </Button>
                 </DialogActions>
+                {guardando == true && (
+                    <Box sx={{ width: '100%' }}>
+                        <LinearProgress aria-label="Loading…" />
+                    </Box>
+                )}
             </Dialog>
 
             <BusquedaPropietario
