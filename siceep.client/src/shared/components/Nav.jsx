@@ -23,6 +23,7 @@ import TopicIcon from '@mui/icons-material/Topic';
 import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import DomainIcon from '@mui/icons-material/Domain';
 // 
 import { Rutas } from "./../../routes/routes";
 
@@ -49,8 +50,14 @@ export default function Nav({ open, toggleNav }) {
             ]
         },
         {
-            titulo: "Expediente",
+            titulo: "Localizacion",
             items: [
+                { text: "Ubicacion", icon: <DomainIcon />, path: Rutas.UBICACION, idPermiso: 3 },
+            ]
+        },
+        {
+            titulo: "Expediente",
+            items: [ 
                 { text: "Info. Personal", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
                 { text: "Info. Familiar", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
                 { text: "Info. Laboral", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },

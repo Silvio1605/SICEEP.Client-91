@@ -7,5 +7,6 @@ export const Rutas = {
     USUARIOS: HOME + "/usuarios",
     PERMISOS: HOME + "/permiso",
     HISTORIAL: HOME + "/historial",
+    UBICACION: HOME + "/ubicacion",
     CERRAR_SESION: HOME + "/cerrar-sesion",
 };
