@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
 import {
     Box,
-    AppBar,
-    Toolbar,
-    Typography,
     Tabs,
     Tab,
     Button,
@@ -16,7 +13,6 @@ import {
     Paper,
     Snackbar,
     Alert,
-    IconButton,
     ThemeProvider,
     createTheme,
     CssBaseline,
@@ -25,14 +21,11 @@ import {
 import { DataGrid } from '@mui/x-data-grid';
 import {
     Add as AddIcon,
-    Edit as EditIcon,
-    Delete as DeleteIcon,
 } from '@mui/icons-material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-// ============================================================
-// 1. TEMA PERSONALIZADO (Material UI Theme)
-// ============================================================
+import { getColumns } from './../components/getColumns';
+import { getUnidades } from './../services/ubicacionServices'
+
 const theme = createTheme({
     palette: {
         primary: {
@@ -67,35 +60,26 @@ const theme = createTheme({
     },
 });
 
-// ============================================================
-// 2. DATOS DE EJEMPLO (estado inicial)
-// ============================================================
-const initialUnits = [
-    { id: 1, name: 'Dirección General', code: 'DG-001', status: 'Activo', createdAt: '2023-01-15' },
-    { id: 2, name: 'Gerencia de Operaciones', code: 'GO-002', status: 'Activo', createdAt: '2023-02-20' },
-    { id: 3, name: 'Gerencia de Finanzas', code: 'GF-003', status: 'Inactivo', createdAt: '2023-03-10' },
-];
 
 const initialStructures = [
-    { id: 1, name: 'Estructura Matriz', code: 'EM-001', status: 'Activo', createdAt: '2023-01-10' },
-    { id: 2, name: 'Estructura Regional Norte', code: 'ERN-002', status: 'Activo', createdAt: '2023-04-05' },
+    { id: 1, descripcion: 'Estructura Matriz', codigo: 'EM-001' },
+    { id: 2, descripcion: 'Estructura Regional Norte', codigo: 'ERN-002' },
 ];
 
 const initialLocations = [
-    { id: 1, name: 'Sede Central', code: 'SC-001', address: 'Av. Principal 123', city: 'Ciudad de México', status: 'Activo', createdAt: '2023-01-01' },
-    { id: 2, name: 'Sucursal Guadalajara', code: 'SG-002', address: 'Calle Independencia 456', city: 'Guadalajara', status: 'Activo', createdAt: '2023-05-15' },
+    { id: 1, estructura: 'Sede Central', unidad: 'Ciudad de México', estado: 'Activo' },
+    { id: 2, estructura: 'Sucursal Guadalajara', unidad: 'Guadalajara', estado: 'Activo' },
 ];
 
 export default function Ubicacion() {
     // --- Estados ---
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
-    const [units, setUnits] = useState(initialUnits);
+    const [units, setUnits] = useState(getUnidades("",1));
     const [structures, setStructures] = useState(initialStructures);
     const [locations, setLocations] = useState(initialLocations);
 
     // Estado del modal
     const [openDialog, setOpenDialog] = useState(false);
-    const [editingItem, setEditingItem] = useState(null); // null = nuevo registro
     const [formData, setFormData] = useState({});
 
     // Snackbar para notificaciones
@@ -127,82 +111,6 @@ export default function Ubicacion() {
         return ['Unidad', 'Estructura', 'Ubicación'][selectedTab] || '';
     };
 
-    // --- Columnas de la tabla según la entidad ---
-    const getColumns = () => {
-        const baseColumns = [
-            { field: 'id', headerName: 'ID', width: 70 },
-            { field: 'name', headerName: 'Nombre', flex: 1, minWidth: 150 },
-            { field: 'code', headerName: 'Código', width: 130 },
-            {
-                field: 'status',
-                headerName: 'Estado',
-                width: 120,
-                renderCell: (params) => (
-                    <Chip
-                        label={params.value}
-                        size="small"
-                        color={params.value === 'Activo' ? 'success' : 'error'}
-                        variant="outlined"
-                    />
-                ),
-            },
-            { field: 'createdAt', headerName: 'Fecha de creación', width: 150 },
-            {
-                field: 'actions',
-                headerName: 'Acciones',
-                width: 120,
-                sortable: false,
-                renderCell: (params) => (
-                    <Box>
-                        <IconButton
-                            color="primary"
-                            size="small"
-                            onClick={() => handleEdit(params.row)}
-                            aria-label="copiar"
-                        >
-                            <ContentCopyIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                            color="primary"
-                            size="small"
-                            onClick={() => console.log('copiar')}
-                            aria-label="copiar" 
-                        >
-                            <EditIcon fontSize="small" />
-                        </IconButton>
-                        <IconButton
-                            color="error"
-                            size="small"
-                            onClick={() => handleDelete(params.row.id)}
-                            aria-label="eliminar"
-                        >
-                            <DeleteIcon fontSize="small" />
-                        </IconButton>
-                    </Box>
-                ),
-            },
-        ];
-
-        // Para Ubicaciones, intercalamos columnas de dirección
-        if (selectedTab === 2) {
-            const locationColumns = [
-                { field: 'address', headerName: 'Dirección', flex: 1, minWidth: 150 },
-                { field: 'city', headerName: 'Ciudad', flex: 0.7, minWidth: 120 },
-            ];
-            // Insertamos después de 'code'
-            return [
-                baseColumns[0], // id
-                baseColumns[1], // name
-                baseColumns[2], // code
-                ...locationColumns,
-                baseColumns[3], // status
-                baseColumns[4], // createdAt
-                baseColumns[5], // actions
-            ];
-        }
-        return baseColumns;
-    };
-
     // --- Filtrado de datos por búsqueda ---
     const getFilteredData = () => {
         const data = getCurrentData();
@@ -217,20 +125,12 @@ export default function Ubicacion() {
     // --- Manejadores de eventos ---
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
-        setEditingItem(null);
         setFormData({});
         setSearchText(''); // Limpia búsqueda al cambiar de pestaña
     };
 
     const handleOpenCreate = () => {
-        setEditingItem(null);
         setFormData({ status: 'Activo' }); // valor por defecto
-        setOpenDialog(true);
-    };
-
-    const handleEdit = (item) => {
-        setEditingItem(item);
-        setFormData(item);
         setOpenDialog(true);
     };
 
@@ -262,40 +162,26 @@ export default function Ubicacion() {
         const currentData = getCurrentData();
         const setData = getSetData();
 
-        if (editingItem) {
-            // Editar
-            const updatedData = currentData.map((item) =>
-                item.id === editingItem.id ? { ...formData, id: item.id } : item
-            );
-            setData(updatedData);
-            setSnackbar({
-                open: true,
-                message: `${getEntityName()} actualizada correctamente.`,
-                severity: 'success',
-            });
-        } else {
-            // Crear nuevo
-            const newItem = {
-                ...formData,
-                id: Math.max(0, ...currentData.map((o) => o.id)) + 1,
-                createdAt: new Date().toISOString().split('T')[0],
-                status: formData.status || 'Activo',
-            };
-            setData([...currentData, newItem]);
-            setSnackbar({
-                open: true,
-                message: `${getEntityName()} creada correctamente.`,
-                severity: 'success',
-            });
-        }
+        // Crear nuevo
+        const newItem = {
+            ...formData,
+            id: Math.max(0, ...currentData.map((o) => o.id)) + 1,
+            createdAt: new Date().toISOString().split('T')[0],
+            status: formData.status || 'Activo',
+        };
+        setData([...currentData, newItem]);
+        setSnackbar({
+            open: true,
+            message: `${getEntityName()} creada correctamente.`,
+            severity: 'success',
+        });
+
         setOpenDialog(false);
-        setEditingItem(null);
         setFormData({});
     };
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-        setEditingItem(null);
         setFormData({});
     };
 
@@ -359,7 +245,7 @@ export default function Ubicacion() {
                     <Paper sx={{ height: 'calc(100% - 180px)', width: '100%', p: 1 }}>
                         <DataGrid
                             rows={getFilteredData()}
-                            columns={getColumns()}
+                            columns={getColumns(handleDelete, selectedTab)}
                             pageSize={10}
                             rowsPerPageOptions={[10, 25, 50, 100]}
                             pagination
@@ -387,7 +273,7 @@ export default function Ubicacion() {
             {/* Modal de creación/edición */}
             <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
                 <DialogTitle sx={{ fontWeight: 600, color: 'primary.main' }}>
-                    {editingItem ? `Editar ${getEntityName()}` : `Nueva ${getEntityName()}`}
+                    {`Nueva ${getEntityName()}`}
                 </DialogTitle>
                 <DialogContent dividers>
                     <Grid container spacing={2}>

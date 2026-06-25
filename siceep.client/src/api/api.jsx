@@ -11,7 +11,7 @@ const api = axios.create({
 // Agregar el token dinámicamente antes de cada solicitud
 api.interceptors.request.use(
     (config) => {
-        const token = localStorage.getItem('jwt-token');
+        const token = localStorage.getItem('token');
         if (token) {
             config.headers['Authorization'] = `Bearer ${token}`;
         }

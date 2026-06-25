@@ -9,8 +9,9 @@
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="src\feature\ubicacion\hooks\" />
-    <Folder Include="src\feature\ubicacion\services\" />
-    <Folder Include="src\feature\expediente\" />
+    <None Remove="src\feature\expediente\**" />
+    <None Remove="src\feature\ubicacion\hooks\**" />
+    <TypeScriptConfiguration Remove="src\feature\expediente\**" />
+    <TypeScriptConfiguration Remove="src\feature\ubicacion\hooks\**" />
   </ItemGroup>
 </Project>
