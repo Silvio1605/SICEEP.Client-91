@@ -10,8 +10,6 @@
   </PropertyGroup>
   <ItemGroup>
     <None Remove="src\feature\expediente\**" />
-    <None Remove="src\feature\ubicacion\hooks\**" />
     <TypeScriptConfiguration Remove="src\feature\expediente\**" />
-    <TypeScriptConfiguration Remove="src\feature\ubicacion\hooks\**" />
   </ItemGroup>
 </Project>

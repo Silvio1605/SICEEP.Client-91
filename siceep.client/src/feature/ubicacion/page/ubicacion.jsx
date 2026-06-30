@@ -24,7 +24,10 @@ import {
 } from '@mui/icons-material';
 
 import { getColumns } from './../components/getColumns';
-import { getUnidades } from './../services/ubicacionServices'
+import { useUnidades } from './../hooks/useUnidades';
+import { useEstructuras } from './../hooks/useEstructuras';
+import { useUbicaciones } from './../hooks/useUbicaciones';
+
 
 const theme = createTheme({
     palette: {
@@ -60,23 +63,14 @@ const theme = createTheme({
     },
 });
 
-
-const initialStructures = [
-    { id: 1, descripcion: 'Estructura Matriz', codigo: 'EM-001' },
-    { id: 2, descripcion: 'Estructura Regional Norte', codigo: 'ERN-002' },
-];
-
-const initialLocations = [
-    { id: 1, estructura: 'Sede Central', unidad: 'Ciudad de México', estado: 'Activo' },
-    { id: 2, estructura: 'Sucursal Guadalajara', unidad: 'Guadalajara', estado: 'Activo' },
-];
-
 export default function Ubicacion() {
+
+    const { data: unidades, search: searchUnidades } = useUnidades();
+    const { data: estructuras, search: searchEstructuras } = useEstructuras();
+    const { data: ubicaciones, search: searchUbicaciones } = useUbicaciones();
+
     // --- Estados ---
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
-    const [units, setUnits] = useState(getUnidades("",1));
-    const [structures, setStructures] = useState(initialStructures);
-    const [locations, setLocations] = useState(initialLocations);
 
     // Estado del modal
     const [openDialog, setOpenDialog] = useState(false);
@@ -91,19 +85,10 @@ export default function Ubicacion() {
     // --- Funciones auxiliares para obtener datos y setters según pestaña ---
     const getCurrentData = () => {
         switch (selectedTab) {
-            case 0: return units;
-            case 1: return structures;
-            case 2: return locations;
+            case 0: return unidades;
+            case 1: return estructuras;
+            case 2: return ubicaciones;
             default: return [];
-        }
-    };
-
-    const getSetData = () => {
-        switch (selectedTab) {
-            case 0: return setUnits;
-            case 1: return setStructures;
-            case 2: return setLocations;
-            default: return () => { };
         }
     };
 
@@ -126,7 +111,14 @@ export default function Ubicacion() {
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
         setFormData({});
-        setSearchText(''); // Limpia búsqueda al cambiar de pestaña
+        setSearchText('');
+        // Refrescar los datos de la nueva pestaña
+        switch (newValue) {
+            case 0: searchUnidades("", 1); break;
+            case 1: searchEstructuras("", 1); break;
+            case 2: searchUbicaciones("", 1); break;
+            default: break;
+        }
     };
 
     const handleOpenCreate = () => {
@@ -134,13 +126,8 @@ export default function Ubicacion() {
         setOpenDialog(true);
     };
 
-    const handleDelete = (id) => {
-        // En una app real, mostraríamos un diálogo de confirmación
-        // y luego llamaríamos a la API.
-        const currentData = getCurrentData();
-        const setData = getSetData();
-        const newData = currentData.filter((item) => item.id !== id);
-        setData(newData);
+    const handleDelete = () => {
+        
         setSnackbar({
             open: true,
             message: `${getEntityName()} eliminada correctamente.`,
@@ -159,17 +146,7 @@ export default function Ubicacion() {
             return;
         }
 
-        const currentData = getCurrentData();
-        const setData = getSetData();
-
         // Crear nuevo
-        const newItem = {
-            ...formData,
-            id: Math.max(0, ...currentData.map((o) => o.id)) + 1,
-            createdAt: new Date().toISOString().split('T')[0],
-            status: formData.status || 'Activo',
-        };
-        setData([...currentData, newItem]);
         setSnackbar({
             open: true,
             message: `${getEntityName()} creada correctamente.`,
