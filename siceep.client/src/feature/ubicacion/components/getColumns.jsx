@@ -41,7 +41,7 @@ const locationColumns = [
             <Chip
                 label={params.value}
                 size="small"
-                color={params.value === 1 ? 'success' : 'error'}
+                color={params.value === 'Activo' ? 'success' : 'error'}
                 variant="outlined"
             />
         ),
@@ -50,13 +50,6 @@ const locationColumns = [
 
 // Función principal
 export const getColumns = ({ handleDelete, selectedTab }) => {
-    // Columnas base para todos los tabs (excepto ubicaciones)
-    const baseColumns = [
-        { field: 'id', headerName: 'Id', width: 50 },
-        { field: 'codigo', headerName: 'Código', width: 100 },
-        { field: 'descripcion', headerName: 'Descripción', flex: 1, minWidth: 150 },
-        actionsColumn(handleDelete),
-    ];
 
     // Si es ubicaciones, construimos el array específico
     if (selectedTab === 2) {
@@ -66,6 +59,14 @@ export const getColumns = ({ handleDelete, selectedTab }) => {
             actionsColumn(handleDelete),
         ];
     }
+
+    // Columnas base para todos los tabs (excepto ubicaciones)
+    const baseColumns = [
+        { field: 'id', headerName: 'Id', width: 50 },
+        { field: 'codigo', headerName: 'Código', width: 100 },
+        { field: 'descripcion', headerName: 'Descripción', flex: 1, minWidth: 150 },
+        actionsColumn(handleDelete),
+    ];
 
     return baseColumns;
 };

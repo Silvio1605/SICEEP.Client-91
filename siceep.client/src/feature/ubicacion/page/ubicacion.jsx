@@ -17,17 +17,19 @@ import {
     createTheme,
     CssBaseline,
     Chip,
+    Stack
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import {
     Add as AddIcon,
 } from '@mui/icons-material';
 
+import SearchIcon from '@mui/icons-material/Search';
 import { getColumns } from './../components/getColumns';
 import { useUnidades } from './../hooks/useUnidades';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { useUbicaciones } from './../hooks/useUbicaciones';
-
+import CardCrear from './../components/cardCrear';
 
 const theme = createTheme({
     palette: {
@@ -74,7 +76,7 @@ export default function Ubicacion() {
 
     // Estado del modal
     const [openDialog, setOpenDialog] = useState(false);
-    const [formData, setFormData] = useState({});
+    //const [formData, setFormData] = useState({});
 
     // Snackbar para notificaciones
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -99,18 +101,35 @@ export default function Ubicacion() {
     // --- Filtrado de datos por búsqueda ---
     const getFilteredData = () => {
         const data = getCurrentData();
+
         if (!searchText.trim()) return data;
+
         const lowerSearch = searchText.toLowerCase();
-        return data.filter((item) =>
-            item.name.toLowerCase().includes(lowerSearch) ||
-            item.code.toLowerCase().includes(lowerSearch)
-        );
+
+        switch (selectedTab) {
+            case 0: // Unidades
+            case 1: // Estructuras
+                return data.filter(item =>
+                    (item.descripcion ?? "").toLowerCase().includes(lowerSearch) ||
+                    String(item.codigo ?? "").toLowerCase().includes(lowerSearch)
+                );
+
+            case 2: // Ubicaciones
+                return data.filter(item =>
+                    (item.estructura ?? "").toLowerCase().includes(lowerSearch) ||
+                    (item.unidad ?? "").toLowerCase().includes(lowerSearch) ||
+                    (item.estado ?? "").toLowerCase().includes(lowerSearch)
+                );
+
+            default:
+                return data;
+        }
     };
 
     // --- Manejadores de eventos ---
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
-        setFormData({});
+        //setFormData({});
         setSearchText('');
         // Refrescar los datos de la nueva pestaña
         switch (newValue) {
@@ -122,8 +141,11 @@ export default function Ubicacion() {
     };
 
     const handleOpenCreate = () => {
-        setFormData({ status: 'Activo' }); // valor por defecto
+        //setFormData({ status: 'Activo' }); 
         setOpenDialog(true);
+    };
+    const handleSearch = () => {
+        console.log(`Buscar en ${getEntityName()} con texto:`, searchText);
     };
 
     const handleDelete = () => {
@@ -134,7 +156,7 @@ export default function Ubicacion() {
             severity: 'success',
         });
     };
-
+    /*
     const handleSave = () => {
         // Validación simple
         if (!formData.name || formData.name.trim() === '') {
@@ -155,30 +177,30 @@ export default function Ubicacion() {
 
         setOpenDialog(false);
         setFormData({});
-    };
+    };*/
 
     const handleCloseDialog = () => {
         setOpenDialog(false);
-        setFormData({});
+        //setFormData({});
     };
 
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
     };
 
+    /*
     const handleFormChange = (event) => {
         setFormData({
             ...formData,
             [event.target.name]: event.target.value,
         });
-    };
+    };*/
 
     return (
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                
-
                 {/* Contenido principal */}
                 <Box sx={{ flexGrow: 1, p: 3, backgroundColor: 'background.default', overflow: 'auto' }}>
                     {/* Cabecera con tabs y botón agregar */}
@@ -207,22 +229,42 @@ export default function Ubicacion() {
 
                     {/* Filtro de búsqueda */}
                     <Box sx={{ mb: 3 }}>
-                        <TextField
-                            fullWidth
-                            label="Buscar por nombre o código"
-                            variant="outlined"
-                            size="small"
-                            value={searchText}
-                            onChange={(e) => setSearchText(e.target.value)}
-                            InputProps={{ sx: { borderRadius: 2, backgroundColor: 'white' } }}
-                        />
+                        <Stack direction="row" spacing={2}>
+                            <TextField
+                                fullWidth
+                                label="Buscar por nombre o código"
+                                variant="outlined"
+                                size="small"
+                                value={searchText}
+                                onChange={(e) => setSearchText(e.target.value)}
+                                InputProps={{
+                                    sx: {
+                                        borderRadius: 2,
+                                        backgroundColor: 'white',
+                                    },
+                                }}
+                            />
+
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<SearchIcon />}
+                                onClick={handleSearch}
+                                sx={{
+                                    borderRadius: 2,
+                                    minWidth: 130,
+                                }}
+                            >
+                                Buscar
+                            </Button>
+                        </Stack>
                     </Box>
 
                     {/* Tabla de datos */}
                     <Paper sx={{ height: 'calc(100% - 180px)', width: '100%', p: 1 }}>
                         <DataGrid
                             rows={getFilteredData()}
-                            columns={getColumns(handleDelete, selectedTab)}
+                            columns={getColumns({ handleDelete, selectedTab })}
                             pageSize={10}
                             rowsPerPageOptions={[10, 25, 50, 100]}
                             pagination
@@ -248,105 +290,10 @@ export default function Ubicacion() {
             </Box>
 
             {/* Modal de creación/edición */}
-            <Dialog open={openDialog} onClose={handleCloseDialog} fullWidth maxWidth="sm">
-                <DialogTitle sx={{ fontWeight: 600, color: 'primary.main' }}>
-                    {`Nueva ${getEntityName()}`}
-                </DialogTitle>
-                <DialogContent dividers>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12}>
-                            <TextField
-                                fullWidth
-                                label="Nombre"
-                                name="name"
-                                value={formData.name || ''}
-                                onChange={handleFormChange}
-                                required
-                                variant="outlined"
-                                size="small"
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Código"
-                                name="code"
-                                value={formData.code || ''}
-                                onChange={handleFormChange}
-                                variant="outlined"
-                                size="small"
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <TextField
-                                fullWidth
-                                label="Estado"
-                                name="status"
-                                value={formData.status || 'Activo'}
-                                onChange={handleFormChange}
-                                select
-                                SelectProps={{ native: true }}
-                                variant="outlined"
-                                size="small"
-                            >
-                                <option value="Activo">Activo</option>
-                                <option value="Inactivo">Inactivo</option>
-                            </TextField>
-                        </Grid>
-                        {/* Campos específicos para Ubicación */}
-                        {selectedTab === 2 && (
-                            <>
-                                <Grid item xs={12}>
-                                    <TextField
-                                        fullWidth
-                                        label="Dirección"
-                                        name="address"
-                                        value={formData.address || ''}
-                                        onChange={handleFormChange}
-                                        variant="outlined"
-                                        size="small"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        fullWidth
-                                        label="Ciudad"
-                                        name="city"
-                                        value={formData.city || ''}
-                                        onChange={handleFormChange}
-                                        variant="outlined"
-                                        size="small"
-                                    />
-                                </Grid>
-                                <Grid item xs={12} sm={6}>
-                                    <TextField
-                                        fullWidth
-                                        label="Código Postal"
-                                        name="postalCode"
-                                        value={formData.postalCode || ''}
-                                        onChange={handleFormChange}
-                                        variant="outlined"
-                                        size="small"
-                                    />
-                                </Grid>
-                            </>
-                        )}
-                    </Grid>
-                </DialogContent>
-                <DialogActions sx={{ p: 2 }}>
-                    <Button onClick={handleCloseDialog} color="inherit">
-                        Cancelar
-                    </Button>
-                    <Button
-                        onClick={handleSave}
-                        variant="contained"
-                        color="secondary"
-                        sx={{ borderRadius: 2, boxShadow: 'none' }}
-                    >
-                        Guardar
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            <CardCrear
+                open={openDialog}
+                onClose={handleCloseDialog}
+            />
 
             {/* Snackbar de notificaciones */}
             <Snackbar
@@ -359,6 +306,7 @@ export default function Ubicacion() {
                     {snackbar.message}
                 </Alert>
             </Snackbar>
+            
         </ThemeProvider>
     );
 }

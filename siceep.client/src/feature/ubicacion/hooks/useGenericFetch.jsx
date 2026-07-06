@@ -16,7 +16,6 @@ export const useGenericFetch = (fetchFn, initialParam = "", initialPage = 1) => 
             const pg = newPage !== undefined ? newPage : page;
 
             const response = await fetchFn(p, pg);
-            console.log(response.data);
             setData(response.data.data);
 
             if (newParam !== undefined) setParam(newParam);
