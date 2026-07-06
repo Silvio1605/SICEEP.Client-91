@@ -3,37 +3,44 @@ import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import Paper from '@mui/material/Paper';
 // datgrid
 import {
-    DataGrid,
-    GridToolbar,
+    DataGrid
 } from '@mui/x-data-grid';
 // iconos
 import SearchIcon from '@mui/icons-material/Search';
 // hooks
-import { useRegistrar } from './../../usuarios/hooks/useRegistrar';
-import { columnsPropietarios } from './../../usuarios/services/propietarioData';
+import { useUnidades } from './../hooks/useUnidades';
+import { useEstructuras } from './../hooks/useEstructuras';
+import { getColumnsSelect } from './../components/getColumnsSelect';
 
-export default function CardSeleccionar({ open, onClose, tipo, onSelect, OriginRegistro }) {
+export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
     // Hook para buscar propietarios
-    const { propietarios, buscar } = useRegistrar();
+    const { data: unidades, search: searchUnidades } = useUnidades();
+    const { data: estructuras, search: searchEstructuras } = useEstructuras();
 
-    const [buscarPropietario, setBuscarPropietario] = useState('');
+    const [buscar, setBuscar] = useState('');
+
+    const getCurrentData = () => {
+        switch (tipo) {
+            case 0: return unidades;
+            case 1: return estructuras;
+            default: return [];
+        }
+    };
 
     // Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
     const handleMouseDownContra = (event) => {
@@ -50,7 +57,16 @@ export default function CardSeleccionar({ open, onClose, tipo, onSelect, OriginR
         onClose();
     };
 
-    const registros = columnsPropietarios({ Seleccion });
+    const Buscar = () => {
+        switch (tipo) {
+            case 0: return searchUnidades(buscar, 1) ;
+            case 1: return searchEstructuras(buscar, 1);
+            default: return [];
+        }
+
+    };
+
+    const registros = getCurrentData();
 
     return (
         <React.Fragment>
@@ -61,7 +77,7 @@ export default function CardSeleccionar({ open, onClose, tipo, onSelect, OriginR
                 aria-labelledby="responsive-dialog-title"
             >
                 <DialogTitle id="responsive-dialog-title">
-                    {"Seleccione la cuenta"}
+                    {"Seleccionar"}
                 </DialogTitle>
                 <DialogContent>
                     <FormControl sx={{ m: 1 }} variant="outlined" fullWidth>
@@ -69,12 +85,12 @@ export default function CardSeleccionar({ open, onClose, tipo, onSelect, OriginR
                         <OutlinedInput
                             id={`buscar-propietario-input`}
                             type={'text'}
-                            value={buscarPropietario}
-                            onChange={(e) => setBuscarPropietario(e.target.value)}
+                            value={buscar}
+                            onChange={(e) => setBuscar(e.target.value)}
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton
-                                        onClick={() => buscar(buscarPropietario, OriginRegistro)}
+                                        onClick={Buscar}
                                         onMouseDown={handleMouseDownContra}
                                         onMouseUp={handleMouseUpContra}
                                         edge="end"
@@ -87,23 +103,35 @@ export default function CardSeleccionar({ open, onClose, tipo, onSelect, OriginR
                         />
                     </FormControl>
 
-                    {propietarios ? (
-                        <DataGrid
-                            rows={propietarios}
-                            columns={registros} // Columnas con flex: 1 aplicado
-                            getRowId={(row) => row.codigo}
-                            initialState={{
-                                pagination: { paginationModel: { pageSize: 10 } },
-                            }}
-                            pageSizeOptions={[5, 10, 25]}
-                            localeText={{
-                                noRowsLabel: "No hay datos",
-                                noResultsOverlayLabel: "No se encontraron resultados",
-                                MuiTablePagination: {
-                                    labelRowsPerPage: "Filas:"
-                                }
-                            }}
-                        />
+                    {registros ? (
+                        <>
+                            {/* Tabla de datos */}
+                            <Paper sx={{ height: 'calc(100% - 180px)', width: '100%', p: 1 }}>
+                                <DataGrid
+                                    rows={registros}
+                                    columns={getColumnsSelect()}
+                                    pageSize={10}
+                                    rowsPerPageOptions={[10, 25, 50, 100]}
+                                    pagination
+                                    disableSelectionOnClick
+                                    autoHeight={false}
+                                    sx={{
+                                        border: 'none',
+                                        '& .MuiDataGrid-columnHeaders': {
+                                            backgroundColor: '#f8fafc',
+                                            fontWeight: 600,
+                                            color: '#1a3b5d',
+                                        },
+                                        '& .MuiDataGrid-cell': {
+                                            borderBottom: '1px solid #f0f0f0',
+                                        },
+                                        '& .MuiDataGrid-footerContainer': {
+                                            borderTop: '1px solid #f0f0f0',
+                                        },
+                                    }}
+                                />
+                            </Paper>
+                        </>
                     ) : (
                         <Stack spacing={1}>
                             {/* For variant="text", adjust the height via font-size */}

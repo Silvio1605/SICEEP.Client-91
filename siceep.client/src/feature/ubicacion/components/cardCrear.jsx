@@ -46,7 +46,7 @@ export default function CardCrear({ open, onClose }) {
     });
 
     const [openBusqueda, setOpenBusqueda] = useState(false);
-    const [tipoBusqueda, setTipoBusqueda] = useState(null); // 'estructura' o 'unidad'
+    const [tipoBusqueda, setTipoBusqueda] = useState(null); // '1 - estructura' o '2 - unidad'
 
 
     // Abre el diálogo y guarda el tipo de búsqueda
@@ -68,14 +68,14 @@ export default function CardCrear({ open, onClose }) {
             ...prev,
             // Si es estructura, actualiza idEstructura y nombreEstructura
             // Si es unidad, actualiza idUnidad y nombreUnidad
-            ...(tipoBusqueda === 'estructura'
+            ...(tipoBusqueda === 1
                 ? {
                     idEstructura: item.id,
-                    nombreEstructura: item.nombre || item.descripcion
+                    nombreEstructura: item.descripcion
                 }
                 : {
                     idUnidad: item.id,
-                    nombreUnidad: item.nombre || item.descripcion
+                    nombreUnidad: item.descripcion
                 }
             ),
         }));
@@ -120,7 +120,7 @@ export default function CardCrear({ open, onClose }) {
                       container spacing={4}
                       sx={{mt: 1}}>
                       {/* --- ESTRUCTURA --- */}
-                      <Grid xs={12} md={6}>
+                      <Grid size={{ xs: 12, md: 6 }}>
                           <Paper
                               variant="outlined"
                               sx={{
@@ -155,7 +155,7 @@ export default function CardCrear({ open, onClose }) {
                                       colorBtn="primary"
                                       iconBtn={<SearchIcon />}
                                       content="Buscar"
-                                      onClick={() => handleBuscar('estructura')}
+                                      onClick={() => handleBuscar(1)}
                                   />
                               </Stack>
 
@@ -178,7 +178,7 @@ export default function CardCrear({ open, onClose }) {
                       </Grid>
 
                       {/* --- UNIDAD --- */}
-                      <Grid xs={12} md={6} >
+                      <Grid size={{ xs: 12, md: 6 }}>
                           <Paper
                               variant="outlined"
                               sx={{
@@ -213,7 +213,7 @@ export default function CardCrear({ open, onClose }) {
                                       colorBtn="success" // diferenciar
                                       iconBtn={<SearchIcon />}
                                       content="Buscar"
-                                      onClick={() => handleBuscar('unidad')}
+                                      onClick={() => handleBuscar(0)}
                                   />
                               </Stack>
 
@@ -261,8 +261,7 @@ export default function CardCrear({ open, onClose }) {
               open={openBusqueda}
               onClose={handleCloseBusqueda}
               onSelect={handleSeleccionarItem}  
-              tipo={tipoBusqueda}                
-              OriginRegistro={true}
+              tipo={tipoBusqueda}
           />
       </React.Fragment>
   );

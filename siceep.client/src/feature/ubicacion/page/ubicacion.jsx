@@ -71,7 +71,7 @@ export default function Ubicacion() {
     const { data: estructuras, search: searchEstructuras } = useEstructuras();
     const { data: ubicaciones, search: searchUbicaciones } = useUbicaciones();
 
-    // --- Estados ---
+    // Estados 
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
 
     // Estado del modal
@@ -126,7 +126,7 @@ export default function Ubicacion() {
         }
     };
 
-    // --- Manejadores de eventos ---
+    // Manejadores de eventos
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
         //setFormData({});

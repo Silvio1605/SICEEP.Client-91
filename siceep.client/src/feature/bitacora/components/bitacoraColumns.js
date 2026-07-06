@@ -1,10 +1,10 @@
 export const columnsBitacora = ({ isMobile }) => [
     {
-        field: 'id', headerName: 'No.', flex: 2, minWidth: 5, maxWith: 10,
+        field: 'id', headerName: 'No.', flex: 1, minWidth: 5,
         align: 'center', headerAlign: 'center'
     },
     {
-        field: 'usuario', headerName: 'Usuario', flex: 2, minWidth: 30, maxWith: 30,
+        field: 'usuario', headerName: 'Usuario', flex: 1, minWidth: 30,
         align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
     },
     {
