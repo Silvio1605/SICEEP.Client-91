@@ -3,7 +3,7 @@ import IconButton from '@mui/material/IconButton';
 import CheckIcon from '@mui/icons-material/Check';
 
 // Función principal
-export const getColumnsSelect = () => {
+export const getColumnsSelect = ({ Seleccion }) => {
 
     // Columnas base para todos los tabs (excepto ubicaciones)
     const baseColumns = [
@@ -16,7 +16,7 @@ export const getColumnsSelect = () => {
                     <IconButton
                         color="primary"
                         size="small"
-                        onClick={() => console.log('copiar')}
+                        onClick={() => Seleccion(params)}
                         aria-label="copiar"
                     >
                         <CheckIcon fontSize="small" />

@@ -50,13 +50,6 @@ export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
         event.preventDefault();
     };
 
-    // Función para manejar la selección de un propietario
-    const Seleccion = (params) => {
-        console.log(tipo);
-        console.log(params, onSelect);
-        onClose();
-    };
-
     const Buscar = () => {
         switch (tipo) {
             case 0: return searchUnidades(buscar, 1) ;
@@ -67,6 +60,7 @@ export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
     };
 
     const registros = getCurrentData();
+    const columns = getColumnsSelect({ Seleccion : onSelect });
 
     return (
         <React.Fragment>
@@ -109,7 +103,7 @@ export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
                             <Paper sx={{ height: 'calc(100% - 180px)', width: '100%', p: 1 }}>
                                 <DataGrid
                                     rows={registros}
-                                    columns={getColumnsSelect()}
+                                    columns={columns}
                                     pageSize={10}
                                     rowsPerPageOptions={[10, 25, 50, 100]}
                                     pagination
@@ -144,9 +138,6 @@ export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
                 <DialogActions>
                     <Button onClick={onClose}>
                         Cancelar
-                    </Button>
-                    <Button onClick={onClose} autoFocus>
-                        Seleccionar
                     </Button>
                 </DialogActions>
             </Dialog>

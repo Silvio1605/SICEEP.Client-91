@@ -17,7 +17,6 @@ export const columnsPropietarios = ({ Seleccion }) => [
         align: 'center',
         headerAlign: 'center',
         renderCell: (params) => {
-
             return (
                 <IconButton color="primary" aria-label="select" onClick={() => Seleccion(params.row)}>
                     <HowToRegIcon />

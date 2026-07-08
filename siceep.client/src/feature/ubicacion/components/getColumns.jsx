@@ -5,18 +5,10 @@ import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 const actionsColumn = (handleDelete) => ({
     field: 'acciones',
     headerName: 'Acciones',
-    width: 120,
+    width: 100,
     sortable: false,
     renderCell: (params) => (
         <Box>
-            <IconButton
-                color="primary"
-                size="small"
-                onClick={() => console.log('copiar')}
-                aria-label="copiar"
-            >
-                <EditIcon fontSize="small" />
-            </IconButton>
             <IconButton
                 color="error"
                 size="small"
@@ -65,7 +57,21 @@ export const getColumns = ({ handleDelete, selectedTab }) => {
         { field: 'id', headerName: 'Id', width: 50 },
         { field: 'codigo', headerName: 'Código', width: 100 },
         { field: 'descripcion', headerName: 'Descripción', flex: 1, minWidth: 150 },
-        actionsColumn(handleDelete),
+        {
+            field: 'editar', headerName: 'Editar', width: 100, sortable: false,
+            renderCell: (params) => (
+                <Box>
+                    <IconButton
+                        color="primary"
+                        size="small"
+                        onClick={() => console.log(params)}
+                        aria-label="editar"
+                    >
+                        <EditIcon fontSize="small" />
+                    </IconButton>
+                </Box>
+            ),
+        }
     ];
 
     return baseColumns;

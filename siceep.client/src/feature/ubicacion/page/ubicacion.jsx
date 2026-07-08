@@ -113,14 +113,12 @@ export default function Ubicacion() {
                     (item.descripcion ?? "").toLowerCase().includes(lowerSearch) ||
                     String(item.codigo ?? "").toLowerCase().includes(lowerSearch)
                 );
-
             case 2: // Ubicaciones
                 return data.filter(item =>
                     (item.estructura ?? "").toLowerCase().includes(lowerSearch) ||
                     (item.unidad ?? "").toLowerCase().includes(lowerSearch) ||
                     (item.estado ?? "").toLowerCase().includes(lowerSearch)
                 );
-
             default:
                 return data;
         }
@@ -145,7 +143,12 @@ export default function Ubicacion() {
         setOpenDialog(true);
     };
     const handleSearch = () => {
-        console.log(`Buscar en ${getEntityName()} con texto:`, searchText);
+        switch (selectedTab) {
+            case 0: return searchUnidades(searchText, 1);
+            case 1: return searchEstructuras(searchText, 1);
+            case 2: return searchUbicaciones(searchText, 1);
+            default: return [];
+        }
     };
 
     const handleDelete = () => {

@@ -4,11 +4,6 @@ import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
 import { Typography, Paper } from "@mui/material";
 import Grid from '@mui/material/Grid';
@@ -46,8 +41,7 @@ export default function CardCrear({ open, onClose }) {
     });
 
     const [openBusqueda, setOpenBusqueda] = useState(false);
-    const [tipoBusqueda, setTipoBusqueda] = useState(null); // '1 - estructura' o '2 - unidad'
-
+    const [tipoBusqueda, setTipoBusqueda] = useState(null); // '1 - estructura' o '0 - unidad'
 
     // Abre el diálogo y guarda el tipo de búsqueda
     const handleBuscar = (tipo) => {
@@ -63,6 +57,7 @@ export default function CardCrear({ open, onClose }) {
 
     // Recibe el elemento seleccionado desde CardSeleccionar
     const handleSeleccionarItem = (item) => {
+       
         // Asume que item tiene { id, nombre } o { id, descripcion }
         setRegistro((prev) => ({
             ...prev,
@@ -70,12 +65,12 @@ export default function CardCrear({ open, onClose }) {
             // Si es unidad, actualiza idUnidad y nombreUnidad
             ...(tipoBusqueda === 1
                 ? {
-                    idEstructura: item.id,
-                    nombreEstructura: item.descripcion
+                    idEstructura: item.row.id,
+                    nombreEstructura: item.row.descripcion
                 }
                 : {
-                    idUnidad: item.id,
-                    nombreUnidad: item.descripcion
+                    idUnidad: item.row.id,
+                    nombreUnidad: item.row.descripcion
                 }
             ),
         }));
