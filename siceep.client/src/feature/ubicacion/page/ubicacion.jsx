@@ -69,7 +69,7 @@ export default function Ubicacion() {
 
     const { data: unidades, search: searchUnidades } = useUnidades();
     const { data: estructuras, search: searchEstructuras } = useEstructuras();
-    const { data: ubicaciones, search: searchUbicaciones } = useUbicaciones();
+    const { data: ubicaciones, search: searchUbicaciones, registrar } = useUbicaciones();
 
     // Estados 
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
@@ -159,29 +159,7 @@ export default function Ubicacion() {
             severity: 'success',
         });
     };
-    /*
-    const handleSave = () => {
-        // Validación simple
-        if (!formData.name || formData.name.trim() === '') {
-            setSnackbar({
-                open: true,
-                message: 'El campo "Nombre" es obligatorio.',
-                severity: 'error',
-            });
-            return;
-        }
-
-        // Crear nuevo
-        setSnackbar({
-            open: true,
-            message: `${getEntityName()} creada correctamente.`,
-            severity: 'success',
-        });
-
-        setOpenDialog(false);
-        setFormData({});
-    };*/
-
+    
     const handleCloseDialog = () => {
         setOpenDialog(false);
         //setFormData({});
@@ -190,14 +168,6 @@ export default function Ubicacion() {
     const handleCloseSnackbar = () => {
         setSnackbar({ ...snackbar, open: false });
     };
-
-    /*
-    const handleFormChange = (event) => {
-        setFormData({
-            ...formData,
-            [event.target.name]: event.target.value,
-        });
-    };*/
 
     return (
         <ThemeProvider theme={theme}>
@@ -294,8 +264,9 @@ export default function Ubicacion() {
 
             {/* Modal de creación/edición */}
             <CardCrear
-                open={openDialog}
-                onClose={handleCloseDialog}
+                open={ openDialog }
+                onClose={ handleCloseDialog }
+                registrar={ registrar }
             />
 
             {/* Snackbar de notificaciones */}

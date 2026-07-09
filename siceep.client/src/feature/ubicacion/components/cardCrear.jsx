@@ -24,7 +24,7 @@ import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SearchIcon from '@mui/icons-material/Search';
 import AppButton from './../../../shared/components/AppButton';
 
-export default function CardCrear({ open, onClose }) {
+export default function CardCrear({ open, onClose, registrar }) {
 
     // Configuración para el diálogo responsivo
     const theme = useTheme();
@@ -78,12 +78,23 @@ export default function CardCrear({ open, onClose }) {
         setTipoBusqueda(null);
     };
 
-    const handleRegistrar = () => {
+    const handleRegistrar = async (registro) => {
+
         setGuardando(true);
+        var resultado = await registrar(registro.idEstructura, registro.idUnidad);
+
+        if (resultado.status == 200) {
+            mostrarNotificacion({
+                message: resultado.message,
+                severity: "success",
+            });
+        }
+
         mostrarNotificacion({
-            message: "registrando",
-            severity: "success",
+            message: resultado.message,
+            severity: "error",
         });
+        setGuardando(false);
     };
 
   return (
@@ -242,7 +253,7 @@ export default function CardCrear({ open, onClose }) {
                   <Button onClick={onClose}>
                       Cancelar
                   </Button>
-                  <Button onClick={handleRegistrar} disabled={guardando}>
+                  <Button onClick={() => handleRegistrar(registro)} disabled={guardando}>
                       {guardando ? "Guardando..." : "Guardar"}
                   </Button>
               </DialogActions>
