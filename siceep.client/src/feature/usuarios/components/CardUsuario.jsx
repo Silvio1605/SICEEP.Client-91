@@ -292,7 +292,7 @@ function CardUsuario({ actualizar }) {
                                                 Ubicado en:
                                             </Typography>
                                             <Typography variant="body2" sx={{ color: '#424242', fontWeight: 500 }}>
-                                                {perfil.estructura?.estructura}
+                                                {perfil.estructura}
                                             </Typography>
                                         </Box>
                                     </Box>

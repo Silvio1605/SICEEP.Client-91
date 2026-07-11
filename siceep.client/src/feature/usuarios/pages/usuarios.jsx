@@ -13,7 +13,7 @@ import { useSearchParams } from "react-router-dom";
 import { columnsUsuarios } from './../services/usuariosData';
 import { useUsuarios } from './../hooks/useUsuarios';
 // componentes
-import FiltrosBusqueda from '../components/filtrosBusqueda';
+import FiltrosBusqueda from '../components/FiltrosBusqueda';
 import Perfil from '../components/Perfil';
 import CardReestrablecerContra from '../components/CardReestrablecerContra';
 import CardRegistrar from '../components/CardRegistrar';
@@ -71,6 +71,7 @@ export default function Usuarios() {
             }
         };
         cargarDatos();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     //logica para abrir card de reestablecer contraseña

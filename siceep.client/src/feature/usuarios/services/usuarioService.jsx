@@ -39,8 +39,8 @@ export const getUsuarios = async (filtros) => {
     }
 };
 
-export const getEstructura = async (idUsuario) => {
-    return await api.post(`Estructura/GetEstructura_byId?id=${idUsuario}`);
+export const getEstructura = (idUsuario) => {
+    return api.get(`Estructura/${idUsuario}`);
 };
 
 export const getUsuariosById = async (id) => {

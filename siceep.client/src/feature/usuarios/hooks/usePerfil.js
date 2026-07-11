@@ -24,7 +24,7 @@ export const usePerfil = (id) => {
                 getEstructura(id),
                 getUsuariosById(id)
             ]);
-
+            
             setPerfil({
                 usuario: usuario.data,
                 estructura: estructura.data

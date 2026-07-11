@@ -7,7 +7,23 @@ export const Login = async (usuario) => {
         console.log(error.response.data);
     }
 };
- 
+
+export const Logout = async () => {
+    try {
+        return await api.post(`Auth/Logout`);
+    } catch (error) {
+        console.log(error.response.data);
+    }
+};
+
+export const Me = async () => {
+    try {
+        return await api.get(`Auth/Me`);
+    } catch (error) {
+        console.log(error.response.data);
+    }
+};
+
 export const Reestablecer = async (usuario) => {
     try {
 

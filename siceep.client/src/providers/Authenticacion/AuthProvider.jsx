@@ -1,52 +1,76 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
-import { Login } from "./../../feature/auth/services/authService";
+import { Login, Logout, Me } from "./../../feature/auth/services/authService";
 
 export const AuthProvider = ({ children }) => {
 
-    const [token, setToken] = useState(
-        localStorage.getItem("token")
-    );
+    const [autenticado, setAutenticado] = useState(false);
+    const [usuario, setUsuario] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        verificarSesion();
+    }, []);
+
+    const verificarSesion = async () => {
+        try {
+
+            const response = await Me();
+
+            setAutenticado(true);
+            setUsuario(response.data);
+
+        } catch {
+
+            setAutenticado(false);
+            setUsuario(null);
+
+        } finally {
+
+            setLoading(false);
+
+        }
+    };
 
     const login = async (nombreUsuario, contraseña) => {
 
-        const isValid = nombreUsuario.trim() !== "" && contraseña.trim() !== "";
-
-        const auth = {
+        const response = await Login({
             nombreUsuario,
             contraseña
-        };
+        });
 
-        if (isValid) {
-            const response = await Login(auth);
-            const { token, mensaje } = response.data;
-            
-            if (token !== "" && token !== null && token !== undefined) {
-                
-                localStorage.setItem("token", token);
-                setToken(token);
-                return { valid: true, mensaje };
-            }
+        if (response.status === 200) {
+
+            await verificarSesion();
+
+            return {
+                valid: true,
+                mensaje: response.data.mensaje
+            };
         }
 
-        return { valid: false, mensaje: "Credenciales inválidas" };
-        
+        return {
+            valid: false,
+            mensaje: "Credenciales inválidas"
+        };
     };
 
-    const logout = () => {
+    const logout = async () => {
 
-        localStorage.removeItem("token");
+        await Logout();
 
-        setToken(null);
+        setAutenticado(false);
+        setUsuario(null);
     };
 
     return (
         <AuthContext.Provider
             value={{
-                token,
+                autenticado,
+                usuario,
+                loading,
                 login,
-                logout,
-                autenticado: !!token
+                logout
             }}
         >
             {children}

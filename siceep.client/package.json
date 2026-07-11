@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "doctor": "npx react-doctor@latest"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -15,10 +16,10 @@
     "@mui/icons-material": "^7.3.7",
     "@mui/material": "^7.3.7",
     "@mui/x-data-grid": "^8.26.0",
-    "@mui/x-data-grid-generator": "^8.26.1",
     "axios": "^1.13.6",
     "jwt-decode": "^4.0.0",
     "react": "^19.2.0",
+    "react-doctor": "^0.7.4",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.13.0"
   },

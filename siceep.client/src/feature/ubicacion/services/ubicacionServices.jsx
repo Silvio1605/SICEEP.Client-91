@@ -2,7 +2,11 @@ import api from "./../../../api/api";
 
 export const registrarUbicacion = async (idEstructura, idUnidad) => {
     try {
-        const response = await api.post(`Ubicacion/Registrar?idEstructura=${idEstructura}&idUnidad=${idUnidad}`);
+
+        const response = await api.post('Ubicacion', null, {
+            params: { idEstructura, idUnidad }
+
+        });
 
         return {
             status: response.data.status,
@@ -19,27 +23,20 @@ export const registrarUbicacion = async (idEstructura, idUnidad) => {
     }
 };
 
-export const getEstructuras = async (parametro, pagina) => {
-    try {
-        return await api.get(`Ubicacion/ListarEstructuras?parametro=${parametro}&page=${pagina}`);
-    } catch (error)
-    {
-        console.log(error);
-    }
+export const getEstructuras = (parametro, pagina) => {
+    return api.get(`Estructura/Search`, {
+        params: { parametro, page: pagina }
+    });
 };
 
-export const getUnidades = async (parametro, pagina) => {
-    try {
-        return await api.get(`Ubicacion/ListarUnidad?parametro=${parametro}&page=${pagina}`);
-    } catch (error) {
-        console.log(error);
-    }
+export const getUnidades = (parametro, pagina) => {
+    return api.get(`Unidad/Search`, {
+        params: { parametro, page: pagina }
+    });
 };
 
 export const getUbicaciones = async (parametro, pagina) => {
-    try {
-        return await api.get(`Ubicacion/ListarUbicaciones?parametro=${parametro}&page=${pagina}`);
-    } catch (error) {
-        console.log(error);
-    }
+    return api.get(`Ubicacion/Search`, {
+        params: { parametro, page: pagina }
+    });
 };
