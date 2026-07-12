@@ -16,7 +16,7 @@ import { useUsuarios } from './../hooks/useUsuarios';
 import FiltrosBusqueda from '../components/FiltrosBusqueda';
 import Perfil from '../components/Perfil';
 import CardReestrablecerContra from '../components/CardReestrablecerContra';
-import CardRegistrar from '../components/CardRegistrar';
+import CardRegistrar from './../components/Registrar/CardRegistrar';
 // loading
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';

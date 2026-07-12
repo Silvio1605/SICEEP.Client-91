@@ -4,27 +4,21 @@ import { styled } from '@mui/material/styles';
 import Avatar from '@mui/material/Avatar';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
-import WorkIcon from '@mui/icons-material/Work';
-import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import LockClockIcon from '@mui/icons-material/LockClock';
-import PersonOffIcon from '@mui/icons-material/PersonOff';
-import PersonIcon from '@mui/icons-material/Person';
-import SelectItem from './../../../shared/components/SelectItem';
-import TextField from '@mui/material/TextField';
-import Confirm from './../../../shared/components/Confirm';
+import Confirm from '../../../../shared/components/Confirm';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-import CardReestrablecerContra from './CardReestrablecerContra';
 // servicios
-import { useNotificacionContext } from '../../../providers/Notificacion/useNotificacionContext';
-import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
-import { usePerfil } from '../hooks/usePerfil';
-import { useSelectRoles } from "../hooks/useSelectRoles";
-import { usePermisosContext } from './../../../providers/Permisos/usePermisoContext'; 
-import { useFecha } from '../hooks/useFecha';
-import { useRol } from '../hooks/useRol';
-import { useUsuarios } from './../hooks/useUsuarios';
-import AppButton from './../../../shared/components/AppButton';
+import { useNotificacionContext } from '../../../../providers/Notificacion/useNotificacionContext';
+import { useBusquedaContext } from '../../../../providers/BusquedaUsers/useBusquedaContext';
+import { usePerfil } from '../../hooks/usePerfil';
+import { usePermisosContext } from '../../../../providers/Permisos/usePermisoContext';
+import { useRol } from '../../hooks/useRol';
+import { useUsuarios } from '../../hooks/useUsuarios';
+import AppButton from '../../../../shared/components/AppButton';
+import CardRol from './CardRol';
+import CardCuenta from './CardCuenta';
+import CardReestablecer from './CardReestablecer';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -36,7 +30,6 @@ const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: '#1A2027',
     }),
 }));
-
 const obtenerEstado = (estado) => {
     switch (estado) {
         case 1:
@@ -53,7 +46,6 @@ const obtenerEstado = (estado) => {
 function CardUsuario({ actualizar }) {
 
     // Funciones para manejo de fechas
-    const { obtenerFechaActual, tiempoRestante, convertirFecha, esMayor, actualizarFechaExpiracion } = useFecha();
     const { permisosHook } = usePermisosContext();
     const { actualizarRol } = useRol();
     const { idSeleccionado } = useBusquedaContext();
@@ -63,8 +55,6 @@ function CardUsuario({ actualizar }) {
     const { mostrarNotificacion } = useNotificacionContext();
 
     // datos para las cajas de selecciones
-    const { selRol, loading } = useSelectRoles();
-    const [fecha, setFecha] = useState("");
     const [rol, setRol] = useState("");
 
     const [EstadoComp, setEstadoComp] = useState();
@@ -75,18 +65,12 @@ function CardUsuario({ actualizar }) {
     const { ActualizarEstado } = useUsuarios();
 
     // Funciones para abrir los diálogos de confirmación
-    const abrirConfirmExp = () => setDialogo("confirmExpiracion");
     const abrirConfirmRol = () => setDialogo("confirmRol");
     const abrirConfirmDes = () => setDialogo("confirmDesactivar");
     const abrirReestrablecerContra = () => setDialogo("reestrablecerContra");
 
     const cerrar = () => setDialogo(null);
     
-    // Convertir fecha de perfil a formato YYYY-MM-DD para comparación
-    const fechaPerfil = perfil.usuario?.fechaExpiracion
-        ? convertirFecha(perfil.usuario.fechaExpiracion)
-        : "";
-
     useEffect(() => {
         const cargarEstado = () => {
             setEstadoComp(perfil.usuario?.estado);
@@ -94,40 +78,6 @@ function CardUsuario({ actualizar }) {
         cargarEstado();
 
     }, [perfil.usuario?.estado]);
-
-    useEffect(() => {
-        const cargarFecha = () => {
-            setFecha(perfil.usuario?.fechaExpiracion ? convertirFecha(perfil.usuario.fechaExpiracion) : obtenerFechaActual());
-        };
-        cargarFecha();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [perfil.usuario?.fechaExpiracion]);
-
-    useEffect(() => {
-        const cargarRol = () => {
-            setRol(perfil.usuario?.idRol || "");
-        };
-        cargarRol();
-    }, [perfil.usuario?.idRol]);
-
-    const handleConfirmarExpiracion = async () => {
-        try {
-            await actualizarFechaExpiracion(perfil.usuario?.id, fecha);
-
-            mostrarNotificacion({
-                message: "Fecha de expiración actualizada correctamente",
-                severity: "success",
-            });
-
-        } catch (error) {
-            mostrarNotificacion({
-                message: "Error al actualizar la fecha de expiración: " + error,
-                severity: "error",
-            });
-        }
-        cerrar();
-    }
 
     const handleConfirmarRol = async () => {
 
@@ -176,7 +126,6 @@ function CardUsuario({ actualizar }) {
 
     };
 
-    
     return (
         
         // Información del Usuario
@@ -221,7 +170,6 @@ function CardUsuario({ actualizar }) {
                                 Información del Usuario
                         </Typography> 
                     </Box>
-
                     <Item>
                         <Box sx={{
                             p: 2,
@@ -303,160 +251,20 @@ function CardUsuario({ actualizar }) {
                 </Grid>
                 <Grid size={12}>
                     <Item>
-                        <Typography
-                            variant="h7"
-                            sx={{
-                                fontWeight: 600,
-                                color: '#1565C0',
-                                letterSpacing: '0.5px',
-                                ml: 2 
-
-                            }}
-                        >
-                            Rol
-                        </Typography>
-
-                        {loading ? (
-                            <p>Cargando...</p>
-                        ) : (
-                            <Box>
-                                   <SelectItem
-                                        value={rol}
-                                        onChange={(selRol) => {
-                                            setRol(selRol);
-                                        }}
-                                        incluirTodo={false}
-                                        datos={selRol}
-                                        titulo=""
-                                    />
-                                    <AppButton
-                                        colorBtn={ 'primary' }
-                                        iconBtn={<WorkIcon /> }
-                                        isfullWidth={ true }
-                                        content={"Actualizar Rol"}
-                                        onClick={(e) => {
-                                            // Evitar que el botón mantenga el foco después de hacer clic
-                                            e.currentTarget.blur();
-                                            abrirConfirmRol();
-                                        }}
-                                    />
-                            </Box>
-                        )}
+                       <CardRol abrirConfirmRol={abrirConfirmRol} rol={rol} setRol={setRol}></CardRol>
                     </Item>
                 </Grid>
                 <Grid size={12}>
                     <Item>
-                        <Typography
-                            variant="h7"
-                            sx={{
-                                fontWeight: 600,
-                                color: '#1565C0',
-                                letterSpacing: '0.5px',
-                                ml: 2
-                            }}
-                        >
-                            Cuenta
-                        </Typography>
-
-                        <AppButton
-                            colorBtn={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
-                            iconBtn={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
-                            isfullWidth={true}
-                            content={ EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
-                            onClick={(e) => {
-                                // Evitar que el botón mantenga el foco después de hacer clic
-                                e.currentTarget.blur();
-                                abrirConfirmDes();
-                            }}
-                        />
-                        {loading ? (
-                            <p>Cargando...</p>
-                        ) : (
-                            <Box>
-                                <TextField
-                                     type="date"
-                                     label="Fecha de Expiración"
-                                     value={fecha}
-                                     onChange={(e) => setFecha(e.target.value)}
-                                     InputLabelProps={{ shrink: true }}
-                                     fullWidth
-                                    />
-
-                                <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
-                                     <LockClockIcon sx={{ mr: 1 }} />
-
-                                     <Typography variant="body2">
-                                          <strong>Tiempo actual restante:</strong> {tiempoRestante(perfil.usuario?.fechaExpiracion)}
-                                     </Typography>
-                                </Box>
-                                {fecha && fecha !== fechaPerfil ? (
-                                     <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
-                                            <LockClockIcon sx={{ mr: 1, color: 'primary.main' }} />
-
-                                            <Typography variant="body2" sx={{ color: 'primary.main' }}>
-                                                <strong>Tiempo nuevo periodo:</strong> {tiempoRestante(fecha)}
-                                            </Typography>
-                                        </Box>
-
-                                     ) : ("")
-                                }
-
-                                <AppButton
-                                    colorBtn={"primary"}
-                                    iconBtn={<CalendarTodayIcon />}
-                                    isfullWidth={true}
-                                    content={"Actualizar Fecha"}
-                                    onClick={(e) => {
-                                          // Evitar que el botón mantenga el foco después de hacer clic
-                                         e.currentTarget.blur();
-                                         esMayor(perfil.usuario?.fechaExpiracion, fecha);
-                                         abrirConfirmExp();
-                                    }}
-                                />
-                            </Box>
-                        )}
-
+                        <CardCuenta perfil={perfil} reload={reload} abrirConfirmDes={abrirConfirmDes} EstadoComp={EstadoComp} ></CardCuenta>
                     </Item>
                 </Grid>
                 <Grid size={12}>
                     <Item>
-                        <Typography
-                            variant="h7"
-                            sx={{
-                                fontWeight: 600,
-                                color: '#1565C0',
-                                letterSpacing: '0.5px',
-                                ml: 2
-                            }}
-                        >
-                            Reestablecer Contraseña
-                        </Typography>
-                        <AppButton
-                            colorBtn={"secondary"}
-                            isfullWidth={true}
-                            content={"Reestablecer Contraseña"}
-                            onClick={(e) => {
-                                // Evitar que el botón mantenga el foco después de hacer clic
-                                e.currentTarget.blur();
-                                abrirReestrablecerContra();
-                            }}
-                        >
-                        </AppButton>  
-                        
+                        <CardReestablecer perfil={perfil} abrirReestrablecerContra={abrirReestrablecerContra} dialogo={dialogo} cerrar={cerrar}></CardReestablecer>
                     </Item>
                 </Grid>
-
-                
             </Grid>
-            <Confirm
-                open={dialogo === "confirmExpiracion"}
-                handleClose={cerrar}
-                onConfirm={handleConfirmarExpiracion}
-                title="Confirmar cambio"
-                content="¿Estás seguro de que deseas actualizar la fecha de expiración? Esta acción no se puede deshacer.?"
-            >
-                {/* contenido */}
-            </Confirm>
             <Confirm
                 open={dialogo === "confirmRol"}
                 handleClose={cerrar}
@@ -475,11 +283,6 @@ function CardUsuario({ actualizar }) {
             >
                 {/* contenido */}
             </Confirm>
-            <CardReestrablecerContra
-                open={dialogo === "reestrablecerContra"}
-                onClose={cerrar}
-                id={perfil.usuario?.id}
-            />
         </Box>
     );
 }

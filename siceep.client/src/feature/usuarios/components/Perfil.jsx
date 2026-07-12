@@ -13,7 +13,7 @@ import Paper from '@mui/material/Paper';
 import { styled } from '@mui/material/styles';
 // componente para mostrar el perfil del usuario seleccionado en la tabla de usuarios
 import Permisos from './../../permisos/pages/Permisos';
-import CardUsuario from './CardUsuario';
+import CardUsuario from './Perfil/CardUsuario';
 //iconos para el botón de activar/desactivar usuario
 // hooks y contextos
 import { useUsuarios } from './../hooks/useUsuarios';

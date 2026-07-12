@@ -68,39 +68,38 @@ const esFechaValida = (fecha) => {
     return !isNaN(f.getTime());
 };
 
+const convertirFecha = (fecha) => {
+
+    if (!esFechaValida(fecha)) {
+        return obtenerFechaActual();
+    }
+    const [dia, mes, anio] = fecha.split('/');
+    const fechaFormateada = `${anio}-${mes}-${dia}`;
+
+    return fechaFormateada;
+}
+
+const actualizarFechaExpiracion = async (id, nuevaFecha) => {
+
+    if (!esFechaValida(nuevaFecha)) {
+        return Promise.reject("Fecha inválida");
+    }
+
+    //deberia ser mayor a la fecha actual
+    if (!esMayor(obtenerFechaActual(), nuevaFecha)) {
+        return Promise.reject("La nueva fecha debe ser mayor a la fecha actual");
+    }
+
+    if (!id) {
+        return Promise.reject("Identificador de usuario no válido");
+    }
+
+    const usuarioActualizado = {
+        idUsuario: id,
+        fechaExpiracion: nuevaFecha
+    };
+    return updateExpiracion(usuarioActualizado);
+}
 export const useFecha = () => {
-
-    const convertirFecha = (fecha) => {
-
-        if (!esFechaValida(fecha)) {
-            return obtenerFechaActual();
-        }
-        const [dia, mes, anio] = fecha.split('/');
-        const fechaFormateada = `${anio}-${mes}-${dia}`;
-
-        return fechaFormateada;
-    }
-
-    const actualizarFechaExpiracion = async (id, nuevaFecha) => {
-
-        if (!esFechaValida(nuevaFecha)) {
-            return Promise.reject("Fecha inválida");
-        }
-
-        if (!esMayor(obtenerFechaActual(), nuevaFecha)) {
-            return Promise.reject("La nueva fecha debe ser mayor a la fecha actual");
-        }
-
-        if (!id) {
-            return Promise.reject("Identificador de usuario no válido");
-        }
-
-        const usuarioActualizado = {
-            idUsuario: id,
-            fechaExpiracion: nuevaFecha
-        };
-        return updateExpiracion(usuarioActualizado);
-    }
-
     return { tiempoRestante, convertirFecha, esMayor, obtenerFechaActual, actualizarFechaExpiracion };
 };
