@@ -13,12 +13,15 @@ function Confirm({ open, handleClose, onConfirm, title, content }) {
     const btnAceptarRef = React.useRef(null);
 
     React.useEffect(() => {
-        if (open) {
-            // pequeño delay para asegurar que el dialog ya montó
-            setTimeout(() => {
-                btnAceptarRef.current?.focus();
-            }, 0);
-        }
+        if (!open) return;
+
+        const frameId = requestAnimationFrame(() => {
+            btnAceptarRef.current?.focus();
+        });
+
+        return () => {
+            cancelAnimationFrame(frameId);
+        };
     }, [open]);
 
     return (

@@ -1,4 +1,4 @@
-import React, {  useState } from "react";
+import React, {  useState, useMemo, useCallback } from "react";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { NotificacionContext } from "./NotificacionContext";
@@ -12,7 +12,7 @@ export const NotificacionProvider = ({ children }) => {
         severity: "success",
     });
 
-    const mostrarNotificacion = ({
+    const mostrarNotificacion = useCallback(({
         message,
         severity = "success",
     }) => {
@@ -23,7 +23,7 @@ export const NotificacionProvider = ({ children }) => {
         });
 
         setOpen(true);
-    };
+    }, []);
 
     const handleClose = (_, reason) => {
 
@@ -32,9 +32,13 @@ export const NotificacionProvider = ({ children }) => {
         setOpen(false);
     };
 
+    const value = useMemo(() => ({
+         mostrarNotificacion
+    }), [mostrarNotificacion]);
+
     return (
         <NotificacionContext.Provider
-            value={{ mostrarNotificacion }}
+            value={value}
         >
             {children}
 

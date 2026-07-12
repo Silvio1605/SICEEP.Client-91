@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { AuthContext } from "./AuthContext";
 import { Login, Logout, Me } from "./../../feature/auth/services/authService";
 
@@ -8,13 +8,10 @@ export const AuthProvider = ({ children }) => {
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        verificarSesion();
-    }, []);
-
+    
     const verificarSesion = async () => {
         try {
-
+                
             const response = await Me();
 
             setAutenticado(true);
@@ -32,7 +29,7 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
-    const login = async (nombreUsuario, contraseña) => {
+    const login = useCallback(async (nombreUsuario, contraseña) => {
 
         const response = await Login({
             nombreUsuario,
@@ -53,25 +50,38 @@ export const AuthProvider = ({ children }) => {
             valid: false,
             mensaje: "Credenciales inválidas"
         };
-    };
+    }, []);
 
-    const logout = async () => {
+    const tienePermiso = useCallback((permiso) => {
+
+        if (!usuario?.permisos)
+            return false;
+
+        return usuario.permisos.includes(permiso.toString());
+    }, [usuario]);
+
+    const logout = useCallback(async () => {
 
         await Logout();
 
         setAutenticado(false);
         setUsuario(null);
-    };
+    }, []);
+
+    const contextValue = useMemo(() => ({
+        autenticado,
+        usuario,
+        loading,
+        login,
+        tienePermiso,
+        logout
+    }), [autenticado, usuario,
+        loading,login,
+        tienePermiso, logout]);
 
     return (
         <AuthContext.Provider
-            value={{
-                autenticado,
-                usuario,
-                loading,
-                login,
-                logout
-            }}
+            value={contextValue}
         >
             {children}
         </AuthContext.Provider>

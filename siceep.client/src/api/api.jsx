@@ -33,7 +33,7 @@ api.interceptors.response.use(
 
             switch (status) {
                 case 401:
-                    window.location.href = '/login';
+                    console.warn('Error de validación:', message);
                     break;
                 case 400:
                     console.warn('Error de validación:', message);

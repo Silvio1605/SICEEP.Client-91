@@ -16,8 +16,6 @@ import KeyIcon from '@mui/icons-material/Key';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import { useAuth } from "../../providers/Authenticacion/useAuth";
-import { tienePermiso } from "./../../helper/JwtValidarPermiso";
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import TopicIcon from '@mui/icons-material/Topic';
 import Collapse from "@mui/material/Collapse";
@@ -25,6 +23,7 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import DomainIcon from '@mui/icons-material/Domain';
 // 
+import { useAuth } from "../../providers/Authenticacion/useAuth";
 import { Rutas } from "./../../routes/routes";
 
 export default function Nav({ open, toggleNav }) {
@@ -38,7 +37,7 @@ export default function Nav({ open, toggleNav }) {
         }));
     };
 
-    const { logout } = useAuth();
+    const { tienePermiso, logout } = useAuth();
 
     const menuSections = [
         {

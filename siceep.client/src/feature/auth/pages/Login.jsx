@@ -101,6 +101,7 @@ function Login() {
                                 <KeyIcon sx={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9ca3af', zIndex: 10 }} />
                                 <input
                                     id="password"
+                                    aria-label="Contraseña"
                                     // Cambia el tipo de input dinamicamente para revelar u ocultar la clave.
                                     type={showPassword ? "text" : "password"}
                                     placeholder="••••••••"
@@ -129,6 +130,7 @@ function Login() {
                         {/* --- BOTONES DE ACCION --- */}
                         {/* Boton tipo submit que dispara el evento handleLogin del formulario. */}
                         <button
+                            type="submit"
                             className="btn btn-primary"
                             variant="contained"
                             onClick={handleLogin}
