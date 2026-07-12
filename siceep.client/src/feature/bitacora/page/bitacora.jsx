@@ -10,6 +10,7 @@ import { useSearchParams } from "react-router-dom";
 // extraer datos de la api
 import { useBitacora } from "./../hooks/useBitacora";
 import { columnsBitacora } from './../components/bitacoraColumns';
+import { Stack, Skeleton } from '@mui/material';
 import BitacoraFiltro from './../components/bitacoraFiltro';
 // media query para detectar el tamaño de pantalla y ajustar la tabla               
 import { useScreenType } from './../../../shared/hooks/useScreenType';

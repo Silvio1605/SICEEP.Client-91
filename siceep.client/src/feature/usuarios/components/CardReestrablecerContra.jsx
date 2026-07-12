@@ -21,6 +21,20 @@ import { ContraUsuario } from './../../auth/hooks/useContra';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
 import { usePerfil } from '../hooks/usePerfil';
 
+
+// Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
+const handleMouseDownContra = (event) => {
+    event.preventDefault();
+};
+const handleMouseUpContra = (event) => {
+    event.preventDefault();
+};
+
+// Función para manejar el clic en el ícono de mostrar/ocultar contraseña
+const handleClickMostrarContra = (setter) => {
+    setter((show) => !show);
+};
+
 export default function CardReestrablecerContra({ open, onClose, id }) {
 
     const { perfil } = usePerfil(id);
@@ -37,18 +51,6 @@ export default function CardReestrablecerContra({ open, onClose, id }) {
     const { ReestablecerContraseña } = ContraUsuario();
     // Notificaciones
     const { mostrarNotificacion } = useNotificacionContext();
-
-    // Función para manejar el clic en el ícono de mostrar/ocultar contraseña
-    const handleClickMostrarContra = (setter) => {
-        setter((show) => !show);
-    };
-    // Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
-    const handleMouseDownContra = (event) => {
-        event.preventDefault();
-    };
-    const handleMouseUpContra = (event) => {
-        event.preventDefault();
-    };
 
     const [actualizar, setActualizar] = useState({
         id: id ?? '',

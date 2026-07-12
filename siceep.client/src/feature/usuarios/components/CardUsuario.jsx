@@ -37,6 +37,19 @@ const Item = styled(Paper)(({ theme }) => ({
     }),
 }));
 
+const obtenerEstado = (estado) => {
+    switch (estado) {
+        case 1:
+            return <Chip label="Activo" color="success" />;
+        case 2:
+            return <Chip label="Inactivo" color="error" />;
+        case 3:
+            return <Chip label="Expirado" color="warning" />;
+        default:
+            return <Chip label="Desconocido" />;
+    }
+};
+
 function CardUsuario({ actualizar }) {
 
     // Funciones para manejo de fechas
@@ -163,20 +176,7 @@ function CardUsuario({ actualizar }) {
 
     };
 
-    const obtenerEstado = (estado) => {
-        switch (estado) {
-            case 1:
-                return <Chip label="Activo" color="success" />;
-            case 2:
-                return <Chip label="Inactivo" color="error" />;
-            case 3:
-                return <Chip label="Expirado" color="warning" />;
-            default:
-                return <Chip label="Desconocido" />;
-        }
-    };
-
-
+    
     return (
         
         // Información del Usuario
@@ -292,7 +292,7 @@ function CardUsuario({ actualizar }) {
                                                 Ubicado en:
                                             </Typography>
                                             <Typography variant="body2" sx={{ color: '#424242', fontWeight: 500 }}>
-                                                {perfil.estructura?.estructura}
+                                                {perfil.estructura}
                                             </Typography>
                                         </Box>
                                     </Box>

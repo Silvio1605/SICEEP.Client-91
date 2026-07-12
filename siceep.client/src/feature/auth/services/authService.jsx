@@ -4,10 +4,29 @@ export const Login = async (usuario) => {
     try {
         return await api.post(`Auth/Login`, usuario);
     } catch (error) {
-        console.log(error.response.data);
+        console.log(error.response?.data);
+        throw error;
     }
 };
- 
+
+export const Logout = async () => {
+    try {
+        return await api.post(`Auth/Logout`);
+    } catch (error) {
+        console.log(error.response?.data);
+        throw error;
+    }
+};
+
+export const Me = async () => {
+    try {
+        return await api.get(`Auth/Me`);
+    } catch (error) {
+        console.log(error.response?.data);
+        throw error;
+    }
+};
+
 export const Reestablecer = async (usuario) => {
     try {
 

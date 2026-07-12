@@ -5,18 +5,10 @@ import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 const actionsColumn = (handleDelete) => ({
     field: 'acciones',
     headerName: 'Acciones',
-    width: 120,
+    width: 100,
     sortable: false,
     renderCell: (params) => (
         <Box>
-            <IconButton
-                color="primary"
-                size="small"
-                onClick={() => console.log('copiar')}
-                aria-label="copiar"
-            >
-                <EditIcon fontSize="small" />
-            </IconButton>
             <IconButton
                 color="error"
                 size="small"
@@ -41,7 +33,7 @@ const locationColumns = [
             <Chip
                 label={params.value}
                 size="small"
-                color={params.value === 1 ? 'success' : 'error'}
+                color={params.value === 'Activo' ? 'success' : 'error'}
                 variant="outlined"
             />
         ),
@@ -50,13 +42,6 @@ const locationColumns = [
 
 // Función principal
 export const getColumns = ({ handleDelete, selectedTab }) => {
-    // Columnas base para todos los tabs (excepto ubicaciones)
-    const baseColumns = [
-        { field: 'id', headerName: 'Id', width: 50 },
-        { field: 'codigo', headerName: 'Código', width: 100 },
-        { field: 'descripcion', headerName: 'Descripción', flex: 1, minWidth: 150 },
-        actionsColumn(handleDelete),
-    ];
 
     // Si es ubicaciones, construimos el array específico
     if (selectedTab === 2) {
@@ -66,6 +51,28 @@ export const getColumns = ({ handleDelete, selectedTab }) => {
             actionsColumn(handleDelete),
         ];
     }
+
+    // Columnas base para todos los tabs (excepto ubicaciones)
+    const baseColumns = [
+        { field: 'id', headerName: 'Id', width: 50 },
+        { field: 'codigo', headerName: 'Código', width: 100 },
+        { field: 'descripcion', headerName: 'Descripción', flex: 1, minWidth: 150 },
+        {
+            field: 'editar', headerName: 'Editar', width: 100, sortable: false,
+            renderCell: (params) => (
+                <Box>
+                    <IconButton
+                        color="primary"
+                        size="small"
+                        onClick={() => console.log(params)}
+                        aria-label="editar"
+                    >
+                        <EditIcon fontSize="small" />
+                    </IconButton>
+                </Box>
+            ),
+        }
+    ];
 
     return baseColumns;
 };

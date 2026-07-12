@@ -16,8 +16,6 @@ import KeyIcon from '@mui/icons-material/Key';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import ContentPasteIcon from '@mui/icons-material/ContentPaste';
 import BarChartIcon from '@mui/icons-material/BarChart';
-import { useAuth } from "../../providers/Authenticacion/useAuth";
-import { tienePermiso } from "./../../helper/JwtValidarPermiso";
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import TopicIcon from '@mui/icons-material/Topic';
 import Collapse from "@mui/material/Collapse";
@@ -25,7 +23,57 @@ import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
 import DomainIcon from '@mui/icons-material/Domain';
 // 
+import { useAuth } from "../../providers/Authenticacion/useAuth";
 import { Rutas } from "./../../routes/routes";
+
+
+const menuSections = [
+    {
+        titulo: "Seguridad",
+        items: [
+            { text: "Usuarios", icon: <PersonIcon />, path: Rutas.USUARIOS, idPermiso: 1 },
+            { text: "Permisos", icon: <KeyIcon />, path: Rutas.PERMISOS, idPermiso: 1 },
+            { text: "Historial", icon: <HistoryEduIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
+        ]
+    },
+    {
+        titulo: "Localizacion",
+        items: [
+            { text: "Ubicacion", icon: <DomainIcon />, path: Rutas.UBICACION, idPermiso: 3 },
+        ]
+    },
+    {
+        titulo: "Expediente",
+        items: [
+            { text: "Info. Personal", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+            { text: "Info. Familiar", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+            { text: "Info. Laboral", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+            { text: "Info. Académica", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 }
+        ]
+    },
+    {
+        titulo: "Tramites y Atención",
+        items: [
+            { text: "Busqueda Rapida", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+            { text: "Gestion Documentos", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 }
+        ]
+    },
+    {
+        titulo: "Reportes y estadisticas",
+        items: [
+            { text: "Reportes", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+            { text: "Estadisticas", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+            { text: "Herramientas de Ayuda", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
+
+        ]
+    },
+    {
+        titulo: "Sesión",
+        items: [
+            { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true, idPermiso: 4 },
+        ]
+    }
+];
 
 export default function Nav({ open, toggleNav }) {
 
@@ -38,55 +86,7 @@ export default function Nav({ open, toggleNav }) {
         }));
     };
 
-    const { logout } = useAuth();
-
-    const menuSections = [
-        {
-            titulo: "Seguridad",
-            items: [
-                { text: "Usuarios", icon: <PersonIcon />, path: Rutas.USUARIOS, idPermiso: 1 },
-                { text: "Permisos", icon: <KeyIcon />, path: Rutas.PERMISOS, idPermiso: 1 },
-                { text: "Historial", icon: <HistoryEduIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
-            ]
-        },
-        {
-            titulo: "Localizacion",
-            items: [
-                { text: "Ubicacion", icon: <DomainIcon />, path: Rutas.UBICACION, idPermiso: 3 },
-            ]
-        },
-        {
-            titulo: "Expediente",
-            items: [ 
-                { text: "Info. Personal", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
-                { text: "Info. Familiar", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
-                { text: "Info. Laboral", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
-                { text: "Info. Académica", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 }
-            ]
-        },
-        {
-            titulo: "Tramites y Atención",
-            items: [
-                { text: "Busqueda Rapida", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
-                { text: "Gestion Documentos", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 }
-            ]
-        },
-        {
-            titulo: "Reportes y estadisticas",
-            items: [
-                { text: "Reportes", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
-                { text: "Estadisticas", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
-                { text: "Herramientas de Ayuda", icon: <TopicIcon />, path: "/index", isLogout: true, idPermiso: 3 },
-                
-            ]
-        },
-        {
-            titulo: "Sesión",
-            items: [
-                { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true, idPermiso: 4 },
-            ]
-        }
-    ];
+    const { tienePermiso, logout } = useAuth();
 
     const NavList = (
         <Box sx={{ width: 280 }} role="presentation">

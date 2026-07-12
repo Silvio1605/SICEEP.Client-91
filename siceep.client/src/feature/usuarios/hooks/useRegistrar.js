@@ -2,7 +2,19 @@ import { useState }from 'react';
 import { BuscarPropietario, BuscarUsuario } from '../services/usuarioService';
 import { registrarUsuario } from './../services/usuarioService';
 
+
+const nuevoUsuario = async (registro) => {
+
+    const {
+        nombrePropietario: _,
+        ...usuario
+    } = registro;
+
+    return await registrarUsuario(usuario);
+};
+
 export const useRegistrar = () => {
+
     const [propietarios, setPropietarios] = useState([]);
 
     const buscar = async (param, OriginRegistro) => {
@@ -17,16 +29,6 @@ export const useRegistrar = () => {
         }
         
         setPropietarios(res.data);
-    };
-
-    const nuevoUsuario = async (registro) => {
-
-        const {
-            nombrePropietario: _,
-            ...usuario
-        } = registro;
-
-        return await registrarUsuario(usuario);
     };
 
     return { propietarios, buscar, nuevoUsuario };

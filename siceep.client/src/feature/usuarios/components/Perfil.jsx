@@ -1,4 +1,4 @@
-﻿import React, { useState, forwardRef, useEffect } from 'react';
+﻿import React, { forwardRef } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import AppBar from '@mui/material/AppBar';
@@ -16,8 +16,6 @@ import Permisos from './../../permisos/pages/Permisos';
 import CardUsuario from './CardUsuario';
 //iconos para el botón de activar/desactivar usuario
 // hooks y contextos
-import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
-import { usePerfil } from '../hooks/usePerfil';
 import { useUsuarios } from './../hooks/useUsuarios';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -37,19 +35,7 @@ const Transition = forwardRef(function Transition(props, ref) {
 
 export default function Perfil({ open, onClose, buscar, filtro }) {
 
-    const { idSeleccionado } = useBusquedaContext();
-    const { perfil } = usePerfil(idSeleccionado);
     const { ActualizarEstado } = useUsuarios();
-
-    const [EstadoComp, setEstadoComp] = useState();
-
-    useEffect(() => {
-        const cargarEstado = () => {
-            setEstadoComp(perfil.usuario?.estado);
-        };
-        cargarEstado();
-
-    }, [perfil.usuario?.estado]);
 
     const actualizarTabla = async () => {
 

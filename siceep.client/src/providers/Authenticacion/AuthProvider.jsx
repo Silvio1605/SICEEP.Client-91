@@ -1,53 +1,87 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { AuthContext } from "./AuthContext";
-import { Login } from "./../../feature/auth/services/authService";
+import { Login, Logout, Me } from "./../../feature/auth/services/authService";
 
 export const AuthProvider = ({ children }) => {
 
-    const [token, setToken] = useState(
-        localStorage.getItem("token")
-    );
+    const [autenticado, setAutenticado] = useState(false);
+    const [usuario, setUsuario] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    const login = async (nombreUsuario, contraseña) => {
+    
+    const verificarSesion = async () => {
+        try {
+                
+            const response = await Me();
 
-        const isValid = nombreUsuario.trim() !== "" && contraseña.trim() !== "";
+            setAutenticado(true);
+            setUsuario(response.data);
 
-        const auth = {
+        } catch {
+
+            setAutenticado(false);
+            setUsuario(null);
+
+        } finally {
+
+            setLoading(false);
+
+        }
+    };
+
+    const login = useCallback(async (nombreUsuario, contraseña) => {
+
+        const response = await Login({
             nombreUsuario,
             contraseña
-        };
+        });
 
-        if (isValid) {
-            const response = await Login(auth);
-            const { token, mensaje } = response.data;
-            
-            if (token !== "" && token !== null && token !== undefined) {
-                
-                localStorage.setItem("token", token);
-                setToken(token);
-                return { valid: true, mensaje };
-            }
+        if (response.status === 200) {
+
+            await verificarSesion();
+
+            return {
+                valid: true,
+                mensaje: response.data.mensaje
+            };
         }
 
-        return { valid: false, mensaje: "Credenciales inválidas" };
-        
-    };
+        return {
+            valid: false,
+            mensaje: "Credenciales inválidas"
+        };
+    }, []);
 
-    const logout = () => {
+    const tienePermiso = useCallback((permiso) => {
 
-        localStorage.removeItem("token");
+        if (!usuario?.permisos)
+            return false;
 
-        setToken(null);
-    };
+        return usuario.permisos.includes(permiso.toString());
+    }, [usuario]);
+
+    const logout = useCallback(async () => {
+
+        await Logout();
+
+        setAutenticado(false);
+        setUsuario(null);
+    }, []);
+
+    const contextValue = useMemo(() => ({
+        autenticado,
+        usuario,
+        loading,
+        login,
+        tienePermiso,
+        logout
+    }), [autenticado, usuario,
+        loading,login,
+        tienePermiso, logout]);
 
     return (
         <AuthContext.Provider
-            value={{
-                token,
-                login,
-                logout,
-                autenticado: !!token
-            }}
+            value={contextValue}
         >
             {children}
         </AuthContext.Provider>

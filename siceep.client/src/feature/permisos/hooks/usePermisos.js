@@ -2,6 +2,11 @@ import { useState, useEffect, useCallback } from 'react';
 // servicios
 import { getPermisos } from './../services/PermisoService';
 
+
+// Export - Función para obtener una lista plana de todos los permisos
+const obtenerPermisos = (data) =>
+    data.flatMap(m => m.permisos);
+
 export const usePermisos = (id) => {
 
     //permisos originales para comparar cambios
@@ -51,10 +56,6 @@ export const usePermisos = (id) => {
         );
     };
 
-    // Export - Función para obtener una lista plana de todos los permisos
-    const obtenerPermisos = (data) =>
-        data.flatMap(m => m.permisos);
-
     // Export - Función para detectar cambios entre los permisos actuales y los originales
     const detectarCambios = () => {
         const originales = obtenerPermisos(permisosOriginal);
@@ -95,7 +96,6 @@ export const usePermisos = (id) => {
         };
 
     })();
-
 
     return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso, refetch: cargar, PermisosModificados };
 }

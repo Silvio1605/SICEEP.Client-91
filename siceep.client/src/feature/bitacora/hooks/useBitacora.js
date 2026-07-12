@@ -12,7 +12,6 @@ export const useBitacora = () => {
 
     const buscar = async (filtro) => {
 
-        console.log("dentro de la busqueda", filtro);
         //validaciones
         if (filtro.estado === "") {
             filtro.estado = null;
@@ -23,7 +22,6 @@ export const useBitacora = () => {
 
         const res = await getBitacora(filtro);
 
-        console.log("respuesta de la bitacora", res);
         setHistorial(res.data.data);
     };
 
