@@ -33,6 +33,20 @@ import AppButton from './../../../shared/components/AppButton';
 import { Box } from "@mui/material";
 import LinearProgress from '@mui/material/LinearProgress';
 
+
+// Función para manejar el clic en el ícono de mostrar/ocultar contraseña
+const handleClickMostrarContra = (setter) => {
+    setter((show) => !show);
+};
+
+// Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
+const handleMouseDownContra = (event) => {
+    event.preventDefault();
+};
+const handleMouseUpContra = (event) => {
+    event.preventDefault();
+};
+
 export default function CardRegistrar({ open, onClose }) {
 
     // datos para las cajas de selecciones
@@ -65,18 +79,6 @@ export default function CardRegistrar({ open, onClose }) {
     const [MostrarContra, setMostrarContra] = useState(false);
     const [MostrarConfirm, setMostrarConfirm] = useState(false);
 
-    // Función para manejar el clic en el ícono de mostrar/ocultar contraseña
-    const handleClickMostrarContra = (setter) => {
-        setter((show) => !show);
-    };
-
-    // Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
-    const handleMouseDownContra = (event) => {
-        event.preventDefault();
-    };
-    const handleMouseUpContra = (event) => {
-        event.preventDefault();
-    };
     // Estado para controlar la apertura del diálogo de búsqueda de propietario
     const [openBusqueda, setOpenBusqueda] = React.useState(false);
 

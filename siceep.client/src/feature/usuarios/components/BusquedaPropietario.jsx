@@ -11,6 +11,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
+import { Stack, Skeleton } from '@mui/material';
 // datgrid
 import {
     DataGrid,
@@ -22,6 +23,14 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useRegistrar } from './../hooks/useRegistrar';
 import { columnsPropietarios } from './../services/propietarioData';
 
+// Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
+const handleMouseDownContra = (event) => {
+    event.preventDefault();
+};
+const handleMouseUpContra = (event) => {
+    event.preventDefault();
+};
+
 export default function BusquedaPropietario({ open, onClose, setRegistro, OriginRegistro }) {
     
     const theme = useTheme();
@@ -32,14 +41,6 @@ export default function BusquedaPropietario({ open, onClose, setRegistro, Origin
 
     const [buscarPropietario, setBuscarPropietario] = useState(''); 
     
-    // Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
-    const handleMouseDownContra = (event) => {
-        event.preventDefault();
-    };
-    const handleMouseUpContra = (event) => {
-        event.preventDefault();
-    };
-
     // Función para manejar la selección de un propietario
     const Seleccion = (params) => {
         setRegistro((prev) => ({...prev, idPropietario: params.codigo, nombrePropietario: params.nombreCompleto }));

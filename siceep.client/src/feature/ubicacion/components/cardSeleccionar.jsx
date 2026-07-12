@@ -12,6 +12,7 @@ import InputLabel from '@mui/material/InputLabel';
 import InputAdornment from '@mui/material/InputAdornment';
 import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
+import { Stack, Skeleton } from '@mui/material';
 // datgrid
 import {
     DataGrid
@@ -22,6 +23,15 @@ import SearchIcon from '@mui/icons-material/Search';
 import { useUnidades } from './../hooks/useUnidades';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { getColumnsSelect } from './../components/getColumnsSelect';
+
+
+// Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
+const handleMouseDownContra = (event) => {
+    event.preventDefault();
+};
+const handleMouseUpContra = (event) => {
+    event.preventDefault();
+};
 
 export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
 
@@ -42,15 +52,7 @@ export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
         }
     };
 
-    // Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
-    const handleMouseDownContra = (event) => {
-        event.preventDefault();
-    };
-    const handleMouseUpContra = (event) => {
-        event.preventDefault();
-    };
-
-    const Buscar = () => {
+    const buscarRegistros = () => {
         switch (tipo) {
             case 0: return searchUnidades(buscar, 1) ;
             case 1: return searchEstructuras(buscar, 1);
@@ -84,7 +86,7 @@ export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton
-                                        onClick={Buscar}
+                                        onClick={buscarRegistros}
                                         onMouseDown={handleMouseDownContra}
                                         onMouseUp={handleMouseUpContra}
                                         edge="end"

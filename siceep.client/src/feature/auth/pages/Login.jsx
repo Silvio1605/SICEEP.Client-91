@@ -109,6 +109,7 @@ function Login() {
                                     onChange={(e) => setPassword(e.target.value)}
                                 />
                                 <button
+                                    aria-label="Mostrar/ocultar contraseña"
                                     type="button"
                                     className="password-toggle"
                                     onClick={() => setShowPassword(!showPassword)}
