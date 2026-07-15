@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -51,6 +51,14 @@ export default function CardRegistrar({ open, onClose }) {
         contrasenaConfirmacion: '',
         fechaExpiracion: '',
     })
+
+    const seleccionarPropietario = useCallback((propietario) => {
+        setRegistro(prev => ({
+            ...prev,
+            idPropietario: propietario.codigo,
+            nombrePropietario: propietario.nombreCompleto,
+        }));
+    }, []);
 
     // Configuración para el diálogo responsivo
     const theme = useTheme();
@@ -189,7 +197,7 @@ export default function CardRegistrar({ open, onClose }) {
             <BusquedaPropietario
                 open={openBusqueda}
                 onClose={handleClose}
-                setRegistro={setRegistro}
+                onSeleccionar={seleccionarPropietario}
                 OriginRegistro={true}
             />
         </React.Fragment>

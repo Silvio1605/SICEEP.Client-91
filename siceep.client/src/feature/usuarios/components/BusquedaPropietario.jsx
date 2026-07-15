@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -31,7 +31,7 @@ const handleMouseUpContra = (event) => {
     event.preventDefault();
 };
 
-export default function BusquedaPropietario({ open, onClose, setRegistro, OriginRegistro }) {
+export default function BusquedaPropietario({ open, onClose, onSeleccionar, OriginRegistro }) {
     
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -43,11 +43,29 @@ export default function BusquedaPropietario({ open, onClose, setRegistro, Origin
     
     // Función para manejar la selección de un propietario
     const Seleccion = (params) => {
-        setRegistro((prev) => ({...prev, idPropietario: params.codigo, nombrePropietario: params.nombreCompleto }));
+        onSeleccionar(params);
         onClose();
     };
 
-    const registros = columnsPropietarios({ Seleccion });
+    const manejarCambioInput = (e) => {
+        setBuscarPropietario(e.target.value);
+    };
+
+    // Manejador para la búsqueda (estable)
+    const manejarBusqueda = () => {
+        buscar(buscarPropietario, OriginRegistro);
+    };
+
+    const manejarSeleccion = useCallback((params) => {
+        
+        onSeleccionar(params);
+        onClose();
+    }, [onSeleccionar, onClose]);
+
+    // Ahora las columnas se generan con la función estable
+    const columnas = useMemo(() => {
+        return columnsPropietarios({ Seleccion: manejarSeleccion });
+    }, [manejarSeleccion]); // Solo se recalcula si cambia la función
 
     return (
         <React.Fragment>
@@ -67,11 +85,11 @@ export default function BusquedaPropietario({ open, onClose, setRegistro, Origin
                             id={`buscar-propietario-input`}
                             type={'text'}
                             value={buscarPropietario}
-                            onChange={(e) => setBuscarPropietario(e.target.value)}
+                            onChange={manejarCambioInput}
                             endAdornment={
                                 <InputAdornment position="end">
                                     <IconButton
-                                        onClick={() => buscar(buscarPropietario, OriginRegistro)}
+                                        onClick={manejarBusqueda}
                                         onMouseDown={handleMouseDownContra}
                                         onMouseUp={handleMouseUpContra}
                                         edge="end"
@@ -87,7 +105,7 @@ export default function BusquedaPropietario({ open, onClose, setRegistro, Origin
                     {propietarios ? (
                         <DataGrid
                             rows={propietarios}
-                            columns={registros} // Columnas con flex: 1 aplicado
+                            columns={columnas} // Columnas con flex: 1 aplicado
                             getRowId={(row) => row.codigo}
                             initialState={{
                                 pagination: { paginationModel: { pageSize: 10 } },
