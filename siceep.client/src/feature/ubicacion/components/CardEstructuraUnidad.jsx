@@ -1,3 +1,4 @@
+import { useState } from 'React';
 import {
     Grid,
     Typography,
@@ -11,13 +12,26 @@ import AppInput from "./../../../shared/components/AppInput";
 
 export default function CardEstructuraUnidad({
     titulo,
-    registro,
-    setRegistro,
-    mostrarOrden = false,
-    onGuardar,
-    onCancelar,
+    tipo,
+    onClose,
     guardando = false
 }) {
+
+    const [registro, setRegistro] = useState({
+        nombre: "",
+        orden: ""
+    });
+
+    const handleGuardar = async () => {
+
+        if (tipo === "estructura") {
+            await registrarEstructura(registro);
+        } else {
+            await registrarUnidad(registro);
+        }
+
+        onClose();
+    };
 
     return (
         <Card
@@ -66,7 +80,7 @@ export default function CardEstructuraUnidad({
                         />
                     </Grid>
 
-                    {mostrarOrden && (
+                    {tipo === "estructura" && (
                         <Grid size={{ xs: 12, md: 4 }}>
                             <AppInput
                                 id="orden"
@@ -97,14 +111,14 @@ export default function CardEstructuraUnidad({
                     <Button
                         variant="outlined"
                         color="inherit"
-                        onClick={onCancelar}
+                        onClick={onClose}
                     >
                         Cancelar
                     </Button>
 
                     <Button
                         variant="contained"
-                        onClick={onGuardar}
+                        onClick={handleGuardar}
                         disabled={guardando}
                     >
                         {guardando ? "Guardando..." : "Guardar"}
