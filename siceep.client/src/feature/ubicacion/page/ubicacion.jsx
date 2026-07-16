@@ -76,7 +76,6 @@ export default function Ubicacion() {
 
     // Estado del modal
     const [openDialog, setOpenDialog] = useState(false);
-    //const [formData, setFormData] = useState({});
 
     // Snackbar para notificaciones
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
@@ -142,6 +141,7 @@ export default function Ubicacion() {
         //setFormData({ status: 'Activo' }); 
         setOpenDialog(true);
     };
+
     const handleSearch = () => {
         switch (selectedTab) {
             case 0: return searchUnidades(searchText, 1);
@@ -177,7 +177,8 @@ export default function Ubicacion() {
                 {/* Contenido principal */}
                 <Box sx={{ flexGrow: 1, p: 3, backgroundColor: 'background.default', overflow: 'auto' }}>
                     {/* Cabecera con tabs y botón agregar */}
-                    <Paper elevation={0} sx={{ p: 2, mb: 3, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Paper elevation={0}
+                        sx={{ p: 2, mb: 3, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Tabs
                             value={selectedTab}
                             onChange={handleTabChange}
@@ -271,7 +272,7 @@ export default function Ubicacion() {
 
             {/* Snackbar de notificaciones */}
             <Snackbar
-                open={snackbar.open}
+                open={snackbar.open} 
                 autoHideDuration={6000}
                 onClose={handleCloseSnackbar}
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}

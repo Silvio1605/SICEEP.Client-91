@@ -1,12 +1,12 @@
 ﻿import { getEstructuras, Registrar, Actualizar } from './../services/EstructuraServices';
 import { useGenericFetch } from './useGenericFetch';
 
-const registrar = async (id, descripcion, orden) => {
+const registrarEstructura = async (id, descripcion, orden) => {
 
     if (!descripcion) {
         return {
             status: 400,
-            message: "El campo descripcion es obligatorios."
+            message: "El campo descripcion es obligatorio."
         };
     }
 
@@ -30,7 +30,7 @@ export const useEstructuras = (initialParam = "", initialPage = 1) => {
 
     return {
         ...generic,
-        registrar
+        registrarEstructura
     };
 
 }

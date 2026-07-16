@@ -1,132 +1,158 @@
 import { useState } from 'React';
 import {
     Grid,
-    Typography,
     Button,
     Card,
     CardContent,
     Stack
 } from "@mui/material";
-
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import LinearProgress from '@mui/material/LinearProgress';
 import AppInput from "./../../../shared/components/AppInput";
+import { useEstructuras } from "./../hooks/useEstructuras";
+import { useUnidades } from "./../hooks/useUnidades";
 
 export default function CardEstructuraUnidad({
     titulo,
     tipo,
-    onClose,
-    guardando = false
+    open,
+    onClose
 }) {
+    // Configuración para el diálogo responsivo
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
+    const { registrarEstructura } = useEstructuras();
+    const { registrarUnidad } = useUnidades();
+
+    // 
+    const [guardando, setGuardando] = useState(false);
     const [registro, setRegistro] = useState({
-        nombre: "",
+        descripcion: "",
         orden: ""
     });
 
     const handleGuardar = async () => {
 
+        setGuardando(true);
         if (tipo === "estructura") {
             await registrarEstructura(registro);
         } else {
             await registrarUnidad(registro);
         }
 
+        setGuardando(false);
         onClose();
     };
 
     return (
-        <Card
-            elevation={2}
-            sx={{
-                borderRadius: 3
-            }}
-        >
-            <CardContent>
-
-                <Typography
-                    variant="h6"
-                    sx={{
-                        mb: 3,
-                        fontWeight: 600,
-                        color: "primary.main"
-                    }}
-                >
+        <React.Fragment>
+          <Dialog
+              fullScreen={fullScreen}
+              open={open}
+              onClose={onClose}
+              fullWidth
+              maxWidth="md"
+              disableAutoFocus
+          >
+              <DialogTitle sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1,
+                  borderBottom: 1,
+                  borderColor: 'divider'
+              }}>
                     {titulo}
-                </Typography>
-
-                <Typography
-                    variant="subtitle2"
-                    sx={{
-                        mb: 2,
-                        color: "text.secondary",
-                        fontWeight: 600
-                    }}
-                >
-                    Información General
-                </Typography>
-
-                <Grid container spacing={2}>
-
-                    <Grid size={{ xs: 12 }}>
-                        <AppInput
-                            id="nombre"
-                            label="Nombre"
-                            value={registro.nombre ?? ""}
-                            onChange={(e) =>
-                                setRegistro({
-                                    ...registro,
-                                    nombre: e.target.value
-                                })
-                            }
-                        />
-                    </Grid>
-
-                    {tipo === "estructura" && (
-                        <Grid size={{ xs: 12, md: 4 }}>
-                            <AppInput
-                                id="orden"
-                                label="Orden"
-                                type="number"
-                                inputProps={{
-                                    step: 0.01
-                                }}
-                                value={registro.orden ?? ""}
-                                onChange={(e) =>
-                                    setRegistro({
-                                        ...registro,
-                                        orden: e.target.value
-                                    })
-                                }
-                            />
-                        </Grid>
-                    )}
-
-                </Grid>
-
-                <Stack
-                    direction="row"
-                    justifyContent="flex-end"
-                    spacing={2}
-                    sx={{ mt: 4 }}
-                >
-                    <Button
-                        variant="outlined"
-                        color="inherit"
-                        onClick={onClose}
+              </DialogTitle>
+              <DialogContent dividers>
+                    <Card
+                        elevation={2}
+                        sx={{
+                            borderRadius: 3
+                        }}
                     >
-                        Cancelar
-                    </Button>
+                        <CardContent>
+                            <Grid container spacing={2}>
 
-                    <Button
-                        variant="contained"
-                        onClick={handleGuardar}
-                        disabled={guardando}
+                                <Grid size={{ xs: 12 }}>
+                                    <AppInput
+                                        id="nombre"
+                                        label="Descripcion"
+                                        value={registro.descripcion ?? ""}
+                                        onChange={(e) =>
+                                            setRegistro({
+                                                ...registro,
+                                                descripcion: e.target.value
+                                            })
+                                        }
+                                    />
+                                </Grid>
+
+                                {tipo === "estructura" && (
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                        <AppInput
+                                            id="orden"
+                                            label="Orden"
+                                            type="number"
+                                            inputProps={{
+                                                step: 0.01
+                                            }}
+                                            value={registro.orden ?? ""}
+                                            onChange={(e) =>
+                                                setRegistro({
+                                                    ...registro,
+                                                    orden: e.target.value
+                                                })
+                                            }
+                                        />
+                                    </Grid>
+                                )}
+
+                            </Grid>
+
+                           
+                        </CardContent>
+                    </Card>
+              </DialogContent>
+              <DialogActions>
+                    <Stack
+                        direction="row"
+                        justifyContent="flex-end"
+                        spacing={2}
+                        sx={{ mt: 4 }}
                     >
-                        {guardando ? "Guardando..." : "Guardar"}
-                    </Button>
+                        <Button
+                            variant="outlined"
+                            color="inherit"
+                            onClick={onClose}
+                        >
+                            Cancelar
+                        </Button>
 
-                </Stack>
+                        <Button
+                            variant="contained"
+                            onClick={handleGuardar}
+                            disabled={guardando}
+                        >
+                            {guardando == true ? "Guardando..." : "Guardar"}
+                        </Button>
 
-            </CardContent>
-        </Card>
+                    </Stack>
+              </DialogActions>
+              {guardando == true && (
+                  <Box sx={{ width: '100%' }}>
+                      <LinearProgress aria-label="Loading…" />
+                  </Box>
+              )}
+          </Dialog>
+         
+      </React.Fragment>
+        
     );
 }
