@@ -33,7 +33,7 @@ const handleMouseUpContra = (event) => {
     event.preventDefault();
 };
 
-export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
+export default function CardSeleccionar({ open, onClose, tipo, onSelect }) {
 
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
@@ -58,7 +58,6 @@ export default function CardSeleccionar({ open, onClose, onSelect, tipo }) {
             case 1: return searchEstructuras(buscar, 1);
             default: return [];
         }
-
     };
 
     const registros = getCurrentData();

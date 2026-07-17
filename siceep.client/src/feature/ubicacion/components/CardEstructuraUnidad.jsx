@@ -19,10 +19,10 @@ import { useEstructuras } from "./../hooks/useEstructuras";
 import { useUnidades } from "./../hooks/useUnidades";
 
 export default function CardEstructuraUnidad({
-    titulo,
-    tipo,
     open,
-    onClose
+    onClose,
+    tipo,
+    titulo
 }) {
     // Configuración para el diálogo responsivo
     const theme = useTheme();
@@ -41,7 +41,7 @@ export default function CardEstructuraUnidad({
     const handleGuardar = async () => {
 
         setGuardando(true);
-        if (tipo === "estructura") {
+        if (tipo === 1) {
             await registrarEstructura(registro);
         } else {
             await registrarUnidad(registro);
@@ -94,7 +94,7 @@ export default function CardEstructuraUnidad({
                                     />
                                 </Grid>
 
-                                {tipo === "estructura" && (
+                                {tipo === 1 && (
                                     <Grid size={{ xs: 12, md: 4 }}>
                                         <AppInput
                                             id="orden"

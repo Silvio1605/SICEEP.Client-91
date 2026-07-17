@@ -29,7 +29,8 @@ import { getColumns } from './../components/getColumns';
 import { useUnidades } from './../hooks/useUnidades';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { useUbicaciones } from './../hooks/useUbicaciones';
-import CardCrear from './../components/cardCrear';
+import { ModalManager } from '../../../shared/components/ModalManager';
+import { useModalManager } from '../../../shared/hooks/useModalManager';
 
 const theme = createTheme({
     palette: {
@@ -67,6 +68,8 @@ const theme = createTheme({
 
 export default function Ubicacion() {
 
+    const modal = useModalManager();
+
     const { data: unidades, search: searchUnidades } = useUnidades();
     const { data: estructuras, search: searchEstructuras } = useEstructuras();
     const { data: ubicaciones, search: searchUbicaciones, registrar } = useUbicaciones();
@@ -78,7 +81,7 @@ export default function Ubicacion() {
     const [openDialog, setOpenDialog] = useState(false);
 
     // Snackbar para notificaciones
-    const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+    const [, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
     // Filtro de búsqueda (texto)
     const [searchText, setSearchText] = useState('');
@@ -138,8 +141,22 @@ export default function Ubicacion() {
     };
 
     const handleOpenCreate = () => {
-        //setFormData({ status: 'Activo' }); 
-        setOpenDialog(true);
+
+        if (selectedTab === 2) {
+            
+            setOpenDialog(true);
+            modal.abrirModal("registrarUbicacion", {
+                tipo: selectedTab,
+                titulo: titulo
+            })
+        } else {
+            var titulo = (selectedTab === 1) ? "Registrar Estructura" : "Registrar Unidad Administrativa";
+
+            modal.abrirModal("registrarEstUnidad", {
+                tipo: selectedTab,
+                titulo: titulo
+            })
+        }
     };
 
     const handleSearch = () => {
@@ -162,14 +179,10 @@ export default function Ubicacion() {
     
     const handleCloseDialog = () => {
         setOpenDialog(false);
-        //setFormData({});
-    };
-
-    const handleCloseSnackbar = () => {
-        setSnackbar({ ...snackbar, open: false });
     };
 
     return (
+
         <ThemeProvider theme={theme}>
             <CssBaseline />
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
@@ -270,18 +283,12 @@ export default function Ubicacion() {
                 registrar={ registrar }
             />
 
-            {/* Snackbar de notificaciones */}
-            <Snackbar
-                open={snackbar.open} 
-                autoHideDuration={6000}
-                onClose={handleCloseSnackbar}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-            >
-                <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%', borderRadius: 2 }}>
-                    {snackbar.message}
-                </Alert>
-            </Snackbar>
-            
+            <ModalManager
+                modal={modal.modal}
+                onClose={modal.cerrarModal}
+                {...modal.props}
+            />
+
         </ThemeProvider>
     );
 }

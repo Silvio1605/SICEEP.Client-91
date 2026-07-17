@@ -2,7 +2,6 @@
 import { Box, Grid, Tabs, Tab, Typography, Paper } from "@mui/material";
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
-import { styled } from '@mui/material/styles';
 // componentes
 import CardPermiso from "../components/CardPermiso";
 import GuardarPermisosDialog from '../components/GuardarPermisos';
@@ -10,16 +9,6 @@ import GuardarPermisosDialog from '../components/GuardarPermisos';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'left',
-    color: (theme.vars ?? theme).palette.text.secondary,
-    ...theme.applyStyles('dark', {
-        backgroundColor: '#1A2027',
-    }),
-}));
 
 export default function Permisos({ idUsuario }) {
 
