@@ -9,12 +9,8 @@ import { useUsuarios } from './../hooks/useUsuarios';
 import FiltrosBusqueda from '../components/FiltrosBusqueda';
 import Perfil from '../components/Perfil';
 import CardReestrablecerContra from '../components/CardReestrablecerContra';
-<<<<<<< HEAD
 import CardRegistrar from './../components/Registrar/CardRegistrar';
-// loading
-=======
-import CardRegistrar from '../components/CardRegistrar';
->>>>>>> oscarDev
+
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { useScreenType } from './../../../shared/hooks/useScreenType';
@@ -50,7 +46,7 @@ export default function Usuarios() {
         setSearchParams(params);
     }, [searchParams, setSearchParams]);
 
-    // 🛠️ SOLUCIÓN 2: Rompemos el bucle infinito del useEffect
+    //  SOLUCIÓN 2: Rompemos el bucle infinito del useEffect
     useEffect(() => {
         const cargarDatos = async () => {
             try {

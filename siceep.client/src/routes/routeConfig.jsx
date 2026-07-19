@@ -26,7 +26,10 @@ export const privateRoutes = [
             </BusquedaProvider>
         )
     },
-<<<<<<< HEAD
+    { path: "info-personal/:id", element: <DetalleExpediente /> },
+    { path: "info-familiar/:id", element: <DetalleExpediente /> },
+    { path: "info-laboral/:id", element: <DetalleExpediente /> },
+    { path: "info-academica/:id", element: <DetalleExpediente /> },
     {
         path: "historial",
         element: <Bitacora />
@@ -36,11 +39,4 @@ export const privateRoutes = [
         element: <Ubicacion />
     }
 ];
-=======
 
-    { path: "info-personal/:id", element: <DetalleExpediente /> },
-    { path: "info-familiar/:id", element: <DetalleExpediente /> },
-    { path: "info-laboral/:id", element: <DetalleExpediente /> },
-    { path: "info-academica/:id", element: <DetalleExpediente /> }
-];
->>>>>>> oscarDev

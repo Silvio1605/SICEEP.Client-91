@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { SidebarContainer } from "./Sidebar.styles";
-import { AiOutlineLeft } from "react-icons/ai";
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -67,8 +67,6 @@ const menuSections = [
             { text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: "/index/herramientas-ayuda", idPermiso: 3 },
         ]
     },
-        ]
-    },*/
     {
         titulo: "Sesión",
         items: [
@@ -95,13 +93,6 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [sidebarOpen, setSidebarOpen]);
 
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sidebarOpen]);
-
     const handleToggleSection = (titulo) => {
         if (!sidebarOpen) setSidebarOpen(true);
         setOpenSections((prev) => ({
@@ -121,7 +112,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
     return (
         <SidebarContainer $isOpen={sidebarOpen} ref={sidebarRef}>
             <button className="Sidebarbutton" onClick={toggleSidebar}>
-                <AiOutlineLeft />
+               <ArrowBackIosNewIcon />
             </button>
 
             <div className="Logocontent">

@@ -9,10 +9,6 @@ import GuardarPermisosDialog from '../components/GuardarPermisos';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
 
-<<<<<<< HEAD
-
-=======
->>>>>>> oscarDev
 export default function Permisos({ idUsuario }) {
 
     //funcion para extraer el valor enviado desde usuario
