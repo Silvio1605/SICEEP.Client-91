@@ -34,12 +34,8 @@ import useModalManager from '../../../shared/hooks/useModalManager';
 
 const theme = createTheme({
     palette: {
-        primary: {
-            main: '#1a3b5d', // Azul corporativo
-        },
         secondary: {
-            main: '#2e7d32', // Verde para acciones positivas
-        },
+            main: '#2e7d32',         },
         background: {
             default: '#f4f6f8',
         },
