@@ -15,7 +15,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
-import CardSeleccionar from './cardSeleccionar';
+import CardSeleccionar from './cardSeleccionarUbicacion';
 import BusinessIcon from '@mui/icons-material/Business';
 import ApartmentIcon from '@mui/icons-material/Apartment';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';

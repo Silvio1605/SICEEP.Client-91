@@ -29,8 +29,8 @@ import { getColumns } from './../components/getColumns';
 import { useUnidades } from './../hooks/useUnidades';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { useUbicaciones } from './../hooks/useUbicaciones';
-import { ModalManager } from '../../../shared/components/ModalManager';
-import { useModalManager } from '../../../shared/hooks/useModalManager';
+import ModalManager from '../../../shared/components/ModalManager';
+import useModalManager from '../../../shared/hooks/useModalManager';
 
 const theme = createTheme({
     palette: {

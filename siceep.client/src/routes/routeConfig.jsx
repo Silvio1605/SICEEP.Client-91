@@ -22,5 +22,5 @@ export const privateRoutes = [
     {
         path: "ubicacion",
         element: <Ubicacion />
-    },
+    }
 ];

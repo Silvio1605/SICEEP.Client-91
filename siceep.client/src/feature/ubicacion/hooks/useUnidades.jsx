@@ -1,9 +1,7 @@
-﻿import { getUnidades } from './../services/ubicacionServices';
-import { getUnidades, Registrar, Actualizar } from './../services/UnidadServices'
+﻿import { getUnidades, registrar, actualizar } from './../services/UnidadServices'
 import { useGenericFetch } from './useGenericFetch';
 
-
-const registrarUnidad = (id, descripcion) => {
+const registrarUnidad = async (id, descripcion, orden) => {
     if (!descripcion) {
         return {
             status: 400,
@@ -12,9 +10,9 @@ const registrarUnidad = (id, descripcion) => {
     }
 
     if (!id) {
-        return await Registrar(descripcion, orden);
+        return await registrar(descripcion, orden);
     } else {
-        return await Actualizar(id, descripcion);
+        return await actualizar(id, descripcion);
     }
 };
 

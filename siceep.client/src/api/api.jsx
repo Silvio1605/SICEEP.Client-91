@@ -1,4 +1,4 @@
-import axios from 'axios';
+ï»¿import axios from 'axios';
 
 const api = axios.create({
     baseURL: 'https://localhost:7109/api',
@@ -9,7 +9,7 @@ const api = axios.create({
     }
 });
 
-// Agregar el token dinámicamente antes de cada solicitud
+// Agregar el token dinÃ¡micamente antes de cada solicitud
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
@@ -33,11 +33,11 @@ api.interceptors.response.use(
 
             switch (status) {
                 case 401:
-                    console.warn('Error de validación:', message);
+                    console.warn('Error de validaciÃ³n:', message);
                     break;
                 case 400:
-                    console.warn('Error de validación:', message);
-                    // Podrías mostrar un toast si quieres, o dejarlo para que el componente lo maneje
+                    console.warn('Error de validaciÃ³n:', message);
+                    // PodrÃ­as mostrar un toast si quieres, o dejarlo para que el componente lo maneje
                     break;
                 case 404:
                     console.warn('Recurso no encontrado:', error.config.url);
