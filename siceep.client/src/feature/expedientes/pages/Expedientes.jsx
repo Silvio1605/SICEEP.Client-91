@@ -4,6 +4,8 @@ import Typography from '@mui/material/Typography';
 import { DataGrid } from '@mui/x-data-grid';
 import Grid from '@mui/material/Grid';
 import { useSearchParams } from "react-router-dom";
+import { columnsExpedientes } from '../services/expedientesData';
+import FiltrosBusqueda from '../../usuarios/components/FiltrosBusqueda';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { columnsExpedientes } from '../components/columns/columnsExpediente';
@@ -15,7 +17,7 @@ export default function Expedientes() {
     //const { isMobile } = useScreenType();
     const [searchParams, setSearchParams] = useSearchParams();
     const { expedientes, buscar, page, total } = useExpediente();
-    
+
     const filtro = useMemo(() => ({
         busqueda: searchParams.get("busqueda") || "",
         estado: searchParams.get("estado") || "",
@@ -72,11 +74,11 @@ export default function Expedientes() {
             <Box sx={{ width: '100%', minWidth: 0, minHeight: 0 }}>
                 
                 <FiltroExpediente
-                   filtro={filtro}
-                   actualizarFiltro={actualizarFiltro}
-                   buscar={buscar}
+                    filtro={filtro}
+                    actualizarFiltro={actualizarFiltro}
+                    buscar={buscar}
                 />
-                
+
                 <Typography variant="subtitle1" component="h1" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
                     Registros de expedientes
                 </Typography>
@@ -85,6 +87,7 @@ export default function Expedientes() {
                     <DataGrid
                         rows={expedientes}
                         columns={registros}
+                        autoHeight
                         disableColumnMenu
                         disableRowSelectionOnClick
                         hideFooterSelectedRowCount

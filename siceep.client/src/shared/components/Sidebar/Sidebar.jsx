@@ -28,6 +28,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../../providers/Authenticacion/useAuth";
 import { Rutas } from "./../../../routes/routes";
 
+
 const menuSections = [
     {
         titulo: "Seguridad",
@@ -78,7 +79,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
     const [openSections, setOpenSections] = useState({});
     const { logout, tienePermiso } = useAuth();
     const sidebarRef = useRef(null);
-    
+
     useEffect(() => {
         if (!sidebarOpen) return;
 

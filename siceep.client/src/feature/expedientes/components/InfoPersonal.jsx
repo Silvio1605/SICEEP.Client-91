@@ -2,18 +2,19 @@ import React from 'react';
 import { Box, Typography, Paper, Avatar, Divider, Grid } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 
+export default function InfoPersonal({ data }) {
 
-// Componente auxiliar para que los campos se vean limpios y uniformes
-const CampoInfo = ({ etiqueta, valor }) => (
-    <Box sx={{ mb: 2 }}>
-        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
-            {etiqueta.toUpperCase()}
-        </Typography>
-        <Typography variant="body1" color="text.primary">
-            {valor || 'NO DISPONIBLE'}
-        </Typography>
-    </Box>
-);
+    // Componente auxiliar para que los campos se vean limpios y uniformes
+    const CampoInfo = ({ etiqueta, valor }) => (
+        <Box sx={{ mb: 2 }}>
+            <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
+                {etiqueta.toUpperCase()}
+            </Typography>
+            <Typography variant="body1" color="text.primary">
+                {valor || 'NO DISPONIBLE'}
+            </Typography>
+        </Box>
+    );
 
 
 export default function InfoPersonal({ data }) {
@@ -38,6 +39,9 @@ export default function InfoPersonal({ data }) {
                 </Box>
                 <Divider sx={{ mb: 3 }} />
 
+                {/* =================================================================
+                    INTEGRACIÓN BACKEND: Lectura dinámica de las propiedades del objeto
+                    ================================================================= */}
                 <Grid container spacing={3}>
                     {/* Primera Columna */}
                     <Grid item xs={12} sm={6}>
@@ -59,6 +63,7 @@ export default function InfoPersonal({ data }) {
                         </Box>
                     </Grid>
                 </Grid>
+
             </Paper>
         </Box>
     );
