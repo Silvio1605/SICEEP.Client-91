@@ -2,24 +2,12 @@
 import { Box, Grid, Tabs, Tab, Typography, Paper } from "@mui/material";
 import Fab from '@mui/material/Fab';
 import SaveIcon from '@mui/icons-material/Save';
-import { styled } from '@mui/material/styles';
 // componentes
 import CardPermiso from "../components/CardPermiso";
 import GuardarPermisosDialog from '../components/GuardarPermisos';
 // servicios
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'left',
-    color: (theme.vars ?? theme).palette.text.secondary,
-    ...theme.applyStyles('dark', {
-        backgroundColor: '#1A2027',
-    }),
-}));
 
 export default function Permisos({ idUsuario }) {
 
@@ -44,7 +32,7 @@ export default function Permisos({ idUsuario }) {
     const sectionsRef = useRef({});
 
     const tabsChange = (event, newValue) => {
-        setValue(newValue);  
+        setValue(newValue);
 
         const idModulo = permisosOriginal[newValue]?.idModulo;
         const element = sectionsRef.current[idModulo];
@@ -98,7 +86,7 @@ export default function Permisos({ idUsuario }) {
                 </Typography>
             </Box>
 
-            
+
             {/* Tabs */}
             <Box
                 sx={{
@@ -111,7 +99,7 @@ export default function Permisos({ idUsuario }) {
                     boxShadow: 2
                 }}
             >
-                
+
                 <Tabs
                     value={value}
                     onChange={tabsChange}
@@ -128,12 +116,12 @@ export default function Permisos({ idUsuario }) {
                         <Tab key={m.idModulo} label={m.modulo} />
                     ))}
                 </Tabs>
-               
+
             </Box>
 
             {/* LISTA COMPLETA DE PERMISOS */}
             {permisos?.map((modulo) => (
-                <Box key={modulo.idModulo} sx={{ mb: 4  }} >
+                <Box key={modulo.idModulo} sx={{ mb: 4 }} >
 
                     {/* HEADER DEL MÓDULO */}
                     <Box

@@ -1,53 +1,45 @@
-﻿import * as React from "react";
-import { Box } from "@mui/material";
+﻿import { useState } from "react";
 import { Outlet } from "react-router-dom";
-import Nav from "./../components/Nav";
-import BarraNav from "./../components/BarraNav";
-import Toolbar from "@mui/material/Toolbar";
-import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'center',
-    color: (theme.vars ?? theme).palette.text.secondary,
-    ...theme.applyStyles('dark', {
-        backgroundColor: '#1A2027',
-    }),
-}));
+// Componentes
+import { Sidebar } from "../components/Sidebar/Sidebar";
+import BarraNav from "../components/BarraNav";
 
-function Index() {
+// Estilos
+import {
+    MainContainer,
+    PageContent,
+    ContentWrapper,
+    SidebarWrapper,
+    OutletContainer
+} from "./Index.styles";
 
-    const [open, setOpen] = React.useState(false);
-
-    const toggleNav = (newOpen) => () => {
-        setOpen(newOpen);
-    };
+const Index = () => {
+    // Estado global de la vista
+    const [sidebarOpen, setSidebarOpen] = useState(true);
 
     return (
-        <Box>
-            {/** Componente de navegción lateral */}
-            <Nav open={open} toggleNav={toggleNav} />
+        <MainContainer>
 
-            {/** Barra de navegación superior */}
-            <BarraNav toggleNav={toggleNav} />
+            {/* Menú de navegación lateral */}
+            <SidebarWrapper>
+                <Sidebar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+            </SidebarWrapper>
 
-            {/** Espacio para el contenido principal */}
-            <Toolbar />
+            {/* Panel derecho principal */}
+            <PageContent>
+                <BarraNav />
 
-            {/** Panel principal con fondo suave y espacio para el contenido */}
-            <Box sx={{ flexGrow: 1, width: "98vw", pl: 1 }}>
-                <Grid container spacing={2}>
-                    <Grid size={{ xs: 12, md: 12 }}>
+                {/* Área de renderizado para las sub-rutas (Tablas, Formularios) */}
+                <ContentWrapper>
+                    <OutletContainer>
                         <Outlet />
-                    </Grid>
-                </Grid>
-            </Box>
-        </Box>
+                    </OutletContainer>
+                </ContentWrapper>
+            </PageContent>
+
+        </MainContainer>
     );
-}
+};
 
 export default Index;

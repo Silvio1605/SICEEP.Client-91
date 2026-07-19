@@ -5,8 +5,9 @@ const HOME = "/index";
 export const Rutas = {
     HOME: HOME,
     USUARIOS: HOME + "/usuarios",
-    PERMISOS: HOME + "/permiso",
+    PERMISOS: HOME + "/permisos",
     HISTORIAL: HOME + "/historial",
     UBICACION: HOME + "/ubicacion",
+    EXPEDIENTES: HOME + "/expedientes",
     CERRAR_SESION: HOME + "/cerrar-sesion",
 };
