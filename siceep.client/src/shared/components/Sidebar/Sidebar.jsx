@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { SidebarContainer } from "./Sidebar.styles";
-import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import { AiOutlineLeft } from "react-icons/ai";
 import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
@@ -28,6 +28,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../../providers/Authenticacion/useAuth";
 import { Rutas } from "./../../../routes/routes";
 
+
 const menuSections = [
     {
         titulo: "Seguridad",
@@ -40,31 +41,32 @@ const menuSections = [
     {
         titulo: "Localizacion",
         items: [
-            { text: "Ubicacion", icon: <DomainIcon />, path: Rutas.UBICACION, idPermiso: 1 },
+            { text: "Ubicacion", icon: <DomainIcon />, path: Rutas.UBICACION, idPermiso: 3 },
         ]
-    },/*
+    },
     {
         titulo: "Expediente",
         items: [
             // 2. Aquí está tu nuevo botón maestro unificado
-            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.HISTORIAL, idPermiso: 1 }
+            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: 3 }
         ]
     },
     {
         titulo: "Tramites y Atención",
         items: [
-            { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
-            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: Rutas.HISTORIAL, idPermiso: 1 }
+            { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: 3 },
+            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 3 }
         ]
     },
     {
         titulo: "Reportes y estadisticas",
         items: [
-            { text: "Reportes", icon: <AssessmentIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
-            { text: "Estadisticas", icon: <BarChartIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
-            {
-                text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: Rutas.HISTORIAL, idPermiso: 1
-            },
+
+            { text: "Reportes", icon: <AssessmentIcon />, path: "/index/reportes", idPermiso: 3 },
+            { text: "Estadisticas", icon: <BarChartIcon />, path: "/index/estadisticas", idPermiso: 3 },
+            { text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: "/index/herramientas-ayuda", idPermiso: 3 },
+        ]
+    },
         ]
     },*/
     {
@@ -84,15 +86,14 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
         if (!sidebarOpen) return;
 
         const handleClickOutside = (event) => {
-            if (
-                sidebarRef.current &&
-                !sidebarRef.current.contains(event.target)
-            ) {
+            if (sidebarOpen && sidebarRef.current && !sidebarRef.current.contains(event.target)) {
                 setSidebarOpen(false);
             }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [sidebarOpen, setSidebarOpen]);
 
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
@@ -110,17 +111,17 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
     };
 
     const toggleSidebar = () => {
-        setSidebarOpen(prev => !prev);
+        setSidebarOpen(!sidebarOpen);
     };
-    /*
+
     const autoCerrarSidebar = () => {
         if (window.innerWidth <= 768) setSidebarOpen(false);
-    };*/
+    };
 
     return (
         <SidebarContainer $isOpen={sidebarOpen} ref={sidebarRef}>
             <button className="Sidebarbutton" onClick={toggleSidebar}>
-                <ArrowBackIosNewIcon />
+                <AiOutlineLeft />
             </button>
 
             <div className="Logocontent">
@@ -150,36 +151,30 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
                             <Collapse in={openSections[section.titulo]} timeout="auto" unmountOnExit>
                                 <div className="ItemsContainer">
-                                    {section.items.map((item) =>
-                                        tienePermiso(item.idPermiso) && (
-                                            <>
-                                                <ListItem
-                                                    key={`${section.titulo}-${item.text}`}
-                                                    disablePadding
-                                                    sx={{ pl: 2 }}
-                                                >
-                                                    <ListItemButton
-                                                        component={NavLink}
-                                                        to={item.path}
-                                                        className={({ isActive }) =>
-                                                            `Links${isActive ? " active" : ""}`
-                                                        }
-                                                        onClick={() => {
-                                                            if (item.isLogout) {
-                                                                logout();
-                                                            }
-                                                        }}
-                                                    >
-                                                        <ListItemIcon>
-                                                            {item.icon}
-                                                        </ListItemIcon>
+                                    {section.items.map((item) => {
+                                        const rutaCorrecta = item.path === "/" || item.path.startsWith("/index")
+                                            ? item.path
+                                            : `/index${item.path.startsWith("/") ? "" : "/"}${item.path}`;
 
-                                                        <ListItemText primary={item.text} />
-                                                    </ListItemButton>
-                                                </ListItem>
-                                            </>
-                                        )
-                                    )}
+                                        return tienePermiso(item.idPermiso) && (
+                                            <div className="LinkContainer" key={item.text}>
+                                                <NavLink
+                                                    to={rutaCorrecta}
+                                                    className={({ isActive }) => `Links${isActive ? " active" : ""}`}
+                                                    onClick={() => {
+                                                        if (item.isLogout) {
+                                                            logout();
+                                                        } else {
+                                                            autoCerrarSidebar();
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className="Linkicon">{item.icon}</div>
+                                                    {sidebarOpen && <span>{item.text}</span>}
+                                                </NavLink>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </Collapse>
                         </div>

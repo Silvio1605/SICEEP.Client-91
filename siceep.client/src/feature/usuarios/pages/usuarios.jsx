@@ -1,44 +1,33 @@
-﻿import { useEffect, useState, useCallback, useMemo } from 'react'
-import Box from '@mui/material/Box'
-import Typography from '@mui/material/Typography'
-import {
-    DataGrid,
-    GridToolbar,
-} from '@mui/x-data-grid';
-import Grid from '@mui/material/Grid';
+﻿import { useEffect, useState, useCallback, useMemo } from 'react';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { DataGrid } from '@mui/x-data-grid';
 import AddIcon from '@mui/icons-material/Add';
-// React Router
 import { useSearchParams } from "react-router-dom";
-// extraer datos de la api
 import { columnsUsuarios } from './../services/usuariosData';
 import { useUsuarios } from './../hooks/useUsuarios';
-// componentes
 import FiltrosBusqueda from '../components/FiltrosBusqueda';
 import Perfil from '../components/Perfil';
 import CardReestrablecerContra from '../components/CardReestrablecerContra';
+<<<<<<< HEAD
 import CardRegistrar from './../components/Registrar/CardRegistrar';
 // loading
+=======
+import CardRegistrar from '../components/CardRegistrar';
+>>>>>>> oscarDev
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-// media query para detectar el tamaño de pantalla y ajustar la tabla               
 import { useScreenType } from './../../../shared/hooks/useScreenType';
-// hooks
 import { PermisoProvider } from './../../../providers/Permisos/PermisoProvider';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
-// componentes personalizados
 import AppButton from './../../../shared/components/AppButton';
 
 export default function Usuarios() {
-
     const { isMobile } = useScreenType();
-
     const { usuarios, buscar } = useUsuarios();
-    // para manejar los parámetros de búsqueda en la URL (si es necesario)
     const [searchParams, setSearchParams] = useSearchParams();
+    const { idSeleccionado } = useBusquedaContext();
 
-    var { idSeleccionado } = useBusquedaContext();
-
-    //datos de la busqueda con filtro
     const filtro = useMemo(() => ({
         propietario: searchParams.get("propietario") || null,
         fechaExpiracionDesde: searchParams.get("fechaExpiracionDesde") || null,
@@ -48,9 +37,9 @@ export default function Usuarios() {
         tamañoPagina: Number(searchParams.get("tamañoPagina")) || 10
     }), [searchParams]);
 
-    const actualizarFiltro = (nuevoFiltro) => {
+    // 🛠️ SOLUCIÓN 1: Memorizamos el filtro para que no rompa la memoria al navegar
+    const actualizarFiltro = useCallback((nuevoFiltro) => {
         const params = new URLSearchParams(searchParams);
-
         Object.entries(nuevoFiltro).forEach(([key, value]) => {
             if (value !== null && value !== "" && value !== undefined) {
                 params.set(key, value);
@@ -59,9 +48,9 @@ export default function Usuarios() {
             }
         });
         setSearchParams(params);
-    };
+    }, [searchParams, setSearchParams]);
 
-    // Cargar usuarios cada vez que cambie el filtro o los parámetros de búsqueda en la URL
+    // 🛠️ SOLUCIÓN 2: Rompemos el bucle infinito del useEffect
     useEffect(() => {
         const cargarDatos = async () => {
             try {
@@ -71,140 +60,85 @@ export default function Usuarios() {
             }
         };
         cargarDatos();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
-    //logica para abrir card de reestablecer contraseña
+        // Ignoramos la función 'buscar' a propósito en las dependencias. 
+        // Como dedujo Silvio, los cambios de estado en permisos y búsquedas 
+        // forzaban a 'buscar' a recargarse y congelaba React Router.
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [filtro]);
+
     const [openCambioContra, setOpenCambioContra] = useState(false);
-    const abrirCambioContra = useCallback(() => {
-        setOpenCambioContra(true);
-    }, []);
-    const cerrarCambioContra = useCallback(() => {
-        setOpenCambioContra(false);
-    }, []);
+    const abrirCambioContra = useCallback(() => setOpenCambioContra(true), []);
+    const cerrarCambioContra = useCallback(() => setOpenCambioContra(false), []);
 
-    //logica para abrir perfil de usuario
     const [openPerfil, setOpenPerfil] = useState(false);
-    const abrirPerfil = useCallback(() => {
-        setOpenPerfil(true);
-    }, []);
-    const cerrarPerfil = useCallback(() => {
-        setOpenPerfil(false);
-    }, []);
+    const abrirPerfil = useCallback(() => setOpenPerfil(true), []);
+    const cerrarPerfil = useCallback(() => setOpenPerfil(false), []);
 
+    // 🛠️ SOLUCIÓN 3: Memorizamos también la apertura del registro
     const [openReg, setOpenReg] = useState(false);
-
-    const abrirReg = () => {
-        setOpenReg(true);
-    };
-    const closeReg = () => {
-        setOpenReg(false);
-    };
+    const abrirReg = useCallback(() => setOpenReg(true), []);
+    const closeReg = useCallback(() => setOpenReg(false), []);
 
     const registros = useMemo(() => {
         return columnsUsuarios({ isMobile, abrirPerfil, abrirCambioContra });
     }, [isMobile, abrirPerfil, abrirCambioContra]);
 
-    const slots = useMemo(() => ({ toolbar: GridToolbar }), []);
-
     return (
-        <Box>
-            <Box sx={{ display: "flex", gap: 2, alignItems: "center" }}>
-                <Box sx={{ flexGrow: 1 }}>
-                    <Grid container spacing={2}>
-                        <Grid size={{ xs: 7, sm: 9, md: 10 }}>
-                            <Typography variant="h5" component="h1" color="text.primary">
-                                Gestion de Usuarios
-                            </Typography>
-                            <Typography variant="subtitle1" component="h1" color="text.secundary">
-                                Control de cuentas de usuario
-                            </Typography>
-                        </Grid>
-                        <Grid size={{ xs: 5, sm: 3, md: 2 }}>
-                            <AppButton
-                                isfullWidth={false}
-                                colorBtn="primary"
-                                iconBtn={<AddIcon />}
-                                content="Registrar"
-                                onClick={abrirReg}
-                            />
-                        </Grid>
-                    </Grid>
+        <Box sx={{ width: '100%', pb: 5 }}>
+
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+                <Box>
+                    <Typography variant="h5" component="h1" color="text.primary">Gestion de Usuarios</Typography>
+                    <Typography variant="subtitle1" component="h1" color="text.secondary">Control de cuentas de usuario</Typography>
+                </Box>
+                <Box>
+                    <AppButton isfullWidth={false} colorBtn="primary" iconBtn={<AddIcon />} content="Registrar" onClick={abrirReg} />
                 </Box>
             </Box>
-            <Box
-                sx={{
-                    flexGrow: 1,
-                    minHeight: 0,
-                    width: '98%',
-                    // Estilos para la tabla
-                    '& .MuiDataGrid-root': {
-                        borderRadius: 2,
-                        boxShadow: 3,
-                        borderColor: 'grey.300',
-                    },
-                    '& .header-negrita': {
-                        fontWeight: 'bold',
-                    },
-                }}
-            >
-                {/* componente para el filtro de busqueda */}
-                <FiltrosBusqueda
-                    filtro={filtro}
-                    actualizarFiltro={actualizarFiltro}
-                    buscar={buscar}
-                />
 
-                <Typography variant="subtitle1" component="h1" color="text.secundary">
-                    Registros de cuentas
-                </Typography>
+            <Box sx={{ width: '100%', minWidth: 0, minHeight: 0 }}>
+                <FiltrosBusqueda filtro={filtro} actualizarFiltro={actualizarFiltro} buscar={buscar} />
+
+                <Typography variant="subtitle1" component="h1" color="text.secondary" sx={{ mt: 2, mb: 1 }}>Registros de cuentas</Typography>
 
                 {usuarios ? (
                     <DataGrid
                         rows={usuarios}
-                        columns={registros} // Columnas con flex: 1 aplicado
-                        // Configuramos el GridToolbar
-                        slots={slots}
-                        initialState={{
-                            pagination: { paginationModel: { pageSize: 10 } },
-                        }}
+                        columns={registros}
+                        autoHeight
+                        disableColumnMenu
+                        disableRowSelectionOnClick
+                        hideFooterSelectedRowCount
+                        disableColumnFilter
+                        disableColumnSelector
+                        disableDensitySelector
+                        slots={{ toolbar: null }}
+                        initialState={{ pagination: { paginationModel: { pageSize: 10 } } }}
                         pageSizeOptions={[5, 10, 25]}
-                        localeText={{
-                            noRowsLabel: "No hay datos",
-                            noResultsOverlayLabel: "No se encontraron resultados",
-                            MuiTablePagination: {
-                                labelRowsPerPage: "Filas:"
-                            }
+                        localeText={{ noRowsLabel: "No hay datos", noResultsOverlayLabel: "No se encontraron resultados", MuiTablePagination: { labelRowsPerPage: "Filas:" } }}
+                        sx={{
+                            border: 'none',
+                            backgroundColor: '#ffffff',
+                            '& .MuiDataGrid-columnHeaders': { borderBottom: 'none', backgroundColor: '#f8f9fa' },
+                            '& .MuiDataGrid-cell': { borderBottom: '1px solid #f0f0f0' },
+                            '& .header-negrita': { fontWeight: 'bold' },
                         }}
                     />
                 ) : (
                     <Stack spacing={1}>
-                        {/* For variant="text", adjust the height via font-size */}
                         <Skeleton variant="rectangular" width={'100%'} height={20} />
                         <Skeleton variant="rounded" width={'100%'} height={60} />
                     </Stack>
                 )}
             </Box>
+
             <PermisoProvider idUsuario={idSeleccionado}>
-                <Perfil
-                    open={openPerfil}
-                    onClose={cerrarPerfil}
-                    buscar={buscar}
-                    filtro={ filtro }
-                />
-
-                <CardReestrablecerContra
-                    open={openCambioContra}
-                    onClose={cerrarCambioContra}
-                    id={idSeleccionado}
-                />
+                <Perfil open={openPerfil} onClose={cerrarPerfil} buscar={buscar} filtro={filtro} />
+                <CardReestrablecerContra open={openCambioContra} onClose={cerrarCambioContra} id={idSeleccionado} />
             </PermisoProvider>
-            <CardRegistrar
-                open={openReg}
-                onClose={closeReg}
-            />
-        </Box>
-        
-    )
-}
 
+            <CardRegistrar open={openReg} onClose={closeReg} />
+        </Box>
+    );
+}
