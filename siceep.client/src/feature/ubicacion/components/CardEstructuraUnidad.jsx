@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import {
     Grid,
     Button,
@@ -31,6 +31,7 @@ export default function CardEstructuraUnidad({
     const { registrarEstructura } = useEstructuras();
     const { registrarUnidad } = useUnidades();
 
+    console.log(titulo);
     // 
     const [guardando, setGuardando] = useState(false);
     const [registro, setRegistro] = useState({
@@ -79,21 +80,6 @@ export default function CardEstructuraUnidad({
                     >
                         <CardContent>
                             <Grid container spacing={2}>
-
-                                <Grid size={{ xs: 12 }}>
-                                    <AppInput
-                                        id="nombre"
-                                        label="Descripcion"
-                                        value={registro.descripcion ?? ""}
-                                        onChange={(e) =>
-                                            setRegistro({
-                                                ...registro,
-                                                descripcion: e.target.value
-                                            })
-                                        }
-                                    />
-                                </Grid>
-
                                 {tipo === 1 && (
                                     <Grid size={{ xs: 12, md: 4 }}>
                                         <AppInput
@@ -114,9 +100,22 @@ export default function CardEstructuraUnidad({
                                     </Grid>
                                 )}
 
-                            </Grid>
 
-                           
+                                <Grid size={{ xs: 12 }}>
+                                    <AppInput
+                                        id="nombre"
+                                        label="Descripcion"
+                                        value={registro.descripcion ?? ""}
+                                        onChange={(e) =>
+                                            setRegistro({
+                                                ...registro,
+                                                descripcion: e.target.value
+                                            })
+                                        }
+                                    />
+                                </Grid>
+                              
+                            </Grid>
                         </CardContent>
                     </Card>
               </DialogContent>

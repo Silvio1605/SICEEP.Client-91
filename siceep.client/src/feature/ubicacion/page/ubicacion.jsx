@@ -29,6 +29,7 @@ import { getColumns } from './../components/getColumns';
 import { useUnidades } from './../hooks/useUnidades';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { useUbicaciones } from './../hooks/useUbicaciones';
+import CardCrear from './../components/cardCrear';
 import ModalManager from '../../../shared/components/ModalManager';
 import useModalManager from '../../../shared/hooks/useModalManager';
 
@@ -138,6 +139,8 @@ export default function Ubicacion() {
 
     const handleOpenCreate = () => {
 
+        var titulo = (selectedTab === 1) ? "Registrar Estructura" : "Registrar Unidad Administrativa";
+
         if (selectedTab === 2) {
             
             setOpenDialog(true);
@@ -146,7 +149,7 @@ export default function Ubicacion() {
                 titulo: titulo
             })
         } else {
-            var titulo = (selectedTab === 1) ? "Registrar Estructura" : "Registrar Unidad Administrativa";
+            
 
             modal.abrirModal("registrarEstUnidad", {
                 tipo: selectedTab,
@@ -280,7 +283,7 @@ export default function Ubicacion() {
             />
 
             <ModalManager
-                modal={modal.modal}
+                modal={modal}
                 onClose={modal.cerrarModal}
                 {...modal.props}
             />
