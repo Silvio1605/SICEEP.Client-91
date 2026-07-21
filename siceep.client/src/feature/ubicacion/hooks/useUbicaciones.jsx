@@ -10,7 +10,10 @@ const registrar = async (idEstructura, idUnidad) => {
         };
     }
 
-    return await registrarUbicacion(idEstructura, idUnidad);
+    var result = await registrarUbicacion(idEstructura, idUnidad);
+
+    console.log(result);
+    return result;
 };
 
 export const useUbicaciones = (initialParam = "", initialPage = 1) => {

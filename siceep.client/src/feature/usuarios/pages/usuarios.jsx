@@ -33,7 +33,7 @@ export default function Usuarios() {
         tamañoPagina: Number(searchParams.get("tamañoPagina")) || 10
     }), [searchParams]);
 
-    // 🛠️ SOLUCIÓN 1: Memorizamos el filtro para que no rompa la memoria al navegar
+    // Memorizamos el filtro para que no rompa la memoria al navegar
     const actualizarFiltro = useCallback((nuevoFiltro) => {
         const params = new URLSearchParams(searchParams);
         Object.entries(nuevoFiltro).forEach(([key, value]) => {
@@ -46,7 +46,7 @@ export default function Usuarios() {
         setSearchParams(params);
     }, [searchParams, setSearchParams]);
 
-    //  SOLUCIÓN 2: Rompemos el bucle infinito del useEffect
+    // Rompemos el bucle infinito del useEffect
     useEffect(() => {
         const cargarDatos = async () => {
             try {
@@ -57,9 +57,6 @@ export default function Usuarios() {
         };
         cargarDatos();
 
-        // Ignoramos la función 'buscar' a propósito en las dependencias. 
-        // Como dedujo Silvio, los cambios de estado en permisos y búsquedas 
-        // forzaban a 'buscar' a recargarse y congelaba React Router.
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filtro]);
 
@@ -71,7 +68,7 @@ export default function Usuarios() {
     const abrirPerfil = useCallback(() => setOpenPerfil(true), []);
     const cerrarPerfil = useCallback(() => setOpenPerfil(false), []);
 
-    // 🛠️ SOLUCIÓN 3: Memorizamos también la apertura del registro
+    // Memorizamos también la apertura del registro
     const [openReg, setOpenReg] = useState(false);
     const abrirReg = useCallback(() => setOpenReg(true), []);
     const closeReg = useCallback(() => setOpenReg(false), []);

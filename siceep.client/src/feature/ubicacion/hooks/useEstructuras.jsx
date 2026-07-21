@@ -1,28 +1,14 @@
 ﻿import { getEstructuras, Registrar, Actualizar } from './../services/EstructuraServices';
 import { useGenericFetch } from './useGenericFetch';
 
-const registrarEstructura = async (id, descripcion, orden) => {
+const registrarEstructura = async (registrar) => {
 
-    if (!descripcion) {
-        return {
-            status: 400,
-            message: "El campo descripcion es obligatorio."
-        };
-    }
-
-    if (!id) {
-        if (!orden) {
-            return {
-                status: 400,
-                message: "El orden es obligatorio."
-            };
-        }
-
-        return await Registrar(descripcion, orden);
+    if (!registrar.id) {
+        
+        return await Registrar(registrar.descripcion, registrar.orden);
     } else {
-        return await Actualizar(id, descripcion);
+        return await Actualizar(registrar.id, registrar.descripcion);
     }
-    
 };
 
 export const useEstructuras = (initialParam = "", initialPage = 1) => {

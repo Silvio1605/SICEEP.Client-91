@@ -30,7 +30,7 @@ import { useUnidades } from './../hooks/useUnidades';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { useUbicaciones } from './../hooks/useUbicaciones';
 import CardCrear from './../components/cardCrear';
-import ModalManager from '../../../shared/components/ModalManager';
+import ModalManager from '../../../shared/components/Modal/ModalManager';
 import useModalManager from '../../../shared/hooks/useModalManager';
 
 const theme = createTheme({

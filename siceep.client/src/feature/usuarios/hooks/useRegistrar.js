@@ -2,7 +2,6 @@ import { useState }from 'react';
 import { BuscarPropietario, BuscarUsuario } from '../services/usuarioService';
 import { registrarUsuario } from './../services/usuarioService';
 
-
 const nuevoUsuario = async (registro) => {
 
     const {

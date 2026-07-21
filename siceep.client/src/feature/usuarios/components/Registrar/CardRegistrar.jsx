@@ -55,7 +55,7 @@ export default function CardRegistrar({ open, onClose }) {
     const seleccionarPropietario = useCallback((propietario) => {
         setRegistro(prev => ({
             ...prev,
-            idPropietario: propietario.codigo,
+            idPropietario: propietario.id,
             nombrePropietario: propietario.nombreCompleto,
         }));
     }, []);

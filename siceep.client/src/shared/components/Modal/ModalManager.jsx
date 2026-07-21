@@ -1,6 +1,6 @@
-import CardSeleccionar from "../../feature/ubicacion/components/cardSeleccionarUbicacion";
-import CardCrear from "../../feature/ubicacion/components/cardCrear";
-import CardEstructuraUnidad from "../../feature/ubicacion/components/cardEstructuraUnidad"
+import CardSeleccionar from "../../../feature/ubicacion/components/cardSeleccionarUbicacion";
+import CardCrear from "../../../feature/ubicacion/components/cardCrear";
+import CardEstructuraUnidad from "../../../feature/ubicacion/components/cardEstructuraUnidad"
 
 export default function ModalManager({ modal, onClose }) {
 

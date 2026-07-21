@@ -3,7 +3,7 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 
 export const columnsPropietarios = ({ Seleccion }) => [
     {
-        field: 'codigo', headerName: 'Codigo', flex: 1, minWidth: 80,
+        field: 'id', headerName: 'Codigo', flex: 1, minWidth: 80,
         align: 'center', headerAlign: 'center'
     },
     {
