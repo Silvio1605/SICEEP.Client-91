@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import { Login, Logout, Me } from "./../../feature/auth/services/authService";
 
@@ -8,10 +8,9 @@ export const AuthProvider = ({ children }) => {
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    
+  
     const verificarSesion = async () => {
         try {
-                
             const response = await Me();
 
             setAutenticado(true);
@@ -28,6 +27,10 @@ export const AuthProvider = ({ children }) => {
 
         }
     };
+
+    useEffect(() => {
+        verificarSesion();
+    }, []);
 
     const login = useCallback(async (nombreUsuario, contraseña) => {
 

@@ -2,10 +2,7 @@ import CardSeleccionar from "../../feature/ubicacion/components/cardSeleccionarU
 import CardCrear from "../../feature/ubicacion/components/cardCrear";
 import CardEstructuraUnidad from "../../feature/ubicacion/components/cardEstructuraUnidad"
 
-export default function ModalManager({
-    modal,
-    onClose
-}) {
+export default function ModalManager({ modal, onClose }) {
 
     const MODALES = {
         seleccionarUbicacion: CardSeleccionar,
@@ -13,14 +10,14 @@ export default function ModalManager({
         registrarEstUnidad: CardEstructuraUnidad
     };
 
-    const Modal = MODALES[modal.nombre];
+    const Modal = MODALES[modal.modalActivo];
     if (!Modal) return null;
 
     return (
         <Modal
             open
             onClose={onClose}
-            {...modal.props}
+            {...modal.modalData}
         />
     );
 }
