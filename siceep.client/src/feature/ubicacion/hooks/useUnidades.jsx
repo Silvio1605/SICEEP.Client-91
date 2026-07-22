@@ -2,13 +2,7 @@
 import { useGenericFetch } from './useGenericFetch';
 
 const registrarUnidad = async (id, descripcion, orden) => {
-    if (!descripcion) {
-        return {
-            status: 400,
-            message: "El campo descripcion es obligatorio."
-        };
-    }
-
+    
     if (!id) {
         return await registrar(descripcion, orden);
     } else {

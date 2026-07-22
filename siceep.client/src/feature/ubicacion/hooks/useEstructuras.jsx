@@ -12,12 +12,10 @@ const registrarEstructura = async (registrar) => {
 };
 
 export const useEstructuras = (initialParam = "", initialPage = 1) => {
-    const generic =  useGenericFetch(getEstructuras, initialParam, initialPage);
+    const generic = useGenericFetch(getEstructuras, initialParam, initialPage);
 
     return {
         ...generic,
         registrarEstructura
     };
-
-}
-   
+}   

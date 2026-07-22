@@ -1,41 +1,40 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState } from "react";
 
-export const useGenericFetch = (fetchFn, initialParam = "", initialPage = 1) => {
+export const useGenericFetch = (fetchFn) => {
+
     const [data, setData] = useState([]);
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [param, setParam] = useState(initialParam);
-    const [page, setPage] = useState(initialPage);
+    const [param, setParam] = useState("");
+    const [page, setPage] = useState(1);
+    const [totalRegistros, setTotalRegistros] = useState(0);
 
-    const fetchData = useCallback(async (newParam, newPage) => {
+    const search = useCallback(async (newParam = "", newPage = 1) => {
         try {
             setLoading(true);
             setError(null);
 
-            const p = newParam !== undefined ? newParam : param;
-            const pg = newPage !== undefined ? newPage : page;
+            const response = await fetchFn(newParam, newPage);
 
-            const response = await fetchFn(p, pg);
             setData(response.data.data);
+            setTotalRegistros(response.data.totalRegistros);
+            setParam(newParam);
+            setPage(newPage);
 
-            if (newParam !== undefined) setParam(newParam);
-            if (newPage !== undefined) setPage(newPage);
         } catch (err) {
             setError(err);
         } finally {
             setLoading(false);
         }
-    }, [param, page, fetchFn]);
+    }, [fetchFn]);
 
-    // Carga inicial
-    useEffect(() => {
-        fetchData(initialParam, initialPage);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const search = (newParam, newPage) => {
-        fetchData(newParam, newPage);
+    return {
+        data,
+        loading,
+        error,
+        param,
+        page,
+        totalRegistros,
+        search
     };
-
-    return { data, loading, error, refetch: fetchData, search, param, page };
 };

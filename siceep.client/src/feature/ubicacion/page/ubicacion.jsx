@@ -20,9 +20,7 @@ import {
     Stack
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import {
-    Add as AddIcon,
-} from '@mui/icons-material';
+import { Add as AddIcon} from '@mui/icons-material';
 
 import SearchIcon from '@mui/icons-material/Search';
 import { getColumns } from './../components/getColumns';
@@ -67,9 +65,9 @@ export default function Ubicacion() {
 
     const modal = useModalManager();
 
-    const { data: unidades, search: searchUnidades } = useUnidades();
-    const { data: estructuras, search: searchEstructuras } = useEstructuras();
-    const { data: ubicaciones, search: searchUbicaciones, registrar } = useUbicaciones();
+    const { data: unidades, search: searchUnidades, page : pagUnidad, totalRegistros : totalUnidad } = useUnidades();
+    const { data: estructuras, search: searchEstructuras, page: pagEstructura, totalRegistros: totalE } = useEstructuras();
+    const { data: ubicaciones, search: searchUbicaciones, page: pagUbicacion, totalRegistros: totalU ,registrar } = useUbicaciones();
 
     // Estados 
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
@@ -92,6 +90,24 @@ export default function Ubicacion() {
             default: return [];
         }
     };
+
+    const getPage = () => {
+        switch (selectedTab) {
+            case 0: return pagUnidad;
+            case 1: return pagEstructura;
+            case 2: return pagUbicacion;
+            default: return 1;
+        }
+    }
+
+    const getTotal = () => {
+        switch (selectedTab) {
+            case 0: return totalUnidad;
+            case 1: return totalE;
+            case 2: return totalU;
+            default: return 0;
+        }
+    }
 
     const getEntityName = () => {
         return ['Unidad', 'Estructura', 'Ubicación'][selectedTab] || '';
@@ -149,8 +165,6 @@ export default function Ubicacion() {
                 titulo: titulo
             })
         } else {
-            
-
             modal.abrirModal("registrarEstUnidad", {
                 tipo: selectedTab,
                 titulo: titulo
@@ -158,11 +172,11 @@ export default function Ubicacion() {
         }
     };
 
-    const handleSearch = () => {
+    const handleSearch = (model = 1) => {
         switch (selectedTab) {
-            case 0: return searchUnidades(searchText, 1);
-            case 1: return searchEstructuras(searchText, 1);
-            case 2: return searchUbicaciones(searchText, 1);
+            case 0: return searchUnidades(searchText, model);
+            case 1: return searchEstructuras(searchText, model);
+            case 2: return searchUbicaciones(searchText, model);
             default: return [];
         }
     };
@@ -235,7 +249,7 @@ export default function Ubicacion() {
                                 variant="contained"
                                 color="primary"
                                 startIcon={<SearchIcon />}
-                                onClick={handleSearch}
+                                onClick={() => handleSearch()}
                                 sx={{
                                     borderRadius: 2,
                                     minWidth: 130,
@@ -251,9 +265,17 @@ export default function Ubicacion() {
                         <DataGrid
                             rows={getFilteredData()}
                             columns={getColumns({ handleDelete, selectedTab })}
-                            pageSize={10}
-                            rowsPerPageOptions={[10, 25, 50, 100]}
                             pagination
+                            paginationMode="server"
+                            rowCount={getTotal()}
+                            paginationModel={{
+                                page: getPage() - 1,
+                                pageSize: 10
+                            }}
+                            onPaginationModelChange={(model) => {
+                                handleSearch(model.page + 1);
+                            }}
+                            pageSizeOptions={[10]}
                             disableSelectionOnClick
                             autoHeight={false}
                             sx={{
