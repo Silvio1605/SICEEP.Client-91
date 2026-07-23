@@ -1,4 +1,4 @@
-﻿import { getUbicaciones, registrarUbicacion } from './../services/ubicacionServices';
+﻿import { getUbicaciones, registrarUbicacion, actualizarEstado } from './../services/ubicacionServices';
 import { useGenericFetch } from './useGenericFetch';
 
 const registrar = async (idEstructura, idUnidad) => {
@@ -12,7 +12,12 @@ const registrar = async (idEstructura, idUnidad) => {
 
     var result = await registrarUbicacion(idEstructura, idUnidad);
 
-    console.log(result);
+    return result.data;
+};
+
+const actualizar = async (idUbicacion, estado) => {
+
+    var result = await actualizarEstado(idUbicacion, estado);
     return result;
 };
 
@@ -22,5 +27,6 @@ export const useUbicaciones = (initialParam = "", initialPage = 1) => {
     return {
         ...generic,
         registrar,
+        actualizar
     };
 };

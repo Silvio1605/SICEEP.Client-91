@@ -4,24 +4,15 @@ import {
     Tabs,
     Tab,
     Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
     TextField,
-    Grid,
     Paper,
-    Snackbar,
-    Alert,
     ThemeProvider,
     createTheme,
     CssBaseline,
-    Chip,
     Stack
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { Add as AddIcon} from '@mui/icons-material';
-
 import SearchIcon from '@mui/icons-material/Search';
 import { getColumns } from './../components/getColumns';
 import { useUnidades } from './../hooks/useUnidades';
@@ -30,11 +21,13 @@ import { useUbicaciones } from './../hooks/useUbicaciones';
 import CardCrear from './../components/cardCrear';
 import ModalManager from '../../../shared/components/Modal/ModalManager';
 import useModalManager from '../../../shared/hooks/useModalManager';
+import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
 
 const theme = createTheme({
     palette: {
         secondary: {
-            main: '#2e7d32',         },
+            main: '#2e7d32',
+        },
         background: {
             default: '#f4f6f8',
         },
@@ -65,18 +58,21 @@ export default function Ubicacion() {
 
     const modal = useModalManager();
 
+    // Notificaciones
+    const { mostrarNotificacion } = useNotificacionContext();
+
     const { data: unidades, search: searchUnidades, page : pagUnidad, totalRegistros : totalUnidad } = useUnidades();
     const { data: estructuras, search: searchEstructuras, page: pagEstructura, totalRegistros: totalE } = useEstructuras();
-    const { data: ubicaciones, search: searchUbicaciones, page: pagUbicacion, totalRegistros: totalU ,registrar } = useUbicaciones();
+    const { data: ubicaciones,
+        search: searchUbicaciones,
+        page: pagUbicacion,
+        totalRegistros: totalU, registrar, actualizar } = useUbicaciones();
 
-    // Estados 
+    // Estados
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
 
     // Estado del modal
     const [openDialog, setOpenDialog] = useState(false);
-
-    // Snackbar para notificaciones
-    const [, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
     // Filtro de búsqueda (texto)
     const [searchText, setSearchText] = useState('');
@@ -108,10 +104,6 @@ export default function Ubicacion() {
             default: return 0;
         }
     }
-
-    const getEntityName = () => {
-        return ['Unidad', 'Estructura', 'Ubicación'][selectedTab] || '';
-    };
 
     // --- Filtrado de datos por búsqueda ---
     const getFilteredData = () => {
@@ -157,6 +149,7 @@ export default function Ubicacion() {
 
         var titulo = (selectedTab === 1) ? "Registrar Estructura" : "Registrar Unidad Administrativa";
 
+        // registrar estructura
         if (selectedTab === 2) {
             
             setOpenDialog(true);
@@ -172,22 +165,54 @@ export default function Ubicacion() {
         }
     };
 
-    const handleSearch = (model = 1) => {
+    const handleSearch = async (model = 1) => {
         switch (selectedTab) {
-            case 0: return searchUnidades(searchText, model);
-            case 1: return searchEstructuras(searchText, model);
-            case 2: return searchUbicaciones(searchText, model);
+            case 0: return await searchUnidades(searchText, model);
+            case 1: return await searchEstructuras(searchText, model);
+            case 2: return await searchUbicaciones(searchText, model);
             default: return [];
         }
     };
 
-    const handleDelete = () => {
+    const handleDelete = async (id, estado) => {
+
+        // cambiar estado, si esta inactivo, enviar 1 para activar
+        var activo = estado === "Inactivo" ? 1 : 0;
+        try {
+            const resultado = await actualizar(id, activo);
+            if (resultado.status == 200) {
+                mostrarNotificacion({
+                    message: resultado.data.message,
+                    severity: "success",
+                });
+            }
+
+            await handleSearch();
+
+        } catch (error) {
+
+            if (error.response) {
+                // La API respondió con un error (400, 409, 500, etc.)
+                mostrarNotificacion({
+                    message: error.response.data.message,
+                    severity: "error",
+                });
+      
+            } else if (error.request) {
+                // La petición se envió pero no hubo respuesta
+                mostrarNotificacion({
+                    message: "No se pudo conectar con el servidor.",
+                    severity: "error",
+                });
+            } else {
+                // Error al crear la petición
+                mostrarNotificacion({
+                    message: error.message,
+                    severity: "error",
+                });
+            }
+        }
         
-        setSnackbar({
-            open: true,
-            message: `${getEntityName()} eliminada correctamente.`,
-            severity: 'success',
-        });
     };
     
     const handleCloseDialog = () => {

@@ -28,3 +28,9 @@ export const getUbicaciones = async (parametro, pagina) => {
         params: { parametro, page: pagina }
     });
 };
+
+export const actualizarEstado = async (id, estado) => {
+    return api.put(`Ubicacion`, null, {
+        params: { id, activo: estado }
+    });
+};

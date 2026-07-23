@@ -12,7 +12,7 @@ const actionsColumn = (handleDelete) => ({
             <IconButton
                 color="error"
                 size="small"
-                onClick={() => handleDelete(params.row.id)}
+                onClick={() => handleDelete(params.row.id, params.row.estado)}
                 aria-label="eliminar"
             >
                 <DeleteIcon fontSize="small" />
