@@ -21,6 +21,22 @@ const actionsColumn = (handleDelete) => ({
     ),
 });
 
+const editColumn = (handleEdit) => ({
+    field: 'editar', headerName: 'Editar', width: 100, sortable: false,
+    renderCell: (params) => (
+        <Box>
+            <IconButton
+                color="primary"
+                size="small"
+                onClick={() => handleEdit(params.row)}
+                aria-label="editar"
+            >
+                <EditIcon fontSize="small" />
+            </IconButton>
+        </Box>
+    ),
+});
+
 // Columnas específicas de ubicaciones
 const locationColumns = [
     { field: 'estructura', headerName: 'Estructura', flex: 0.5, minWidth: 150 },
@@ -41,7 +57,7 @@ const locationColumns = [
 ];
 
 // Función principal
-export const getColumns = ({ handleDelete, selectedTab }) => {
+export const getColumns = ({ handleDelete, handleEdit, selectedTab }) => {
 
     // Si es ubicaciones, construimos el array específico
     if (selectedTab === 2) {
@@ -54,24 +70,13 @@ export const getColumns = ({ handleDelete, selectedTab }) => {
 
     // Columnas base para todos los tabs (excepto ubicaciones)
     const baseColumns = [
-        { field: 'id', headerName: 'Id', width: 50 },
+        { field: 'id', headerName: 'Id', width: 60 },
         { field: 'codigo', headerName: 'Código', width: 100 },
+        ...(selectedTab === 1
+            ? [{ field: 'orden', headerName: 'Orden', flex: 1, minWidth: 60 }]
+            : []),
         { field: 'descripcion', headerName: 'Descripción', flex: 1, minWidth: 150 },
-        {
-            field: 'editar', headerName: 'Editar', width: 100, sortable: false,
-            renderCell: (params) => (
-                <Box>
-                    <IconButton
-                        color="primary"
-                        size="small"
-                        onClick={() => console.log(params)}
-                        aria-label="editar"
-                    >
-                        <EditIcon fontSize="small" />
-                    </IconButton>
-                </Box>
-            ),
-        }
+        editColumn(handleEdit)
     ];
 
     return baseColumns;

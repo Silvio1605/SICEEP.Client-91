@@ -1,27 +1,27 @@
-import React, { useState } from 'react';
+import { Add as AddIcon } from '@mui/icons-material';
+import SearchIcon from '@mui/icons-material/Search';
 import {
     Box,
-    Tabs,
-    Tab,
     Button,
-    TextField,
-    Paper,
-    ThemeProvider,
-    createTheme,
     CssBaseline,
-    Stack
+    Paper,
+    Stack,
+    Tab,
+    Tabs,
+    TextField,
+    ThemeProvider,
+    createTheme
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { Add as AddIcon} from '@mui/icons-material';
-import SearchIcon from '@mui/icons-material/Search';
-import { getColumns } from './../components/getColumns';
-import { useUnidades } from './../hooks/useUnidades';
-import { useEstructuras } from './../hooks/useEstructuras';
-import { useUbicaciones } from './../hooks/useUbicaciones';
-import CardCrear from './../components/cardCrear';
+import React, { useState } from 'react';
 import ModalManager from '../../../shared/components/Modal/ModalManager';
 import useModalManager from '../../../shared/hooks/useModalManager';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
+import CardCrear from './../components/cardCrear';
+import { getColumns } from './../components/getColumns';
+import { useEstructuras } from './../hooks/useEstructuras';
+import { useUbicaciones } from './../hooks/useUbicaciones';
+import { useUnidades } from './../hooks/useUnidades';
 
 const theme = createTheme({
     palette: {
@@ -214,7 +214,27 @@ export default function Ubicacion() {
         }
         
     };
-    
+
+    const handleEdit = (row) => {
+
+        var titulo = (selectedTab === 1) ? "Editar Estructura" : "Editar Unidad Administrativa";
+        const datos = {
+            id: row.id,
+            descripcion: row.descripcion
+        };
+
+        // Solo las estructuras tienen orden
+        if (selectedTab === 1) {
+            datos.orden = row.orden;
+
+        }
+        modal.abrirModal("registrarEstUnidad", {
+            tipo: selectedTab,
+            titulo: titulo,
+            editar: datos
+        })
+    }
+
     const handleCloseDialog = () => {
         setOpenDialog(false);
     };
@@ -289,7 +309,7 @@ export default function Ubicacion() {
                     <Paper sx={{ height: 'calc(100% - 180px)', width: '100%', p: 1 }}>
                         <DataGrid
                             rows={getFilteredData()}
-                            columns={getColumns({ handleDelete, selectedTab })}
+                            columns={getColumns({ handleDelete, handleEdit,selectedTab })}
                             pagination
                             paginationMode="server"
                             rowCount={getTotal()}
@@ -324,9 +344,9 @@ export default function Ubicacion() {
 
             {/* Modal de creación/edición */}
             <CardCrear
-                open={ openDialog }
-                onClose={ handleCloseDialog }
-                registrar={ registrar }
+                open={openDialog}
+                onClose={handleCloseDialog}
+                registrar={registrar}
             />
 
             <ModalManager

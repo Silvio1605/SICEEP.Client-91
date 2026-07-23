@@ -9,7 +9,6 @@ const registrar = async (idEstructura, idUnidad) => {
             message: "Debe seleccionar la estructura y la unidad para poder registrar la ubicación."
         };
     }
-
     var result = await registrarUbicacion(idEstructura, idUnidad);
 
     return result.data;

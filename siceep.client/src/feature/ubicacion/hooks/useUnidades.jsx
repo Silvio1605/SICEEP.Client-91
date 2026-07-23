@@ -1,12 +1,13 @@
 ﻿import { getUnidades, registrar, actualizar } from './../services/UnidadServices'
 import { useGenericFetch } from './useGenericFetch';
 
-const registrarUnidad = async (id, descripcion, orden) => {
-    
-    if (!id) {
-        return await registrar(descripcion, orden);
+const registrarUnidad = async (datos) => {
+
+    if (!datos.id) {
+        return await registrar(datos.descripcion);
     } else {
-        return await actualizar(id, descripcion);
+        console.log(datos);
+        return await actualizar(datos.id, datos.descripcion);
     }
 };
 

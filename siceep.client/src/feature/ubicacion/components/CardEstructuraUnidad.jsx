@@ -24,12 +24,14 @@ import { useUnidades } from "./../hooks/useUnidades";
 import DescriptionIcon from '@mui/icons-material/Description';
 import LooksOneIcon from '@mui/icons-material/LooksOne';
 import AddIcon from '@mui/icons-material/Add';
+import { Edit as EditIcon } from '@mui/icons-material';
 
 export default function CardEstructuraUnidad({
     open,
     onClose,
     tipo,
-    titulo
+    titulo,
+    editar
 }) {
     // Configuración para el diálogo responsivo
     const theme = useTheme();
@@ -43,9 +45,9 @@ export default function CardEstructuraUnidad({
 
     const [guardando, setGuardando] = useState(false);
     const [registro, setRegistro] = useState({
-        id: null,
-        descripcion: null,
-        orden: null
+        id: editar?.id ?? null,
+        descripcion: editar?.descripcion ?? null,
+        orden: editar?.orden ?? null
     });
 
     const handleGuardar = async () => {
@@ -59,6 +61,7 @@ export default function CardEstructuraUnidad({
 
             } else {
                 resultado = await registrarUnidad(registro);
+                console.log(resultado);
             }
            
             mostrarNotificacion({
@@ -78,12 +81,28 @@ export default function CardEstructuraUnidad({
                     message: primerError,
                     severity: "error"
                 });
-            } else {
+            } else if (error.response) {
+                // La API respondió con un error (400, 409, 500, etc.)
                 mostrarNotificacion({
-                    message: data?.message ?? "Ocurrió un error inesperado.",
-                    severity: "error"
+                    message: error.response.data.mensaje,
+                    severity: "error",
+                });
+
+            } else if (error.request) {
+                // La petición se envió pero no hubo respuesta
+                mostrarNotificacion({
+                    message: "No se pudo conectar con el servidor.",
+                    severity: "error",
+                });
+            } else {
+                // Error al crear la petición
+                mostrarNotificacion({
+                    message: error.message,
+                    severity: "error",
                 });
             }
+
+            
         } finally {
             setGuardando(false);
         }
@@ -117,11 +136,11 @@ export default function CardEstructuraUnidad({
                             <Typography variant="h6" component="div">
                                 {titulo}
                             </Typography>
-                            {/*<Typography variant="caption" color="text.secondary">
-                                {registro.id
+                           <Typography variant="caption" color="text.secondary">
+                                {editar?.id
                                     ? 'Edita los campos y guarda los cambios'
                                     : 'Completa la información para agregar un nuevo registro'}
-                            </Typography>*/}
+                            </Typography>
                         </Stack>
                     </Stack>
               </DialogTitle>
@@ -134,12 +153,29 @@ export default function CardEstructuraUnidad({
                     >
                         <CardContent>
                             <Grid container spacing={2}>
+                                {editar?.id && (
+                                    <Grid size={{ xs: 12, md: 4 }}>
+                                        <AppInput
+                                            id="id"
+                                            label="Id"
+                                            type="number"
+                                            size="medium"
+                                            InputProps={{
+                                                startAdornment: (
+                                                    <InputAdornment position="start">
+                                                        <LooksOneIcon fontSize="small" color="action" />
+                                                    </InputAdornment>
+                                                )
+                                            }}
+                                            value={registro.id ?? ""}
+                                        />
+                                    </Grid>
+                                )}
                                 {tipo === 1 && (
                                     <Grid size={{ xs: 12, md: 4 }}>
                                         <AppInput
                                             id="orden"
                                             label="Orden"
-                                            type="number"
                                             size="medium"
                                             InputProps={{
                                                 startAdornment: (

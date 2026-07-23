@@ -83,6 +83,7 @@ export default function CardCrear({ open, onClose, registrar }) {
         setGuardando(true);
         var resultado = await registrar(registro.idEstructura, registro.idUnidad);
 
+        console.log(resultado);
         if (resultado.status == 200) {
             mostrarNotificacion({
                 message: resultado.message,
@@ -94,6 +95,7 @@ export default function CardCrear({ open, onClose, registrar }) {
             message: resultado.message,
             severity: "error",
         });
+
         setGuardando(false);
     };
 
