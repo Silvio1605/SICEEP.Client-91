@@ -24,7 +24,7 @@ import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SearchIcon from '@mui/icons-material/Search';
 import AppButton from './../../../shared/components/AppButton';
 
-export default function CardCrear({ open, onClose, registrar }) {
+export default function CardCrear({ open, onClose, registrar, refrescar }) {
 
     // Configuración para el diálogo responsivo
     const theme = useTheme();
@@ -80,23 +80,44 @@ export default function CardCrear({ open, onClose, registrar }) {
 
     const handleRegistrar = async (registro) => {
 
-        setGuardando(true);
-        var resultado = await registrar(registro.idEstructura, registro.idUnidad);
+       
+        try {
+            setGuardando(true);
+            var resultado = await registrar(registro.idEstructura, registro.idUnidad);
 
-        console.log(resultado);
-        if (resultado.status == 200) {
             mostrarNotificacion({
                 message: resultado.message,
-                severity: "success",
+                severity: resultado.status === 200 ? "success" : "error",
             });
+
+        } catch (error) {
+
+            if (error.response) {
+                // La API respondió con un error (400, 409, 500, etc.)
+                mostrarNotificacion({
+                    message: error.response.message,
+                    severity: "error",
+                });
+
+            } else if (error.request) {
+                // La petición se envió pero no hubo respuesta
+                mostrarNotificacion({
+                    message: "No se pudo conectar con el servidor.",
+                    severity: "error",
+                });
+            } else {
+                // Error al crear la petición
+                mostrarNotificacion({
+                    message: error.message,
+                    severity: "error",
+                });
+            }
+        } finally {
+            refrescar();
+            setGuardando(false);
+            onClose();
         }
-
-        mostrarNotificacion({
-            message: resultado.message,
-            severity: "error",
-        });
-
-        setGuardando(false);
+        
     };
 
   return (

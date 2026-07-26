@@ -11,7 +11,7 @@ const registrar = async (idEstructura, idUnidad) => {
     }
     var result = await registrarUbicacion(idEstructura, idUnidad);
 
-    return result.data;
+    return result;
 };
 
 const actualizar = async (idUbicacion, estado) => {

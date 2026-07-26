@@ -31,7 +31,8 @@ export default function CardEstructuraUnidad({
     onClose,
     tipo,
     titulo,
-    editar
+    editar,
+    refrescar
 }) {
     // Configuración para el diálogo responsivo
     const theme = useTheme();
@@ -61,15 +62,16 @@ export default function CardEstructuraUnidad({
 
             } else {
                 resultado = await registrarUnidad(registro);
-                console.log(resultado);
             }
-           
+
+            var mensaje = resultado.status === 200  ? "Registrado correctamente, identificador: " + resultado.data : resultado.message;
+
+            mensaje = editar?.id ? resultado.data.mensaje : mensaje;
+
             mostrarNotificacion({
-                message: resultado.status === 200 ?
-                    "Registrado correctamente, identificador: " + resultado.data.message : resultado.message,
+                message: mensaje,
                 severity: resultado.status === 200 ? "success" : "error",
             });
-
             if (resultado.status === 200) onClose();
 
         } catch (error) {
@@ -102,8 +104,8 @@ export default function CardEstructuraUnidad({
                 });
             }
 
-            
         } finally {
+            refrescar();
             setGuardando(false);
         }
     };

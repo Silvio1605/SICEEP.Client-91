@@ -71,9 +71,6 @@ export default function Ubicacion() {
     // Estados
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
 
-    // Estado del modal
-    const [openDialog, setOpenDialog] = useState(false);
-
     // Filtro de búsqueda (texto)
     const [searchText, setSearchText] = useState('');
 
@@ -134,7 +131,7 @@ export default function Ubicacion() {
     // Manejadores de eventos
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
-        //setFormData({});
+
         setSearchText('');
         // Refrescar los datos de la nueva pestaña
         switch (newValue) {
@@ -152,15 +149,17 @@ export default function Ubicacion() {
         // registrar estructura
         if (selectedTab === 2) {
             
-            setOpenDialog(true);
             modal.abrirModal("registrarUbicacion", {
                 tipo: selectedTab,
-                titulo: titulo
+                titulo: titulo,
+                registrar: registrar,
+                refrescar: handleSearch
             })
         } else {
             modal.abrirModal("registrarEstUnidad", {
                 tipo: selectedTab,
-                titulo: titulo
+                titulo: titulo,
+                refrescar: handleSearch
             })
         }
     };
@@ -226,18 +225,15 @@ export default function Ubicacion() {
         // Solo las estructuras tienen orden
         if (selectedTab === 1) {
             datos.orden = row.orden;
-
         }
+
         modal.abrirModal("registrarEstUnidad", {
             tipo: selectedTab,
             titulo: titulo,
-            editar: datos
+            editar: datos,
+            refrescar: handleSearch
         })
     }
-
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
-    };
 
     return (
 
@@ -341,13 +337,6 @@ export default function Ubicacion() {
                     </Paper>
                 </Box>
             </Box>
-
-            {/* Modal de creación/edición */}
-            <CardCrear
-                open={openDialog}
-                onClose={handleCloseDialog}
-                registrar={registrar}
-            />
 
             <ModalManager
                 modal={modal}
