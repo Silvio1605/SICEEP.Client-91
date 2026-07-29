@@ -1,8 +1,8 @@
-import { IconButton, Tooltip } from '@mui/material';
-import VisibilityIcon from '@mui/icons-material/Visibility'; // Icono de ojito
+﻿import { IconButton, Tooltip } from '@mui/material';
+import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import { useNavigate } from 'react-router-dom';
 
-// 1. COMPONENTE: Un solo botón directo
+// eslint-disable-next-line react-refresh/only-export-components
 const BotonVerExpediente = ({ idExpediente }) => {
     const navigate = useNavigate();
 
@@ -14,26 +14,27 @@ const BotonVerExpediente = ({ idExpediente }) => {
     return (
         <Tooltip title="Ver Expediente">
             <IconButton onClick={irAlExpediente} color="primary" size="small">
-                <VisibilityIcon />
+                <FolderSharedIcon />
             </IconButton>
         </Tooltip>
     );
 };
 
-// 2. COLUMNAS: Configuración de la tabla de expedientes
+// columnas de expediente
 export const columnsExpedientes = () => {
+
     return [
         { field: 'id', headerName: 'No.', width: 70 },
-        { field: 'ident', headerName: 'Número de Expediente', flex: 1 },
+        { field: 'codigo', headerName: 'No. de Expediente', flex: 1 },
         { field: 'nombreCompleto', headerName: 'Nombre Completo', flex: 1.5 },
-        { field: 'ubicacion', headerName: 'Ubicación', flex: 1 },
+        { field: 'estructura', headerName: 'Estuctura', flex: 1 },
         {
             field: 'estado',
             headerName: 'Estado',
             width: 120,
             renderCell: (params) => (
-                <span style={{ color: params.value === 'Activo' ? 'green' : 'red', fontWeight: 'bold' }}>
-                    {params.value}
+                <span style={{ color: params.value === 1 ? 'green' : 'red', fontWeight: 'bold' }}>
+                    {params.value === 1 ? 'Activo' : 'Baja'}
                 </span>
             )
         },

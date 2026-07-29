@@ -6,7 +6,6 @@ const registrarUnidad = async (datos) => {
     if (!datos.id) {
         return await registrar(datos.descripcion);
     } else {
-        console.log(datos);
         return await actualizar(datos.id, datos.descripcion);
     }
 };

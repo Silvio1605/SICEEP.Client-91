@@ -1,31 +1,30 @@
-import { useState, useMemo, useCallback } from 'react'; // ✅ Importamos useCallback
+import { useEffect, useMemo, useCallback } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { DataGrid } from '@mui/x-data-grid';
 import Grid from '@mui/material/Grid';
 import { useSearchParams } from "react-router-dom";
-import { columnsExpedientes } from '../services/expedientesData';
-import FiltrosBusqueda from '../../usuarios/components/FiltrosBusqueda';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
-import { useScreenType } from '../../../shared/hooks/useScreenType';
+import { columnsExpedientes } from '../components/columns/columnsExpediente';
+import FiltroExpediente from '../components/FiltroExpediente';
+import { useExpediente } from '../hooks/useExpediente'
 
 export default function Expedientes() {
-    const { isMobile } = useScreenType();
-    const [searchParams, setSearchParams] = useSearchParams();
 
-    const [expedientes, setExpedientes] = useState([
-        { id: 1, ident: 'EXP-001', nombreCompleto: 'Juan Perez', ubicacion: 'Managua', estado: 'Activo' },
-        { id: 2, ident: 'EXP-002', nombreCompleto: 'Ana Lopez', ubicacion: 'Leon', estado: 'Inactivo' },
-        { id: 3, ident: 'EXP-003', nombreCompleto: 'Carlos Gomez', ubicacion: 'Estelí', estado: 'Activo' },
-    ]);
+    //const { isMobile } = useScreenType();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const { expedientes, buscar, page, total } = useExpediente();
 
     const filtro = useMemo(() => ({
-        propietario: searchParams.get("propietario") || null,
-        estado: searchParams.get("estado") || null,
+        busqueda: searchParams.get("busqueda") || "",
+        estado: searchParams.get("estado") || 1,
+        estructura: searchParams.get("estructura") || "",
+        cargo: searchParams.get("cargo") || "",
+        pagina: 1
     }), [searchParams]);
 
-    // ✅ SOLUCIÓN 2: Memorizamos la función para que no cause bucle infinito en el filtro
+    // Memorizamos la función para que no cause bucle infinito en el filtro
     const actualizarFiltro = useCallback((nuevoFiltro) => {
         const params = new URLSearchParams(searchParams);
         Object.entries(nuevoFiltro).forEach(([key, value]) => {
@@ -38,8 +37,17 @@ export default function Expedientes() {
         setSearchParams(params);
     }, [searchParams, setSearchParams]);
 
-    const buscar = useCallback(() => {
-        console.log("Buscando con filtros:", filtro);
+    useEffect(() => {
+        const cargarDatos = async () => {
+            try {
+                await buscar(filtro);
+            } catch (error) {
+                console.error("Error:", error);
+            }
+        };
+        cargarDatos();
+
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filtro]);
 
     const registros = useMemo(() => {
@@ -62,12 +70,13 @@ export default function Expedientes() {
             </Box>
 
             <Box sx={{ width: '100%', minWidth: 0, minHeight: 0 }}>
-                <FiltrosBusqueda
-                    filtro={filtro}
-                    actualizarFiltro={actualizarFiltro}
-                    buscar={buscar}
+                
+                <FiltroExpediente
+                   filtro={filtro}
+                   actualizarFiltro={actualizarFiltro}
+                   buscar={buscar}
                 />
-
+                
                 <Typography variant="subtitle1" component="h1" color="text.secondary" sx={{ mt: 2, mb: 1 }}>
                     Registros de expedientes
                 </Typography>
@@ -76,18 +85,33 @@ export default function Expedientes() {
                     <DataGrid
                         rows={expedientes}
                         columns={registros}
-                        autoHeight
                         disableColumnMenu
                         disableRowSelectionOnClick
                         hideFooterSelectedRowCount
                         disableColumnFilter
                         disableColumnSelector
                         disableDensitySelector
+                        pagination
+                        paginationMode="server"
+                        rowCount={total}
+                        paginationModel={{
+                            page: page - 1,
+                            pageSize: 10
+                        }}
+                        onPaginationModelChange={(model) => {
+                            const nuevoFiltro = {
+                                ...filtro,
+                                page: model + 1
+                            };
+                            buscar(nuevoFiltro);
+                        }}
+                        pageSizeOptions={[10]}
+                        disableSelectionOnClick
                         slots={{ toolbar: null }}
                         initialState={{
                             pagination: { paginationModel: { pageSize: 10 } },
                         }}
-                        pageSizeOptions={[5, 10, 25]}
+                        autoHeight={false}
                         localeText={{
                             noRowsLabel: "No hay expedientes",
                             noResultsOverlayLabel: "No se encontraron resultados",

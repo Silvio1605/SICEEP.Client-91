@@ -17,7 +17,6 @@ import React, { useState } from 'react';
 import ModalManager from '../../../shared/components/Modal/ModalManager';
 import useModalManager from '../../../shared/hooks/useModalManager';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
-import CardCrear from './../components/cardCrear';
 import { getColumns } from './../components/getColumns';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { useUbicaciones } from './../hooks/useUbicaciones';

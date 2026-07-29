@@ -52,6 +52,7 @@ export default function DetalleExpediente() {
         else if (path.includes('info-familiar')) setTabValue(1);
         else if (path.includes('info-laboral')) setTabValue(2);
         else if (path.includes('info-academica')) setTabValue(3);
+
     }, [location.pathname]);
 
     const handleTabChange = (event, newValue) => {

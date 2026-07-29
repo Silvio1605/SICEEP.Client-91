@@ -59,7 +59,6 @@ export const columnsUsuarios = ({ isMobile, abrirPerfil, abrirCambioContra }) =>
         headerAlign: 'center',
         renderCell: (params) => (
             <MenuAcciones row={params.row} abrirPerfil={abrirPerfil}  abrirCambioContra={abrirCambioContra} />
-
         ),
     },
 
