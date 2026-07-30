@@ -8,6 +8,7 @@ export const useExpediente = () => {
 
     const buscar = async (filtro) => {
 
+        
         //validaciones
         if (filtro.estado === "") {
             filtro.estado = null;
@@ -19,6 +20,8 @@ export const useExpediente = () => {
         setPage(res.data.pagina);
         setTotal(res.data.totalRegistros);
     };
+
+
 
     return { expedientes, buscar, page, total };
 }

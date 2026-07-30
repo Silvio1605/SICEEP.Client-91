@@ -7,6 +7,7 @@ import SelectItem from './../../../shared/components/SelectItem';
 import { useSelectUsuarios } from './../hooks/useSelectUsuarios';
 import IconButton from '@mui/material/IconButton';
 
+
 export default function FiltrosBusqueda({ filtro, actualizarFiltro, buscar }) {
     const { selEstado, selAño, loading } = useSelectUsuarios();
 

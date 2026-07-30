@@ -4,21 +4,37 @@ import Paper from '@mui/material/Paper';
 import InputBase from '@mui/material/InputBase';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
+import Stack from '@mui/material/Stack';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import { useSelectEmpleado } from './../hooks/useSelectEmpleado';
+import SelectItem from './../../../shared/components/SelectItem';
 
 export default function FiltroExpediente({ filtro, actualizarFiltro, buscar }) {
+
+    const { selEstado, loading } = useSelectEmpleado();
+
+    const [inputFiltro, setInputFiltro] = useState(filtro.busqueda || "");
+    const [inputEstructura, setInputEstructura] = useState(filtro.estructura || "");
+    const [inputCargo, setInputCargo] = useState(filtro.cargo || "");
     
-    const [inputFiltro, setInputFiltro] = useState(
-        filtro.busqueda || ""
-    );
+    const [activeFilter, setActiveFilter] = useState(true);
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const nuevoFiltro = {
+
+        actualizarFiltro({
             ...filtro,
-            busqueda: inputFiltro
-        };
-        actualizarFiltro({ busqueda: inputFiltro });
-        buscar(nuevoFiltro);
+            busqueda: inputFiltro,
+            estructura: activeFilter ? inputEstructura : "",
+            cargo: activeFilter ? inputCargo : "",
+            estado: activeFilter ? filtro.estado : null
+        });
+        buscar(filtro);
+    };
+
+    const toggle = () => {
+        setActiveFilter(prev => !prev); // ← aquí está el truco
     };
 
     return (
@@ -29,83 +45,119 @@ export default function FiltroExpediente({ filtro, actualizarFiltro, buscar }) {
             sx={{
                 p: 1.5,
                 display: 'flex',
-                alignItems: 'center',
+                flexDirection: 'column',
                 gap: 2,
                 mb: 2,
-                backgroundColor: '#f8f9fa', // Fondo grisáceo de la barra entera
+                backgroundColor: '#f8f9fa',
                 borderColor: '#e0e0e0',
                 borderRadius: 2,
-                // flexWrap permite que en pantallas pequeñas (celulares) los filtros se acomoden abajo
-                flexWrap: { xs: 'wrap', md: 'nowrap' }
+                width: '100%',
             }}
         >
             {/* 1. BUSCADOR PRINCIPAL (El flex: 1 empuja los selectores a la derecha) */}
             <Box
                 sx={{
+                    p: 1.5,
                     display: 'flex',
-                    alignItems: 'center',
-                    flex: 1, 
-                    border: '1px solid #ced4da',
-                    borderRadius: 1,
-                    backgroundColor: '#ffffff',
-                    px: 1,
-                    py: 0.5
+                    flexDirection: 'column',
+                    gap: 1,
+                    backgroundColor: '#f8f9fa',
+                    borderColor: '#e0e0e0',
+                    borderRadius: 2,
                 }}
             >
-                <InputBase
-                    sx={{ ml: 1, flex: 1 }}
-                    type="text"
-                    placeholder="Buscar por nombre"
-                    value={inputFiltro}
-                    onChange={(e) => setInputFiltro(e.target.value)}
-                />
-                <IconButton aria-label="search" color="primary" type="submit">
-                    <SearchIcon />
-                </IconButton>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, width: '100%' }}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            flex: 1,              // ← Ocupa el ancho restante
+                            minWidth: 0,          // ← Permite que se ajuste
+                            border: '1px solid #ced4da',
+                            borderRadius: 1,
+                            backgroundColor: '#fff',
+                            px: 1,
+                            py: 0.5,
+                        }}
+                    >
+                        <InputBase
+                            sx={{ ml: 1, flex: 1, minWidth: 0 }}
+                            type="text"
+                            placeholder="Buscar por nombre"
+                            value={inputFiltro}
+                            onChange={(e) => setInputFiltro(e.target.value)}
+                        />
+                        <IconButton aria-label="search" color="primary" type="submit">
+                            <SearchIcon />
+                        </IconButton>
+                        <Stack direction="row" spacing={1}>
+                            <IconButton
+                                color="primary"
+                                aria-label="add to shopping cart"
+                                onClick={toggle}
+                            >
+                                {activeFilter === true ? <FilterAltOffIcon /> : <FilterAltIcon /> }
+                            </IconButton>
+                        </Stack>
+                    </Box>
+                </Box>
+               
             </Box>
 
-            <Box sx={{ width: { xs: '100%', md: 200 } }}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        flex: 1,
-                        border: '1px solid #ced4da',
-                        borderRadius: 1,
-                        backgroundColor: '#ffffff',
-                        px: 1,
-                        py: 0.5
-                    }}
-                >
-                    <InputBase
-                        sx={{ ml: 1, flex: 1 }}
-                        type="text"
-                        placeholder="Buscar por Estructura"
-                    />
+            {activeFilter && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, width: '100%' }}>
+                    <Box sx={{ flex: 1, minWidth: '200px' }}>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            border: '1px solid #ced4da',
+                            borderRadius: 1,
+                            backgroundColor: '#ffffff',
+                            px: 1, py: 0.5
+                        }}>
+                            <InputBase sx={{ ml: 1, flex: 1 }}
+                                placeholder="Buscar por Estructura"
+                                value={inputEstructura}
+                                onChange={(e) => setInputEstructura(e.target.value)}
+                            />
+                        </Box>
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: '200px' }}>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            border: '1px solid #ced4da',
+                            borderRadius: 1,
+                            backgroundColor: '#ffffff',
+                            px: 1, py: 0.5
+                        }}>
+                            <InputBase
+                                sx={{ ml: 1, flex: 1 }}
+                                placeholder="Buscar por Cargo"
+                                value={inputCargo}
+                                onChange={(e) => setInputCargo(e.target.value)}
+                            />
+                        </Box>
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: '200px' }}>
+                        {loading ? (
+                            <p>Cargando...</p>
+                        ) : (
+                            <SelectItem
+                                value={filtro.estado || ""}
+                                onChange={(estado) => {
+                                    actualizarFiltro({ estado: estado});
+                                }}
+                                incluirTodo={true}
+                                datos={selEstado}
+                                titulo="Estados"
+                            />
+                        )}
+                    </Box>
+                    
                 </Box>
-                
-            </Box>
-
-            <Box sx={{ width: { xs: '100%', md: 200 } }}>
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        flex: 1,
-                        border: '1px solid #ced4da',
-                        borderRadius: 1,
-                        backgroundColor: '#ffffff',
-                        px: 1,
-                        py: 0.5
-                    }}
-                >
-                    <InputBase
-                        sx={{ ml: 1, flex: 1 }}
-                        type="text"
-                        placeholder="Buscar por Cargo"
-                    />
-                </Box>
-            </Box>
+            )}
+            
         </Paper>
     );
 }

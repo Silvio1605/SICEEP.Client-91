@@ -32,11 +32,20 @@ export const columnsExpedientes = () => {
             field: 'estado',
             headerName: 'Estado',
             width: 120,
-            renderCell: (params) => (
-                <span style={{ color: params.value === 1 ? 'green' : 'red', fontWeight: 'bold' }}>
-                    {params.value === 1 ? 'Activo' : 'Baja'}
-                </span>
-            )
+            renderCell: (params) => {
+                const estadoMap = {
+                    1: { label: 'Baja', color: 'red' },
+                    2: { label: 'Activo', color: 'green' },
+                    3: { label: 'Com/Servicio', color: 'orange' },
+                };
+                const estado = estadoMap[params.row.estado] || { label: 'Desconocido', color: 'gray' };
+
+                return (
+                    <span style={{ color: estado.color, fontWeight: 'bold' }}>
+                        {estado.label}
+                    </span>
+                );
+            }
         },
         {
             field: 'acciones',

@@ -8,17 +8,17 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { columnsExpedientes } from '../components/columns/columnsExpediente';
 import FiltroExpediente from '../components/FiltroExpediente';
-import { useExpediente } from '../hooks/useExpediente'
+import { useExpediente } from '../hooks/useExpediente';
 
 export default function Expedientes() {
 
     //const { isMobile } = useScreenType();
     const [searchParams, setSearchParams] = useSearchParams();
     const { expedientes, buscar, page, total } = useExpediente();
-
+    
     const filtro = useMemo(() => ({
         busqueda: searchParams.get("busqueda") || "",
-        estado: searchParams.get("estado") || 1,
+        estado: searchParams.get("estado") || "",
         estructura: searchParams.get("estructura") || "",
         cargo: searchParams.get("cargo") || "",
         pagina: 1
@@ -58,7 +58,7 @@ export default function Expedientes() {
         <Box sx={{ width: '100%', pb: 5 }}>
             <Box sx={{ mb: 3 }}>
                 <Grid container spacing={2} alignItems="center">
-                    <Grid item xs={12}>
+                    <Grid xs={12}>
                         <Typography variant="h5" component="h1" color="text.primary">
                             Búsqueda de Expedientes
                         </Typography>
@@ -93,7 +93,7 @@ export default function Expedientes() {
                         disableDensitySelector
                         pagination
                         paginationMode="server"
-                        rowCount={total}
+                        rowCount={total ?? 0}
                         paginationModel={{
                             page: page - 1,
                             pageSize: 10
