@@ -34,7 +34,7 @@ export default function FiltroExpediente({ filtro, actualizarFiltro, buscar }) {
     };
 
     const toggle = () => {
-        setActiveFilter(prev => !prev); // ← aquí está el truco
+        setActiveFilter(prev => !prev);
     };
 
     return (

@@ -26,7 +26,6 @@ export const useRegistrar = () => {
         } else {
             res = await BuscarUsuario(param);
         }
-        
         setPropietarios(res.data);
     };
 

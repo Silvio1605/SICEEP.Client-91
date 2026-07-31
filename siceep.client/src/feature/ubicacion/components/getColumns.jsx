@@ -1,5 +1,7 @@
 ﻿import { Box, IconButton, Chip } from '@mui/material';
 import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import DomainAddIcon from '@mui/icons-material/DomainAdd';
+import DomainDisabledIcon from '@mui/icons-material/DomainDisabled';
 
 // Columna de acciones (reutilizable)
 const actionsColumn = (handleDelete) => ({
@@ -10,12 +12,12 @@ const actionsColumn = (handleDelete) => ({
     renderCell: (params) => (
         <Box>
             <IconButton
-                color="error"
+                color={params.row.estado === 'Inactivo' ? "primary" : "error" }
                 size="small"
                 onClick={() => handleDelete(params.row.id, params.row.estado)}
                 aria-label="eliminar"
             >
-                <DeleteIcon fontSize="small" />
+                {params.row.estado === 'Inactivo' ? <DomainAddIcon /> : <DomainDisabledIcon/> }
             </IconButton>
         </Box>
     ),

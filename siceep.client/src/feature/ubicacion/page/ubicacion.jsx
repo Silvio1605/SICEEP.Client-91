@@ -13,7 +13,7 @@ import {
     createTheme
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ModalManager from '../../../shared/components/Modal/ModalManager';
 import useModalManager from '../../../shared/hooks/useModalManager';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
@@ -172,10 +172,16 @@ export default function Ubicacion() {
         }
     };
 
+    useEffect(() => {
+        handleSearch(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
     const handleDelete = async (id, estado) => {
 
         // cambiar estado, si esta inactivo, enviar 1 para activar
         var activo = estado === "Inactivo" ? 1 : 0;
+
         try {
             const resultado = await actualizar(id, activo);
             if (resultado.status == 200) {
