@@ -11,7 +11,7 @@ export default function TabInfoAcademica() {
 
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField select fullWidth size="small" label="Nivel Académico" defaultValue="">
                             <MenuItem value="ESTUDIANTE">Estudiante</MenuItem>
                             <MenuItem value="EGRESADO">Egresado</MenuItem>
@@ -19,13 +19,13 @@ export default function TabInfoAcademica() {
                             <MenuItem value="MAESTRIA">Maestría / Postgrado</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} md={5}>
+                    <Grid size={{ xs: 12, md: 5 }}>
                         <TextField fullWidth size="small" label="Carrera o Profesión" placeholder="Ej: Ingeniería en Computación" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Lugar / Universidad" placeholder="Ej: UNI-MANAGUA" />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField fullWidth size="small" label="Año" type="number" placeholder="Ej: 2026" />
                     </Grid>
                 </Grid>
@@ -46,10 +46,10 @@ export default function TabInfoAcademica() {
                             <MenuItem value="BACHILLER">Bachiller</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Centro de Estudio" placeholder="Ej: Inst. Nacional Rafael Angel Reyes" />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField fullWidth size="small" label="Año" type="number" placeholder="Ej: 2017" />
                     </Grid>
                 </Grid>

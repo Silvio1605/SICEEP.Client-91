@@ -13,7 +13,7 @@ export default function TabDatosGenerales() {
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
                 <Grid container spacing={3}>
                     {/* Área de Fotografía (Columna Izquierda) */}
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <Box
                             sx={{
                                 width: '100%',
@@ -34,38 +34,38 @@ export default function TabDatosGenerales() {
                     </Grid>
 
                     {/* Campos de Datos (Columna Derecha) */}
-                    <Grid item xs={12} md={8}>
+                    <Grid size={{ xs: 12, md: 8 }}>
                         <Grid container spacing={2}>
 
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" label="Nombres" />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" label="Primer Apellido" />
                             </Grid>
 
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" label="Segundo Apellido" />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" label="N° Cédula" />
                             </Grid>
 
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField select fullWidth size="small" label="Género" defaultValue="">
                                     <MenuItem value="MASCULINO">Masculino</MenuItem>
                                     <MenuItem value="FEMENINO">Femenino</MenuItem>
                                 </TextField>
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 {/* Nuevo campo agregado según tu indicación */}
                                 <TextField fullWidth size="small" label="Lugar de Nacimiento" />
                             </Grid>
 
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" type="date" label="Fecha Nacimiento" InputLabelProps={{ shrink: true }} />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" type="date" label="Fecha Ingreso" InputLabelProps={{ shrink: true }} />
                             </Grid>
 

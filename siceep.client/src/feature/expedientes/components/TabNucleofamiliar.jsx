@@ -10,27 +10,27 @@ export default function TabNucleofamiliar() {
                 Datos de los Padres
             </Typography>
             <Grid container spacing={3} sx={{ mb: 4 }}>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, height: '100%' }}>
                         <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 2 }}>Madre</Typography>
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <TextField fullWidth size="small" label="Nombre Completo de la Madre" />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <TextField fullWidth size="small" label="N° Cédula (Opcional)" />
                             </Grid>
                         </Grid>
                     </Paper>
                 </Grid>
-                <Grid item xs={12} md={6}>
+                <Grid size={{ xs: 12, md: 6 }}>
                     <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, height: '100%' }}>
                         <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 2 }}>Padre</Typography>
                         <Grid container spacing={2}>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <TextField fullWidth size="small" label="Nombre Completo del Padre" />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{ xs: 12 }}>
                                 <TextField fullWidth size="small" label="N° Cédula (Opcional)" />
                             </Grid>
                         </Grid>
@@ -44,10 +44,10 @@ export default function TabNucleofamiliar() {
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Nombre Completo del Cónyuge" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="N° Cédula (Opcional)" />
                     </Grid>
                 </Grid>
@@ -73,10 +73,10 @@ export default function TabNucleofamiliar() {
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
                 <Typography variant="subtitle2" fontWeight="bold" sx={{ mb: 2 }}>Hijo #1</Typography>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={8}>
+                    <Grid size={{ xs: 12, md: 8 }}>
                         <TextField fullWidth size="small" label="Nombre Completo" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" type="date" label="Fecha de Nacimiento" InputLabelProps={{ shrink: true }} />
                     </Grid>
                 </Grid>

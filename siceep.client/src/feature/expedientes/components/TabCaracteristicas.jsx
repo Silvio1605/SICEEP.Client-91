@@ -11,13 +11,13 @@ export default function TabCaracteristicas() {
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
                     {/* Se ajustó a md={4} para rellenar el espacio tras eliminar Religión */}
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Nacionalidad" defaultValue="Nicaragüense" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Lugar de Nacimiento" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField select fullWidth size="small" label="Estado Civil" defaultValue="">
                             <MenuItem value="SOLTERO">Soltero/a</MenuItem>
                             <MenuItem value="CASADO">Casado/a</MenuItem>
@@ -34,13 +34,13 @@ export default function TabCaracteristicas() {
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField fullWidth size="small" label="Estatura (metros)" type="number" />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField fullWidth size="small" label="Peso (Libras)" type="number" />
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField select fullWidth size="small" label="Tipo Sanguíneo" defaultValue="">
                             <MenuItem value="O+">O+</MenuItem>
                             <MenuItem value="O-">O-</MenuItem>
@@ -52,7 +52,7 @@ export default function TabCaracteristicas() {
                             <MenuItem value="AB-">AB-</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField select fullWidth size="small" label="Color de Piel" defaultValue="">
                             <MenuItem value="BLANCA">Blanca</MenuItem>
                             <MenuItem value="MORENA">Morena</MenuItem>
@@ -60,7 +60,7 @@ export default function TabCaracteristicas() {
                             <MenuItem value="OTRO">Otro</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField select fullWidth size="small" label="Color de Ojos" defaultValue="">
                             <MenuItem value="CAFE">Café</MenuItem>
                             <MenuItem value="NEGRO">Negro</MenuItem>
@@ -68,7 +68,7 @@ export default function TabCaracteristicas() {
                             <MenuItem value="AZUL">Azul</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField select fullWidth size="small" label="Color de Pelo" defaultValue="">
                             <MenuItem value="NEGRO">Negro</MenuItem>
                             <MenuItem value="CASTANO">Castaño</MenuItem>
@@ -76,7 +76,7 @@ export default function TabCaracteristicas() {
                             <MenuItem value="CANOSO">Canoso</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField select fullWidth size="small" label="Tipo de Pelo" defaultValue="">
                             <MenuItem value="LISO">Liso</MenuItem>
                             <MenuItem value="ONDULADO">Ondulado</MenuItem>
@@ -92,18 +92,18 @@ export default function TabCaracteristicas() {
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Dirección Domiciliar" multiline rows={3} />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <Grid container spacing={3}>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" label="Teléfono Fijo" />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" label="Celular 1" />
                             </Grid>
-                            <Grid item xs={12} md={6}>
+                            <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" label="Celular 2 (Opcional)" />
                             </Grid>
                         </Grid>
@@ -117,13 +117,13 @@ export default function TabCaracteristicas() {
                     En caso de emergencia contactar a:
                 </Typography>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Nombre Completo" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Parentesco" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Teléfono / Celular" />
                     </Grid>
                 </Grid>

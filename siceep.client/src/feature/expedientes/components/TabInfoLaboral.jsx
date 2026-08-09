@@ -32,10 +32,10 @@ export default function TabInfoLaboral() {
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
                     {/* Fila 1: Código y Estado (Sin la Fecha de Asignación) */}
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Código de Plaza (Número)" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField select fullWidth size="small" label="Estado de la Plaza" defaultValue="">
                             <MenuItem value="ACTIVA">Activa</MenuItem>
                             <MenuItem value="INACTIVA">Inactiva</MenuItem>
@@ -43,21 +43,21 @@ export default function TabInfoLaboral() {
                     </Grid>
 
                     {/* Fila 2: Los campos que nos trajimos de la pestaña Ubicación */}
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Orden" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Estructura" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Unidad Administrativa" />
                     </Grid>
 
                     {/* Fila 3: Cargo y Nivel */}
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Cargo Asignado" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Nivel / Categoría" />
                     </Grid>
                 </Grid>
@@ -69,20 +69,20 @@ export default function TabInfoLaboral() {
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Devengado" placeholder="C$" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Deducciones" placeholder="C$" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Salario Ordinario" placeholder="C$" />
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Salario Bruto" placeholder="C$" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
                             size="small"
