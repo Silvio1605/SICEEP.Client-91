@@ -4,6 +4,7 @@ import { Box, Grid, TextField, Typography, Paper, MenuItem } from '@mui/material
 export default function TabInfoLaboral() {
     return (
         <Box>
+            {/* 1. INFORMACIÓN DEL CONTRATO (Arriba, como en tu boceto) */}
             <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
                 Información del Contrato
             </Typography>
@@ -24,11 +25,13 @@ export default function TabInfoLaboral() {
                 </Grid>
             </Paper>
 
+            {/* 2. INFORMACIÓN DE LA PLAZA (Aquí están los campos fusionados de Ubicación) */}
             <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
                 Información de la Plaza
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
+                    {/* Fila 1: Código y Estado (Sin la Fecha de Asignación) */}
                     <Grid item xs={12} md={6}>
                         <TextField fullWidth size="small" label="Código de Plaza (Número)" />
                     </Grid>
@@ -39,6 +42,7 @@ export default function TabInfoLaboral() {
                         </TextField>
                     </Grid>
 
+                    {/* Fila 2: Los campos que nos trajimos de la pestaña Ubicación */}
                     <Grid item xs={12} md={4}>
                         <TextField fullWidth size="small" label="Orden" />
                     </Grid>
@@ -48,6 +52,8 @@ export default function TabInfoLaboral() {
                     <Grid item xs={12} md={4}>
                         <TextField fullWidth size="small" label="Unidad Administrativa" />
                     </Grid>
+
+                    {/* Fila 3: Cargo y Nivel */}
                     <Grid item xs={12} md={6}>
                         <TextField fullWidth size="small" label="Cargo Asignado" />
                     </Grid>
@@ -57,30 +63,36 @@ export default function TabInfoLaboral() {
                 </Grid>
             </Paper>
 
+            {/* 3. DESGLOSE SALARIAL (Abajo, con su borde verde) */}
             <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
                 Desglose Salarial
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
                 <Grid container spacing={3}>
                     <Grid item xs={12} md={4}>
-                        <TextField fullWidth size="small" label="Devengado" type="number" />
+                        <TextField fullWidth size="small" label="Devengado" placeholder="C$" />
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <TextField fullWidth size="small" label="Deducciones" type="number" />
+                        <TextField fullWidth size="small" label="Deducciones" placeholder="C$" />
                     </Grid>
                     <Grid item xs={12} md={4}>
-                        <TextField fullWidth size="small" label="Salario Ordinario" type="number" />
+                        <TextField fullWidth size="small" label="Salario Ordinario" placeholder="C$" />
                     </Grid>
+
                     <Grid item xs={12} md={6}>
-                        <TextField fullWidth size="small" label="Salario Bruto" type="number" />
+                        <TextField fullWidth size="small" label="Salario Bruto" placeholder="C$" />
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <TextField
                             fullWidth
                             size="small"
                             label="Salario Neto"
-                            type="number"
-                            sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'success.main', borderWidth: 2 } } }}
+                            placeholder="C$"
+                            sx={{
+                                '& .MuiOutlinedInput-root': {
+                                    '& fieldset': { borderColor: 'success.main', borderWidth: 2 }
+                                }
+                            }}
                         />
                     </Grid>
                 </Grid>

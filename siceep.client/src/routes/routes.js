@@ -1,7 +1,6 @@
-// Rutas de la aplicación
+
 const HOME = "/index";
 
-// Exportamos un objeto con las rutas para facilitar su uso en toda la aplicación
 export const Rutas = {
     HOME: HOME,
     USUARIOS: HOME + "/usuarios",
@@ -9,5 +8,8 @@ export const Rutas = {
     HISTORIAL: HOME + "/historial",
     UBICACION: HOME + "/ubicacion",
     EXPEDIENTES: HOME + "/expedientes",
+    CREAR_EXPEDIENTE: HOME + "/crear-expediente",
     CERRAR_SESION: HOME + "/cerrar-sesion",
+    DEDUCCIONES: HOME + "/deducciones",
+    BUSQUEDA_RAPIDA: HOME + "/busqueda-rapida",
 };

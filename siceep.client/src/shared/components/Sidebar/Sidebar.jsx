@@ -11,14 +11,14 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import DomainIcon from '@mui/icons-material/Domain';
 import BadgeIcon from '@mui/icons-material/Badge';
-import GroupsIcon from '@mui/icons-material/Groups';
-import WorkIcon from '@mui/icons-material/Work';
-import SchoolIcon from '@mui/icons-material/School';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import HelpCenterIcon from '@mui/icons-material/HelpCenter';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+
 import logo from "../../../assets/Logo_p.png";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -27,7 +27,6 @@ import ListItemText from "@mui/material/ListItemText";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../providers/Authenticacion/useAuth";
 import { Rutas } from "./../../../routes/routes";
-
 
 const menuSections = [
     {
@@ -47,21 +46,21 @@ const menuSections = [
     {
         titulo: "Expediente",
         items: [
-            // 2. Aquí está tu nuevo botón maestro unificado
-            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: 3 }
+            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: 3 },
+            { text: "Nuevo Expediente", icon: <AddBoxIcon />, path: Rutas.CREAR_EXPEDIENTE, idPermiso: 3 }
         ]
     },
     {
         titulo: "Tramites y Atención",
         items: [
             { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: 3 },
-            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 3 }
+            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 3 },
+            { text: "Gestion Deducciones", icon: <AccountBalanceWalletIcon />, path: Rutas.DEDUCCIONES, idPermiso: 3 }
         ]
     },
     {
         titulo: "Reportes y estadisticas",
         items: [
-
             { text: "Reportes", icon: <AssessmentIcon />, path: "/index/reportes", idPermiso: 3 },
             { text: "Estadisticas", icon: <BarChartIcon />, path: "/index/estadisticas", idPermiso: 3 },
             { text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: "/index/herramientas-ayuda", idPermiso: 3 },
