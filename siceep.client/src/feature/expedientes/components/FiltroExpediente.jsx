@@ -18,7 +18,7 @@ export default function FiltroExpediente({ filtro, actualizarFiltro, buscar }) {
     const [inputEstructura, setInputEstructura] = useState(filtro.estructura || "");
     const [inputCargo, setInputCargo] = useState(filtro.cargo || "");
     
-    const [activeFilter, setActiveFilter] = useState(true);
+    const [activeFilter, setActiveFilter] = useState(false);
 
     const handleSubmit = (e) => {
         e.preventDefault();

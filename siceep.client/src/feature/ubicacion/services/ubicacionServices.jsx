@@ -23,9 +23,10 @@ export const registrarUbicacion = async (idEstructura, idUnidad) => {
     }
 };
 
-export const getUbicaciones = async (parametro, pagina) => {
+export const getUbicaciones = async (parametro, page) => {
+    
     return api.get(`Ubicacion/Search`, {
-        params: { parametro, page: pagina }
+        params: { parametro, page }
     });
 };
 
