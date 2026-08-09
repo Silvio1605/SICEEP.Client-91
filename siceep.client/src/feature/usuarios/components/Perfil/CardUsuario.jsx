@@ -30,6 +30,7 @@ const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: '#1A2027',
     }),
 }));
+
 const obtenerEstado = (estado) => {
     switch (estado) {
         case 1:
@@ -56,8 +57,6 @@ function CardUsuario({ actualizar }) {
     const [rol, setRol] = useState("");
     const [EstadoComp, setEstadoComp] = useState();
     const [dialogo, setDialogo] = useState(null);
-
-    const { ActualizarEstado } = useUsuarios();
 
     // Funciones para abrir los diálogos de confirmación
     const abrirConfirmRol = () => setDialogo("confirmRol");
@@ -111,7 +110,6 @@ function CardUsuario({ actualizar }) {
         // Información del Usuario
         <Box sx={{ flexGrow: 1, mb: 1 }}>
             <Grid container spacing={2}>
-
                 <Grid size={12}>
                     <Box
                         sx={{
@@ -206,10 +204,13 @@ function CardUsuario({ actualizar }) {
                                                 {perfil.usuario?.propietario}
                                             </Typography>
                                         </Box>
-
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Box>
                         <Typography variant="caption" color="primary" fontWeight="bold">Ubicado en:</Typography>
                         <Typography variant="body2">{perfil.estructura || 'No asignado'}</Typography>
-                    </Paper>
+                    </Item>
                 </Grid>
                 <Grid size={12}>
                     <Item>
@@ -227,6 +228,7 @@ function CardUsuario({ actualizar }) {
                     </Item>
                 </Grid>
             </Grid>
+
             <Confirm
                 open={dialogo === "confirmRol"}
                 handleClose={cerrar}

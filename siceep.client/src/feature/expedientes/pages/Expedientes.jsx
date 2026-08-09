@@ -4,7 +4,6 @@ import Typography from '@mui/material/Typography';
 import { DataGrid } from '@mui/x-data-grid';
 import Grid from '@mui/material/Grid';
 import { useSearchParams } from "react-router-dom";
-import { columnsExpedientes } from '../services/expedientesData';
 import FiltrosBusqueda from '../../usuarios/components/FiltrosBusqueda';
 import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
