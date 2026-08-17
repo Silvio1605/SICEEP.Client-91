@@ -1,25 +1,80 @@
-import React from 'react';
-import { Box, Grid, TextField, Typography, Paper, MenuItem } from '@mui/material';
+import React, { useState } from 'react';
+import {
+    Box, Grid, TextField, Typography, Paper, MenuItem,
+    Divider, Autocomplete, CircularProgress, Alert, InputAdornment, Chip
+} from '@mui/material';
+//iconos
+import SearchIcon from '@mui/icons-material/Search';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import CalculateIcon from '@mui/icons-material/Calculate';
 
+// Definir el tipo de Plaza según tu modelo
 export default function TabInfoLaboral() {
+
+    const [plaza, setPlaza] = useState(null);
+    const [cargando, setCargando] = useState(false);
+    const [error, setError] = useState(null);
+    const [opciones, setOpciones] = useState([]);
+
+    const buscarPlazas = async (query) => {
+        if (query.length < 2) return;
+        setCargando(true);
+        setError(null);
+        try {
+            // const response = await api.get(`/plazas?search=${query}`);
+            // setOpciones(response.data);
+
+            // Simulación:
+            const resultados = [
+                { id: 1, codigo: 'PL-001', estado: 'Activa', orden: '1', estructura: 'Estructura A', unidadAdministrativa: 'Unidad 1', cargo: 'Gerente', nivel: 'Nivel 1' },
+                { id: 2, codigo: 'PL-002', estado: 'Inactiva', orden: '2', estructura: 'Estructura B', unidadAdministrativa: 'Unidad 2', cargo: 'Analista', nivel: 'Nivel 2' },
+            ].filter(p => p.codigo.toLowerCase().includes(query.toLowerCase()));
+            setOpciones(resultados);
+        } catch (err) {
+            setError('Error al buscar la plaza' + err.message);
+        } finally {
+            setCargando(false);
+        }
+    };
+
+    // Estados para los campos (ejemplo)
+    const [salarioMensual, setSalarioMensual] = useState('');
+    const [devengado, setDevengado] = useState('');
+    const [deducciones, setDeducciones] = useState('');
+
+    // Calcular salario bruto y neto (ejemplo)
+    const salarioBruto = parseFloat(salarioMensual) || 0;
+    const totalDeducciones = parseFloat(deducciones) || 0;
+    const salarioNeto = salarioBruto - totalDeducciones;
+
+    const handleChange = (event, value) => {
+        setPlaza(value);
+    };
+
     return (
         <Box>
+            
             {/* 1. INFORMACIÓN DEL CONTRATO (Arriba, como en tu boceto) */}
             <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
                 Información del Contrato
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 3 }}>
+                        <TextField fullWidth size="small" label="Numero de seguro Inss" />
+                    </Grid>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField select fullWidth size="small" label="Tipo de Contrato" defaultValue="">
                             <MenuItem value="INDETERMINADO">Indeterminado</MenuItem>
                             <MenuItem value="DETERMINADO">Determinado</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} md={4}>
-                        <TextField fullWidth size="small" type="date" label="Fecha de Inicio" InputLabelProps={{ shrink: true }} />
+                    <Grid size={{ xs: 12, md: 3 }}>
+                        <TextField fullWidth size="small" type="date" label="Fecha de Ingreso" InputLabelProps={{ shrink: true }} />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField fullWidth size="small" type="date" label="Fecha de Cese" InputLabelProps={{ shrink: true }} />
                     </Grid>
                 </Grid>
@@ -31,35 +86,133 @@ export default function TabInfoLaboral() {
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
-                    {/* Fila 1: Código y Estado (Sin la Fecha de Asignación) */}
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField fullWidth size="small" label="Código de Plaza (Número)" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField select fullWidth size="small" label="Estado de la Plaza" defaultValue="">
-                            <MenuItem value="ACTIVA">Activa</MenuItem>
-                            <MenuItem value="INACTIVA">Inactiva</MenuItem>
-                        </TextField>
+                    {/* Búsqueda de plaza */}
+                    <Grid size={{ xs: 12 }}>
+                        <Autocomplete
+                            freeSolo
+                            options={opciones}
+                            getOptionLabel={(option) => option?.codigo || ''}
+                            loading={cargando}
+                            onInputChange={(_, newValue) => buscarPlazas(newValue)}
+                            onChange={handleChange}
+                            renderInput={(params) => (
+                                <TextField
+                                    {...params}
+                                    label="Código de Plaza"
+                                    placeholder="Buscar por código"
+                                    size="small"
+                                    fullWidth
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
+                                        endAdornment: (
+                                            <>
+                                                {cargando && <CircularProgress color="inherit" size={20} />}
+                                                {params.InputProps.endAdornment}
+                                            </>
+                                        )
+                                    }}
+                                />
+                            )}
+                            renderOption={(props, option) => {
+                                const { key, ...restProps } = props;
+                                return (
+                                    <li key={key} {...restProps}>
+                                        <div>
+                                            <div><strong>{option.codigo}</strong> - {option.cargo}</div>
+                                            <div style={{ fontSize: '0.8rem', color: 'gray' }}>
+                                                {option.estructura} - {option.unidadAdministrativa}
+                                            </div>
+                                        </div>
+                                    </li>
+                                );
+                            }}
+                        />
+                        {error && <Alert severity="error" sx={{ mt: 1 }}>{error}</Alert>}
                     </Grid>
 
-                    {/* Fila 2: Los campos que nos trajimos de la pestaña Ubicación */}
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Orden" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Estructura" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Unidad Administrativa" />
-                    </Grid>
+                    {/* Datos de la plaza seleccionada */}
+                    {plaza && (
+                        <>
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    id="codigo-plaza"
+                                    fullWidth size="small"
+                                    label="Estado de la Plaza"
+                                    value={plaza.estado || ''}
+                                    InputProps={{ readOnly: true }}
+                                    InputLabelProps={{ shrink: true }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    id="orden-plaza"
+                                    fullWidth size="small"
+                                    label="Orden"
+                                    value={plaza.orden || ''}
+                                    InputProps={{ readOnly: true }}
+                                    InputLabelProps={{ shrink: true }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    id="estructura-plaza"
+                                    fullWidth size="small"
+                                    label="Estructura"
+                                    value={plaza.estructura || ''}
+                                    InputProps={{ readOnly: true }}
+                                    InputLabelProps={{ shrink: true }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    id="unidad-administrativa-plaza"
+                                    fullWidth size="small"
+                                    label="Unidad Administrativa"
+                                    value={plaza.unidadAdministrativa || ''}
+                                    InputProps={{ readOnly: true }}
+                                    InputLabelProps={{ shrink: true }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    id="cargo-plaza"
+                                    fullWidth size="small"
+                                    label="Cargo Asignado"
+                                    value={plaza.cargo || ''}
+                                    InputProps={{ readOnly: true }}
+                                    InputLabelProps={{ shrink: true }}
+                                    variant="outlined"
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    id="nivel-plaza"
+                                    fullWidth size="small"
+                                    label="Nivel / Categoría"
+                                    value={plaza.nivel || ''}
+                                    InputProps={{ readOnly: true }}
+                                    InputLabelProps={{ shrink: true }}
+                                    variant="outlined"
+                                />
+                            </Grid>
 
-                    {/* Fila 3: Cargo y Nivel */}
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField fullWidth size="small" label="Cargo Asignado" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField fullWidth size="small" label="Nivel / Categoría" />
-                    </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField fullWidth size="small" label="Salario Mensual" placeholder="C$" />
+                            </Grid>
+                        </>
+                    )}
+                    {!plaza && (
+                        <Grid size={{ xs: 12 }}>
+                            <Typography variant="body2" color="textSecondary" align="center">
+                                No se ha seleccionado ninguna plaza.
+                            </Typography>
+                        </Grid>
+                    )}
                 </Grid>
             </Paper>
 
@@ -67,34 +220,121 @@ export default function TabInfoLaboral() {
             <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
                 Desglose Salarial
             </Typography>
-            <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
+
+            <Paper elevation={1} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
                 <Grid container spacing={3}>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Devengado" placeholder="C$" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Deducciones" placeholder="C$" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Salario Ordinario" placeholder="C$" />
+
+                    {/* Primera fila: Ingresos */}
+                    <Grid size={{ xs: 12 }}>
+                        <Typography variant="caption" color="textSecondary" fontWeight="bold" sx={{ display: 'block', mb: 1 }}>
+                            INGRESOS
+                        </Typography>
+                        <Grid container spacing={3}>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Salario Mensual"
+                                    value={salarioMensual}
+                                    onChange={(e) => setSalarioMensual(e.target.value)}
+                                    placeholder="0.00"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">C$</InputAdornment>,
+                                    }}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Devengado"
+                                    value={devengado}
+                                    onChange={(e) => setDevengado(e.target.value)}
+                                    placeholder="0.00"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">C$</InputAdornment>,
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
                     </Grid>
 
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField fullWidth size="small" label="Salario Bruto" placeholder="C$" />
+                    <Grid size={{ xs: 12 }}>
+                        <Divider />
                     </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField
-                            fullWidth
-                            size="small"
-                            label="Salario Neto"
-                            placeholder="C$"
-                            sx={{
-                                '& .MuiOutlinedInput-root': {
-                                    '& fieldset': { borderColor: 'success.main', borderWidth: 2 }
-                                }
-                            }}
-                        />
+
+                    {/* Segunda fila: Deducciones */}
+                    <Grid size={{ xs: 12 }}>
+                        <Typography variant="caption" color="textSecondary" fontWeight="bold" sx={{ display: 'block', mb: 1 }}>
+                            DEDUCCIONES
+                        </Typography>
+                        <Grid container spacing={3}>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Deducciones Totales"
+                                    value={deducciones}
+                                    onChange={(e) => setDeducciones(e.target.value)}
+                                    placeholder="0.00"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">C$</InputAdornment>,
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
                     </Grid>
+
+                    <Grid size={{ xs: 12 }}>
+                        <Divider />
+                    </Grid>
+
+                    {/* Tercera fila: Totales con estilo */}
+                    <Grid size={{ xs: 12 }}>
+                        <Typography variant="caption" color="textSecondary" fontWeight="bold" sx={{ display: 'block', mb: 1 }}>
+                            TOTALES
+                        </Typography>
+                        <Grid container spacing={3}>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Salario Bruto"
+                                    value={salarioBruto.toFixed(2)}
+                                    InputProps={{
+                                        readOnly: true,
+                                        startAdornment: <InputAdornment position="start">C$</InputAdornment>,
+                                        sx: { backgroundColor: '#f5f5f5' }
+                                    }}
+                                    InputLabelProps={{ shrink: true }}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Salario Neto"
+                                    value={salarioNeto.toFixed(2)}
+                                    InputProps={{
+                                        readOnly: true,
+                                        startAdornment: <InputAdornment position="start">C$</InputAdornment>,
+                                        sx: {
+                                            backgroundColor: '#e8f5e9',
+                                            fontWeight: 'bold',
+                                            '& .MuiInputBase-input': { fontWeight: 'bold', color: '#2e7d32' }
+                                        }
+                                    }}
+                                    InputLabelProps={{ shrink: true }}
+                                    sx={{
+                                        '& .MuiOutlinedInput-root': {
+                                            '& fieldset': { borderColor: '#2e7d32', borderWidth: 2 }
+                                        }
+                                    }}
+                                />
+                            </Grid>
+                        </Grid>
+                    </Grid>
+
                 </Grid>
             </Paper>
         </Box>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Box, Grid, TextField, Typography, Paper, MenuItem } from '@mui/material';
+import { Box, Grid, TextField, Typography, Paper, MenuItem, Divider } from '@mui/material';
 
 export default function TabDatosGenerales() {
     return (
@@ -57,20 +57,49 @@ export default function TabDatosGenerales() {
                                     <MenuItem value="FEMENINO">Femenino</MenuItem>
                                 </TextField>
                             </Grid>
+
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField select fullWidth size="small" label="Estado Civil" defaultValue="">
+                                    <MenuItem value="SOLTERO">Soltero</MenuItem>
+                                    <MenuItem value="CASADO">Casado</MenuItem>
+                                </TextField>
+                            </Grid>
+
                             <Grid size={{ xs: 12, md: 6 }}>
                                 {/* Nuevo campo agregado según tu indicación */}
                                 <TextField fullWidth size="small" label="Lugar de Nacimiento" />
                             </Grid>
-
+                            
                             <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" type="date" label="Fecha Nacimiento" InputLabelProps={{ shrink: true }} />
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField fullWidth size="small" type="date" label="Fecha Ingreso" InputLabelProps={{ shrink: true }} />
-                            </Grid>
-
+                            
                         </Grid>
+                        {/* Contacto y Domicilio */}
+                        <Divider sx={{ my: 1 }} />
+                        <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
+                            Domicilio 
+                        </Typography>
+
+                        <Grid container spacing={3}>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField fullWidth size="small" label="Dirección Domiciliar" multiline rows={3} />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }} >
+                                <Grid size={{ xs: 12, md: 12 }}>
+                                    <TextField fullWidth size="small" label="Teléfono Fijo" />
+                                </Grid>
+                                <Divider sx={{ my: 1 }} />
+                                <Grid size={{ xs: 12, md: 12 }}>
+                                    <TextField fullWidth size="small" label="Celular" />
+                                </Grid>
+
+                            </Grid>
+                        </Grid>
+
                     </Grid>
+
+                    
                 </Grid>
             </Paper>
         </Box>

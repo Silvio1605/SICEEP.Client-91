@@ -40,7 +40,7 @@ export default function TabInfoAcademica() {
 
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={3}>
+                    <Grid size={{ xs: 12, md: 3 }}>
                         <TextField select fullWidth size="small" label="Nivel" defaultValue="">
                             <MenuItem value="PRIMARIA">Primaria</MenuItem>
                             <MenuItem value="BACHILLER">Bachiller</MenuItem>
