@@ -17,3 +17,4 @@ export const Actualizar = (id, descripcion) => {
         params: { id, nombreEstructura : descripcion }
     });
 };
+
