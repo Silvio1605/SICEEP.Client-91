@@ -8,6 +8,7 @@ import DetalleExpediente from "../feature/expedientes/pages/DetalleExpediente";
 import CrearExpediente from "../feature/expedientes/pages/CrearExpediente";
 import GestionDeducciones from "../feature/tramites/pages/GestionDeducciones";
 import BusquedaRapida from "../feature/tramites/pages/BusquedaRapida";
+import ExpedienteProvider from "./../feature/expedientes/context/ExpedienteProvider";
 
 export const privateRoutes = [
     {
@@ -29,7 +30,14 @@ export const privateRoutes = [
             </BusquedaProvider>
         )
     },
-    { path: "crear-expediente", element: <CrearExpediente /> },
+    {
+        path: "crear-expediente",
+        element: (
+            <ExpedienteProvider>
+                <CrearExpediente />
+            </ExpedienteProvider>
+        )
+    },
     { path: "info-personal/:id", element: <DetalleExpediente /> },
     { path: "info-familiar/:id", element: <DetalleExpediente /> },
     { path: "info-laboral/:id", element: <DetalleExpediente /> },

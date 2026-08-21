@@ -6,10 +6,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
 
 // Importación de Componentes Hijos
-import InfoPersonal from '../components/InfoPersonal';
-import InfoFamiliar from '../components/InfoFamiliar';
-import InfoLaboral from '../components/InfoLaboral';
-import InfoAcademica from '../components/InfoAcademica';
+import InfoPersonal from '../components/ver/InfoPersonal';
+import InfoFamiliar from '../components/ver/InfoFamiliar';
+import InfoLaboral from '../components/ver/InfoLaboral';
+import InfoAcademica from '../components/ver/InfoAcademica';
 import ModalImpresion from '../components/ModalImpresion';
 
 export default function DetalleExpediente() {
@@ -23,9 +23,7 @@ export default function DetalleExpediente() {
     const [cargando, setCargando] = useState(true);
     const [modalAbierto, setModalAbierto] = useState(false);
 
-    // =================================================================
     // OBTENCIÓN DE DATOS (MOCK) - Pendiente de reemplazar por API real
-    // =================================================================
     useEffect(() => {
         setCargando(true);
         setTimeout(() => {
@@ -43,9 +41,7 @@ export default function DetalleExpediente() {
         }, 300);
     }, [id]);
 
-    // =================================================================
     // MANEJO DE NAVEGACIÓN Y PESTAÑAS
-    // =================================================================
     useEffect(() => {
         const path = location.pathname;
         if (path.includes('info-personal')) setTabValue(0);
@@ -61,10 +57,7 @@ export default function DetalleExpediente() {
         const rutas = ['info-personal', 'info-familiar', 'info-laboral', 'info-academica'];
         navigate(`/index/${rutas[newValue]}/${expedienteId}`);
     };
-
-    // =================================================================
     // ACCIONES
-    // =================================================================
     const ejecutarImpresionFinal = (opcionesSeleccionadas) => {
         // Silvio: Aquí puedes enviar las opciones seleccionadas a tu backend
         // para que genere el PDF solo con las secciones marcadas.

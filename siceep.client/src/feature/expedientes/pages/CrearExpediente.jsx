@@ -8,12 +8,12 @@ import SaveIcon from '@mui/icons-material/Save';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import TabDatosGenerales from '../components/TabDatosGenerales';
-import TabInfoLaboral from '../components/TabInfoLaboral';
-import TabInfoAcademica from '../components/TabInfoAcademica';
-import TabCaracteristicas from '../components/TabCaracteristicas';
-import TabNucleofamiliar from '../components/TabNucleofamiliar';
-import TabDocumentos from '../components/TabDocumentos';
+import TabDatosGenerales from '../components/crear/TabDatosGenerales';
+import TabInfoLaboral from '../components/crear/TabInfoLaboral';
+import TabInfoAcademica from '../components/crear/TabInfoAcademica';
+import TabCaracteristicas from '../components/crear/TabCaracteristicas';
+import TabNucleofamiliar from '../components/crear/TabNucleofamiliar';
+import TabDocumentos from '../components/crear/TabDocumentos';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -82,8 +82,8 @@ export default function CrearExpediente() {
             <Paper elevation={2} sx={{ width: '100%', borderRadius: 2 }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: '#f8f9fa', borderRadius: '8px 8px 0 0' }}>
                     <Tabs value={tabActiva} onChange={handleChangeTab} variant="scrollable" scrollButtons="auto" allowScrollButtonsMobile>
-                        <Tab label="1 - Datos Generales" />
-                        <Tab label="2 - Info. Laboral" />
+                        <Tab label="1 - Datos Generales *" />
+                        <Tab label="2 - Info. Laboral *" />
                         <Tab label="3 - Características" />
                         <Tab label="4 - Núcleo Familiar" />
                         <Tab label="5 - Prep. Académica" />
@@ -124,7 +124,7 @@ export default function CrearExpediente() {
 
                     <Divider sx={{ my: 1 }} />
 
-                    <Typography variant="subtitle2" sx={{ color: 'warning.main', fontWeight: 'bold', mt: 2 }}>⚠ Faltan por ingresar:</Typography>
+                    <Typography variant="subtitle2" sx={{ color: 'warning.main', fontWeight: 'bold', mt: 2 }}>Faltan por ingresar:</Typography>
                     <List dense>
                         <ListItem>
                             <ListItemIcon sx={{ minWidth: 35 }}>

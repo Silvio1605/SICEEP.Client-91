@@ -1,11 +1,35 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Grid, TextField, Typography, Paper, MenuItem, Divider } from '@mui/material';
+import { useSelectSexo } from './../../hooks/Select/useSelectSexo'
+import SelectItemB from './../../../../shared/components/select/SelectItemB'
+import { useSelectEstadoCivil } from './../../hooks/Select/useSelectEstadoCivil'
 
 export default function TabDatosGenerales() {
+
+    const { selSexo, loadingS } = useSelectSexo();
+    const [sexo, setSexo] = useState('');
+
+    const { selECivil, loadingEC } = useSelectEstadoCivil();
+    const [estadoCivil, setEstadoCivil] = useState(1);
+
+    useEffect(() => {
+        const cargarSexo = () => {
+            setSexo(selSexo?.id || 'M');
+        };
+        cargarSexo();
+    }, [selSexo]);
+
+    useEffect(() => {
+        const cargarEstadoCivil = () => {
+            setEstadoCivil(selECivil?.id || 1);
+        };
+        cargarEstadoCivil();
+    }, [selECivil]);
+
     return (
+
         <Box>
             {/* Se eliminó por completo la sección de Identificación Corporativa */}
-
             <Typography variant="subtitle1" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
                 Información Personal
             </Typography>
@@ -50,21 +74,40 @@ export default function TabDatosGenerales() {
                             <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField fullWidth size="small" label="N° Cédula" />
                             </Grid>
-
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField select fullWidth size="small" label="Género" defaultValue="">
-                                    <MenuItem value="MASCULINO">Masculino</MenuItem>
-                                    <MenuItem value="FEMENINO">Femenino</MenuItem>
-                                </TextField>
+                                {loadingS ? (
+                                    <p>Cargando...</p>
+                                ) : (
+                                    <Box>
+                                        <SelectItemB
+                                            value={sexo}
+                                            onChange={(selSexo) => {
+                                                setSexo(selSexo);
+                                            }}
+                                            datos={selSexo}
+                                            titulo=""
+                                        />
+                                    </Box>
+                                )}
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField select fullWidth size="small" label="Estado Civil" defaultValue="">
-                                    <MenuItem value="SOLTERO">Soltero</MenuItem>
-                                    <MenuItem value="CASADO">Casado</MenuItem>
-                                </TextField>
+                                {loadingEC ? (
+                                    <p>Cargando...</p>
+                                ) : (
+                                    <Box>
+                                        <SelectItemB
+                                            value={estadoCivil}
+                                            onChange={(selECivil) => {
+                                                setEstadoCivil(selECivil);
+                                            }}
+                                            datos={selECivil}
+                                            titulo=""
+                                        />
+                                    </Box>
+                                )}
                             </Grid>
-
+                            
                             <Grid size={{ xs: 12, md: 6 }}>
                                 {/* Nuevo campo agregado según tu indicación */}
                                 <TextField fullWidth size="small" label="Lugar de Nacimiento" />

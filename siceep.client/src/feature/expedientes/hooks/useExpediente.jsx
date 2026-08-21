@@ -8,7 +8,6 @@ export const useExpediente = () => {
 
     const buscar = async (filtro) => {
 
-        
         //validaciones
         if (filtro.estado === "") {
             filtro.estado = null;

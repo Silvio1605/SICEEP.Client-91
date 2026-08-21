@@ -9,16 +9,16 @@ export default function TabInfoLaboral() {
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}> 
                         <TextField select fullWidth size="small" label="Tipo de Contrato" defaultValue="">
                             <MenuItem value="INDETERMINADO">Indeterminado</MenuItem>
                             <MenuItem value="DETERMINADO">Determinado</MenuItem>
                         </TextField>
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" type="date" label="Fecha de Inicio" InputLabelProps={{ shrink: true }} />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" type="date" label="Fecha de Cese" InputLabelProps={{ shrink: true }} />
                     </Grid>
                 </Grid>
@@ -29,29 +29,29 @@ export default function TabInfoLaboral() {
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Código de Plaza (Número)" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField select fullWidth size="small" label="Estado de la Plaza" defaultValue="">
                             <MenuItem value="ACTIVA">Activa</MenuItem>
                             <MenuItem value="INACTIVA">Inactiva</MenuItem>
                         </TextField>
                     </Grid>
 
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Orden" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Estructura" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Unidad Administrativa" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Cargo Asignado" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Nivel / Categoría" />
                     </Grid>
                 </Grid>
@@ -62,19 +62,19 @@ export default function TabInfoLaboral() {
             </Typography>
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Devengado" type="number" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Deducciones" type="number" />
                     </Grid>
-                    <Grid item xs={12} md={4}>
+                    <Grid size={{ xs: 12, md: 4 }}>
                         <TextField fullWidth size="small" label="Salario Ordinario" type="number" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField fullWidth size="small" label="Salario Bruto" type="number" />
                     </Grid>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{ xs: 12, md: 6 }}>
                         <TextField
                             fullWidth
                             size="small"

@@ -12,7 +12,7 @@ export const crearExpediente = (expediente) => {
     return api.post(`Expediente`, expediente);
 }
 
-
+// tab infromacion laboral
 export const buscarPlaza = (ordinal, top) => {
     return api.get(`SearchByOrdinal`, null, {
         params: { ordinal, top }
@@ -25,18 +25,16 @@ export const obtenerPlaza = (ordinal) => {
     });
 };
 
+//tab informacion general (persona)
 export const getSelectSexo = async () => {
     return await api.get(`LookUp/Select_Sexo`);
 };
 
-export const getSelectSexo = async () => {
+export const getSelectEstCivil = async () => {
     return await api.get(`LookUp/Select_Civil`);
 };
 
-export const getSelectCaracteristicas = async () => {
-    return await api.get(`LookUp/Select_Caracteristicas`);
-};
-
+// tab caracteristicas fisicas
 export const getSelectCaracteristicas = async () => {
     return await api.get(`LookUp/Select_Caracteristicas`);
 };
