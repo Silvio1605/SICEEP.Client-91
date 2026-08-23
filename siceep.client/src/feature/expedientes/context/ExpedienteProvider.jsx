@@ -3,8 +3,8 @@ import { ExpedienteContext } from './ExpedienteContext';
 
 // Estado inicial del expediente (vacío)
 const ExpedienteInicial = {
-    persona: { pnombre: '', papellido: '' }, // campos obligatorios
-    contrato: {},
+    persona: { pnombre: '', papellido: '', sexo: '', fechaNacimiento: null }, // campos obligatorios
+    contrato: { ordinal: null, numInss: '', tipoContrato: '', fechaInicio: null, fechaCese: null, salarioMensual: 0 },
     contactoEmergencia: null,
     caracteristicasFisicas: null,
     familiares: [],
@@ -32,7 +32,7 @@ export const ExpedienteProvider = ({ children }) => {
             case 'persona':
                 return !!data.pnombre && !!data.papellido;
             case 'contrato':
-                return !!data.idPlaza && !!data.salarioMensual;
+                return !!data.ordinal && !!data.salarioMensual;
             case 'contactoEmergencia':
                 return !!(data.nombreContacto && data.telefono);
             case 'caracteristicasFisicas':

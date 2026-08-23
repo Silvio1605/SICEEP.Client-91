@@ -13,7 +13,6 @@ export const useSelectPlaza = () => {
         try {
             const response = await searchPlaza(ordinal, top);
             setPlazas(response.data || []);
-            
             return response.data;
         } catch (err) {
             setError(err.message || 'Error al buscar plazas');

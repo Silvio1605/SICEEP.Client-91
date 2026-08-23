@@ -24,6 +24,8 @@ export default function TabDatosGenerales() {
                 papellido: '',
                 sapellido: '',
                 fechaNacimiento: null,
+                direccion: null,
+                celular: null,
                 sexo: selSexo?.id || 'M',
                 estadoCivil: selECivil?.id || 1
             });
@@ -203,7 +205,7 @@ export default function TabDatosGenerales() {
                                         size="small"
                                         label="Celular"
                                         value={persona.celular || ''}
-                                        onChange={(e) => handleChangeSimple('fechaNacimiento', e.target.value)}
+                                        onChange={(e) => handleChangeSimple('celular', e.target.value)}
                                     />
                                 </Grid>
 

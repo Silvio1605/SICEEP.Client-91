@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import {
     Box, Grid, TextField, Typography, Paper, MenuItem,
     Divider, Autocomplete, CircularProgress, Alert, InputAdornment, Chip
@@ -10,19 +10,24 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import CalculateIcon from '@mui/icons-material/Calculate';
 
+import SelectItemB from './../../../../shared/components/Select/SelectItemB';
 import { useSelectPlaza } from './../../hooks/useSelectPlaza'; 
-//import { useExpedienteContext } from './../../context/ExpedienteContext';
+import { ExpedienteContext } from './../../context/ExpedienteContext';
+
+
+const selTipoContrato = [
+    { id: 'P', nombre: 'PLANTA' },
+    { id: 'A', nombre: 'AUXILIAR' },
+];
 
 // Definir el tipo de Plaza según tu modelo
 export default function TabInfoLaboral() {
 
     const { plazas, loading, error, buscarPlazas } = useSelectPlaza();
-    //const { expediente, actualizarSeccion } = useExpedienteContext();
-
-    const [plaza, setPlaza] = useState(null);
+    const { expediente, actualizarSeccion, actualizarCampo } = useContext(ExpedienteContext);
 
     // Estados para los campos (ejemplo)
-    const [salarioMensual, setSalarioMensual] = useState('');
+    const [salarioMensual, setSalarioMensual] = useState(expediente.contrato?.salarioMensual || '');
     const [devengado, setDevengado] = useState('');
     const [deducciones, setDeducciones] = useState('');
 
@@ -31,9 +36,40 @@ export default function TabInfoLaboral() {
     const totalDeducciones = parseFloat(deducciones) || 0;
     const salarioNeto = salarioBruto - totalDeducciones;
 
-    const handleChange = (event, value) => {
-        setPlaza(value);
+    const [plazaSeleccionada, setPlazaSeleccionada] = useState(expediente.contrato?.plaza || null);
+
+    useEffect(() => {
+        if (!expediente.contrato) {
+            // Si la sección está vacía, la creamos con valores predeterminados
+            actualizarSeccion('contrato', {
+                ordinal: null,
+                numInss: '',
+                tipoContrato: 'P',
+                fechaInicio: null,
+                fechaCese: null,
+                salarioMensual: '',
+            });
+        }
+
+    }, [expediente, actualizarSeccion]); 
+
+    const contrato = expediente.contrato || {};
+
+    // Manejador para cambios en campos simples
+    const handleChangeSimple = (campo, valor) => {
+        actualizarCampo('contrato', campo, valor);
     };
+
+    // Manejador para cambios en selects (usando SelectItemB)
+    const handleSelectChange = (campo, valor) => {
+        actualizarCampo('contrato', campo, valor);
+    };
+
+    const handlePlazaSelected = (plazaSelect) => {
+        setPlazaSeleccionada(plazaSelect);
+        actualizarCampo('contrato', 'ordinal', plazaSelect.ordinal);
+        actualizarCampo('contrato', 'salarioMensual', plazaSelect.salario);
+    }
 
     return (
         <Box>
@@ -45,19 +81,46 @@ export default function TabInfoLaboral() {
             <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
                 <Grid container spacing={3}>
                     <Grid size={{ xs: 12, md: 3 }}>
-                        <TextField fullWidth size="small" label="Numero de seguro Inss" />
+                        <TextField
+                            fullWidth
+                            size="small"
+                            label="Numero de seguro Inss"
+                            value={contrato.numInss || ''}
+                            onChange={(e) => handleChangeSimple('numInss', e.target.value)}
+                        />
                     </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>
-                        <TextField select fullWidth size="small" label="Tipo de Contrato" defaultValue="">
-                            <MenuItem value="P">PLANTA</MenuItem>
-                            <MenuItem value="A">AUXILIAR</MenuItem>
-                        </TextField>
+                        <Box>
+                            <SelectItemB
+                                value={contrato.tipoContrato || 'P'}
+                                onChange={(value) => handleSelectChange('tipoContrato', value)}
+                                datos={selTipoContrato}
+                                titulo=""
+                            />
+                        </Box>
+                        
                     </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>
-                        <TextField fullWidth size="small" type="date" label="Fecha de Ingreso" InputLabelProps={{ shrink: true }} />
+                        <TextField
+                            fullWidth
+                            size="small"
+                            type="date"
+                            label="Fecha de Ingreso"
+                            InputLabelProps={{ shrink: true }}
+                            value={contrato.fechaInicio || ''}
+                            onChange={(e) => handleChangeSimple('fechaInicio', e.target.value)}
+                        />
                     </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>
-                        <TextField fullWidth size="small" type="date" label="Fecha de Cese" InputLabelProps={{ shrink: true }} />
+                        <TextField
+                            fullWidth
+                            size="small"
+                            type="date"
+                            label="Fecha de Cese"
+                            InputLabelProps={{ shrink: true }}
+                            value={contrato.fechaCese || ''}
+                            onChange={(e) => handleChangeSimple('fechaCese', e.target.value)}
+                        />
                     </Grid>
                 </Grid>
             </Paper>
@@ -73,10 +136,11 @@ export default function TabInfoLaboral() {
                         <Autocomplete
                             freeSolo
                             options={plazas}
-                            getOptionLabel={(plazas) => plazas?.ordinal || ''}
+                            getOptionLabel={(option) => option?.ordinal || ''}
                             loading={loading}
                             onInputChange={(_, newValue) => buscarPlazas(newValue)}
-                            onChange={handleChange}
+                            onChange={(_, newValue) => handlePlazaSelected(newValue)}
+                            value={plazaSeleccionada}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
@@ -101,7 +165,7 @@ export default function TabInfoLaboral() {
                                 return (
                                     <li key={key} {...restProps}>
                                         <div>
-                                            <div><strong>{plazas.ordinal}</strong> - {plazas.orden}</div>
+                                            <div><strong>{plazas.ordinal}</strong> - {plazas.cargo}</div>
                                             <div style={{ fontSize: '0.8rem', color: 'gray' }}>
                                                 {plazas.estructura} - {plazas.unidad}
                                             </div>
@@ -114,14 +178,14 @@ export default function TabInfoLaboral() {
                     </Grid>
 
                     {/* Datos de la plaza seleccionada */}
-                    {plaza && (
+                    {plazaSeleccionada && (
                         <>
                             <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     id="codigo-plaza"
                                     fullWidth size="small"
                                     label="Codigo de la Plaza"
-                                    value={plaza.ordinal || ''}
+                                    value={plazaSeleccionada.ordinal || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
@@ -132,7 +196,7 @@ export default function TabInfoLaboral() {
                                     id="orden-plaza"
                                     fullWidth size="small"
                                     label="Orden"
-                                    value={plaza.orden || ''}
+                                    value={plazaSeleccionada.orden || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
@@ -143,7 +207,7 @@ export default function TabInfoLaboral() {
                                     id="estructura-plaza"
                                     fullWidth size="small"
                                     label="Estructura"
-                                    value={plaza.estructura || ''}
+                                    value={plazaSeleccionada.estructura || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
@@ -154,7 +218,7 @@ export default function TabInfoLaboral() {
                                     id="unidad-administrativa-plaza"
                                     fullWidth size="small"
                                     label="Unidad Administrativa"
-                                    value={plaza.unidad || ''}
+                                    value={plazaSeleccionada.unidad || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
@@ -165,38 +229,57 @@ export default function TabInfoLaboral() {
                                     id="cargo-plaza"
                                     fullWidth size="small"
                                     label="Cargo Asignado"
-                                    value={plaza.cargo || ''}
+                                    value={plazaSeleccionada.cargo || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
                                 />
                             </Grid>
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     id="categoria-plaza"
                                     fullWidth size="small"
                                     label="Nivel / Categoría"
-                                    value={plaza.categoria || ''}
+                                    value={plazaSeleccionada.categoria || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
                                 />
                             </Grid>
 
-                            <Grid size={{ xs: 12, md: 6 }}>
+                            <Grid size={{ xs: 12, md: 4 }}>
+                                <TextField
+                                    id="salario-Presupuestado-plaza"
+                                    fullWidth size="small"
+                                    label="Salario Presupuestado"
+                                    value={plazaSeleccionada.salario || ''}
+                                    InputProps={{ readOnly: true }}
+                                    InputLabelProps={{ shrink: true }}
+                                    variant="outlined"
+                                />
+                                
+                            </Grid>
+
+                            <Grid size={{ xs: 12, md: 4 }}>
                                 <TextField
                                     id="salario-plaza"
                                     fullWidth
-                                    value={plaza.salario || ''}
                                     size="small"
-                                    label="Salario Mensual"
-                                    placeholder="C$"
+                                    label="Salario Ordinario"
                                     variant="outlined"
+                                    placeholder="0.00"
+                                    InputProps={{
+                                        startAdornment: <InputAdornment position="start">C$</InputAdornment>,
+                                    }}
+                                    value={contrato.salarioMensual || ''}
+                                    onChange={(e) => {
+                                        handleChangeSimple('salarioMensual', e.target.value);
+                                    }}
                                 />
                             </Grid>
                         </>
                     )}
-                    {!plaza && (
+                    {!plazaSeleccionada && (
                         <Grid size={{ xs: 12 }}>
                             <Typography variant="body2" color="textSecondary" align="center">
                                 No se ha seleccionado ninguna plaza.

@@ -5,7 +5,7 @@ export const esquemaValidacion = {
         seccionObligatoria: true
     },
     contrato: {
-        camposObligatorios: ['idPlaza', 'numInss', 'tipoContrato',  'fechaInicio', 'salarioMensual'],
+        camposObligatorios: ['ordinal', 'numInss', 'tipoContrato',  'fechaInicio', 'salarioMensual'],
         seccionObligatoria: true
     },
     contactoEmergencia: {
