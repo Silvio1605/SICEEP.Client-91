@@ -1,7 +1,7 @@
 import { useContext } from 'react';
-import ExpedienteContext from '../context/ExpedienteContext';
+import ExpedienteContext from './ExpedienteContext';
 
-export const useExpedienteForm = () => {
+export const useExpedienteContext = () => {
     const context = useContext(ExpedienteContext);
 
     if (!context) {

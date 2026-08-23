@@ -67,8 +67,8 @@ export default function TabInfoLaboral() {
                     </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>
                         <TextField select fullWidth size="small" label="Tipo de Contrato" defaultValue="">
-                            <MenuItem value="INDETERMINADO">Indeterminado</MenuItem>
-                            <MenuItem value="DETERMINADO">Determinado</MenuItem>
+                            <MenuItem value="P">PLANTA</MenuItem>
+                            <MenuItem value="A">AUXILIAR</MenuItem>
                         </TextField>
                     </Grid>
                     <Grid size={{ xs: 12, md: 3 }}>

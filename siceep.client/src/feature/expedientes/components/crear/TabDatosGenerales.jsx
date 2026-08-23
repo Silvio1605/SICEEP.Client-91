@@ -4,6 +4,8 @@ import { useSelectSexo } from './../../hooks/Select/useSelectSexo'
 import SelectItemB from './../../../../shared/components/select/SelectItemB'
 import { useSelectEstadoCivil } from './../../hooks/Select/useSelectEstadoCivil'
 
+//import { ExpedienteContext } from './../../context/ExpedienteContext';
+
 export default function TabDatosGenerales() {
 
     const { selSexo, loadingS } = useSelectSexo();
