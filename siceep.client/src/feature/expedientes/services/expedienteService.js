@@ -13,14 +13,21 @@ export const crearExpediente = (expediente) => {
 }
 
 // tab infromacion laboral
-export const buscarPlaza = (ordinal, top) => {
-    return api.get(`SearchByOrdinal`, null, {
-        params: { ordinal, top }
+export const searchPlaza = (ordinal, top) => {
+    if (!ordinal || ordinal === '') {
+        return Promise.reject(new Error('El ordinal es requerido'));
+    }
+
+    // Asegurar que top sea un número positivo
+    const limit = Math.max(1, top || 10);
+
+    return api.get(`Plaza/SearchByOrdinal`, {
+        params: { ordinal, top: limit }
     });
 };
 
-export const obtenerPlaza = (ordinal) => {
-    return api.get(`GetByOrdinal`, null, {
+export const getPlaza = (ordinal) => {
+    return api.get(`Plaza/GetByOrdinal`, {
         params: { ordinal }
     });
 };

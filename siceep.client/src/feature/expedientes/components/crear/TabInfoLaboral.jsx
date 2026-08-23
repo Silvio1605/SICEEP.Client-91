@@ -10,34 +10,16 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import CalculateIcon from '@mui/icons-material/Calculate';
 
+import { useSelectPlaza } from './../../hooks/useSelectPlaza'; 
+//import { useExpedienteContext } from './../../context/ExpedienteContext';
+
 // Definir el tipo de Plaza según tu modelo
 export default function TabInfoLaboral() {
 
+    const { plazas, loading, error, buscarPlazas } = useSelectPlaza();
+    //const { expediente, actualizarSeccion } = useExpedienteContext();
+
     const [plaza, setPlaza] = useState(null);
-    const [cargando, setCargando] = useState(false);
-    const [error, setError] = useState(null);
-    const [opciones, setOpciones] = useState([]);
-
-    const buscarPlazas = async (query) => {
-        if (query.length < 2) return;
-        setCargando(true);
-        setError(null);
-        try {
-            // const response = await api.get(`/plazas?search=${query}`);
-            // setOpciones(response.data);
-
-            // Simulación:
-            const resultados = [
-                { id: 1, codigo: 'PL-001', estado: 'Activa', orden: '1', estructura: 'Estructura A', unidadAdministrativa: 'Unidad 1', cargo: 'Gerente', nivel: 'Nivel 1' },
-                { id: 2, codigo: 'PL-002', estado: 'Inactiva', orden: '2', estructura: 'Estructura B', unidadAdministrativa: 'Unidad 2', cargo: 'Analista', nivel: 'Nivel 2' },
-            ].filter(p => p.codigo.toLowerCase().includes(query.toLowerCase()));
-            setOpciones(resultados);
-        } catch (err) {
-            setError('Error al buscar la plaza' + err.message);
-        } finally {
-            setCargando(false);
-        }
-    };
 
     // Estados para los campos (ejemplo)
     const [salarioMensual, setSalarioMensual] = useState('');
@@ -90,9 +72,9 @@ export default function TabInfoLaboral() {
                     <Grid size={{ xs: 12 }}>
                         <Autocomplete
                             freeSolo
-                            options={opciones}
-                            getOptionLabel={(option) => option?.codigo || ''}
-                            loading={cargando}
+                            options={plazas}
+                            getOptionLabel={(plazas) => plazas?.ordinal || ''}
+                            loading={loading}
                             onInputChange={(_, newValue) => buscarPlazas(newValue)}
                             onChange={handleChange}
                             renderInput={(params) => (
@@ -107,21 +89,21 @@ export default function TabInfoLaboral() {
                                         startAdornment: <SearchIcon color="action" sx={{ mr: 1 }} />,
                                         endAdornment: (
                                             <>
-                                                {cargando && <CircularProgress color="inherit" size={20} />}
+                                                {loading && <CircularProgress color="inherit" size={20} />}
                                                 {params.InputProps.endAdornment}
                                             </>
                                         )
                                     }}
                                 />
                             )}
-                            renderOption={(props, option) => {
+                            renderOption={(props, plazas) => {
                                 const { key, ...restProps } = props;
                                 return (
                                     <li key={key} {...restProps}>
                                         <div>
-                                            <div><strong>{option.codigo}</strong> - {option.cargo}</div>
+                                            <div><strong>{plazas.ordinal}</strong> - {plazas.orden}</div>
                                             <div style={{ fontSize: '0.8rem', color: 'gray' }}>
-                                                {option.estructura} - {option.unidadAdministrativa}
+                                                {plazas.estructura} - {plazas.unidad}
                                             </div>
                                         </div>
                                     </li>
@@ -138,8 +120,8 @@ export default function TabInfoLaboral() {
                                 <TextField
                                     id="codigo-plaza"
                                     fullWidth size="small"
-                                    label="Estado de la Plaza"
-                                    value={plaza.estado || ''}
+                                    label="Codigo de la Plaza"
+                                    value={plaza.ordinal || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
@@ -172,7 +154,7 @@ export default function TabInfoLaboral() {
                                     id="unidad-administrativa-plaza"
                                     fullWidth size="small"
                                     label="Unidad Administrativa"
-                                    value={plaza.unidadAdministrativa || ''}
+                                    value={plaza.unidad || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
@@ -191,10 +173,10 @@ export default function TabInfoLaboral() {
                             </Grid>
                             <Grid size={{ xs: 12, md: 6 }}>
                                 <TextField
-                                    id="nivel-plaza"
+                                    id="categoria-plaza"
                                     fullWidth size="small"
                                     label="Nivel / Categoría"
-                                    value={plaza.nivel || ''}
+                                    value={plaza.categoria || ''}
                                     InputProps={{ readOnly: true }}
                                     InputLabelProps={{ shrink: true }}
                                     variant="outlined"
@@ -202,7 +184,15 @@ export default function TabInfoLaboral() {
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField fullWidth size="small" label="Salario Mensual" placeholder="C$" />
+                                <TextField
+                                    id="salario-plaza"
+                                    fullWidth
+                                    value={plaza.salario || ''}
+                                    size="small"
+                                    label="Salario Mensual"
+                                    placeholder="C$"
+                                    variant="outlined"
+                                />
                             </Grid>
                         </>
                     )}

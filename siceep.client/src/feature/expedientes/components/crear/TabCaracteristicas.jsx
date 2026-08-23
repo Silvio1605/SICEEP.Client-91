@@ -25,6 +25,7 @@ export default function TabCaracteristicas() {
                 tipoSangre: selCaracteristicas?.TipoSangre?.[0]?.id || 'NR'
             });
         }
+
     }, [selCaracteristicas, expediente.caracteristicasFisicas, actualizarSeccion]);
 
     // Si el expediente ya tiene caracteristicasFisicas, pero no tiene algunos campos,

@@ -1,32 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { Box, Grid, TextField, Typography, Paper, MenuItem, Divider } from '@mui/material';
 import { useSelectSexo } from './../../hooks/Select/useSelectSexo'
 import SelectItemB from './../../../../shared/components/select/SelectItemB'
 import { useSelectEstadoCivil } from './../../hooks/Select/useSelectEstadoCivil'
 
-//import { ExpedienteContext } from './../../context/ExpedienteContext';
+import { ExpedienteContext } from './../../context/ExpedienteContext';
 
 export default function TabDatosGenerales() {
 
-    const { selSexo, loadingS } = useSelectSexo();
-    const [sexo, setSexo] = useState('');
-
     const { selECivil, loadingEC } = useSelectEstadoCivil();
-    const [estadoCivil, setEstadoCivil] = useState(1);
+    const { selSexo, loadingS } = useSelectSexo();
+
+    // Obtener el contexto del expediente
+    const { expediente, actualizarCampo, actualizarSeccion } = useContext(ExpedienteContext);
+
 
     useEffect(() => {
-        const cargarSexo = () => {
-            setSexo(selSexo?.id || 'M');
-        };
-        cargarSexo();
-    }, [selSexo]);
+        if (!expediente.persona) {
+            // Si la sección está vacía, la creamos con valores predeterminados
+            actualizarSeccion('persona', {
+                pnombre: '',
+                snombre: '',
+                papellido: '',
+                sapellido: '',
+                fechaNacimiento: null,
+                sexo: selSexo?.id || 'M',
+                estadoCivil: selECivil?.id || 1
+            });
+        }
 
-    useEffect(() => {
-        const cargarEstadoCivil = () => {
-            setEstadoCivil(selECivil?.id || 1);
-        };
-        cargarEstadoCivil();
-    }, [selECivil]);
+    }, [selSexo, selECivil, expediente.persona, actualizarSeccion]);
+
+    // Manejador para cambios en campos simples (estatura, peso)
+    const handleChangeSimple = (campo, valor) => {
+        actualizarCampo('persona', campo, valor);
+    };
+
+    // Manejador para cambios en selects (usando SelectItemB)
+    const handleSelectChange = (campo, valor) => {
+        actualizarCampo('persona', campo, valor);
+    };
+
+    const persona = expediente.persona || {};
 
     return (
 
@@ -64,17 +79,50 @@ export default function TabDatosGenerales() {
                         <Grid container spacing={2}>
 
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField fullWidth size="small" label="Nombres" />
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Primer Nombre"
+                                    value={persona.pnombre || ''}
+                                    onChange={(e) => handleChangeSimple('pnombre', e.target.value)}
+                                />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField fullWidth size="small" label="Primer Apellido" />
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Segundo Nombre"
+                                    value={persona.snombre || ''}
+                                    onChange={(e) => handleChangeSimple('snombre', e.target.value)}
+                                />
+                            </Grid>
+                            <Grid size={{ xs: 12, md: 6 }}>
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Primer Apellido"
+                                    value={persona.papellido || ''}
+                                    onChange={(e) => handleChangeSimple('papellido', e.target.value)}
+                                />
                             </Grid>
 
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField fullWidth size="small" label="Segundo Apellido" />
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Segundo Apellido"
+                                    value={persona.sapellido || ''}
+                                    onChange={(e) => handleChangeSimple('sapellido', e.target.value)}
+                                />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField fullWidth size="small" label="N° Cédula" />
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="N° Cédula"
+                                    value={persona.cedula || ''}
+                                    onChange={(e) => handleChangeSimple('cedula', e.target.value)}
+                                />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6 }}>
                                 {loadingS ? (
@@ -82,10 +130,8 @@ export default function TabDatosGenerales() {
                                 ) : (
                                     <Box>
                                         <SelectItemB
-                                            value={sexo}
-                                            onChange={(selSexo) => {
-                                                setSexo(selSexo);
-                                            }}
+                                            value={persona.sexo || 'M'}
+                                            onChange={(value) => handleSelectChange('sexo', value)}
                                             datos={selSexo}
                                             titulo=""
                                         />
@@ -99,10 +145,8 @@ export default function TabDatosGenerales() {
                                 ) : (
                                     <Box>
                                         <SelectItemB
-                                            value={estadoCivil}
-                                            onChange={(selECivil) => {
-                                                setEstadoCivil(selECivil);
-                                            }}
+                                            value={persona.estadoCivil || 1}
+                                            onChange={(value) => handleSelectChange('estadoCivil', value)}
                                             datos={selECivil}
                                             titulo=""
                                         />
@@ -112,11 +156,25 @@ export default function TabDatosGenerales() {
                             
                             <Grid size={{ xs: 12, md: 6 }}>
                                 {/* Nuevo campo agregado según tu indicación */}
-                                <TextField fullWidth size="small" label="Lugar de Nacimiento" />
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Lugar de Nacimiento"
+                                    value={persona.lugarNacimiento || ''}
+                                    onChange={(e) => handleChangeSimple('lugarNacimiento', e.target.value)}
+                                />
                             </Grid>
                             
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField fullWidth size="small" type="date" label="Fecha Nacimiento" InputLabelProps={{ shrink: true }} />
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    type="date"
+                                    label="Fecha Nacimiento"
+                                    InputLabelProps={{ shrink: true }}
+                                    value={persona.fechaNacimiento || ''}
+                                    onChange={(e) => handleChangeSimple('fechaNacimiento', e.target.value)}
+                                />  
                             </Grid>
                             
                         </Grid>
@@ -128,15 +186,25 @@ export default function TabDatosGenerales() {
 
                         <Grid container spacing={3}>
                             <Grid size={{ xs: 12, md: 6 }}>
-                                <TextField fullWidth size="small" label="Dirección Domiciliar" multiline rows={3} />
+                                <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="Dirección Domiciliar"
+                                    multiline rows={3}
+                                    value={persona.direccion || ''}
+                                    onChange={(e) => handleChangeSimple('direccion', e.target.value)}
+                                />
                             </Grid>
                             <Grid size={{ xs: 12, md: 6 }} >
+                               
                                 <Grid size={{ xs: 12, md: 12 }}>
-                                    <TextField fullWidth size="small" label="Teléfono Fijo" />
-                                </Grid>
-                                <Divider sx={{ my: 1 }} />
-                                <Grid size={{ xs: 12, md: 12 }}>
-                                    <TextField fullWidth size="small" label="Celular" />
+                                    <TextField
+                                        fullWidth
+                                        size="small"
+                                        label="Celular"
+                                        value={persona.celular || ''}
+                                        onChange={(e) => handleChangeSimple('fechaNacimiento', e.target.value)}
+                                    />
                                 </Grid>
 
                             </Grid>

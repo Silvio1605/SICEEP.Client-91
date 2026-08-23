@@ -4,89 +4,94 @@ import { ExpedienteContext } from './ExpedienteContext';
 // Estado inicial del expediente (vacío)
 const ExpedienteInicial = {
     persona: { pnombre: '', papellido: '' }, // campos obligatorios
-    empleado: {},
     contrato: {},
     contactoEmergencia: null,
     caracteristicasFisicas: null,
     familiares: [],
 };
 
+const SeccionesEstadoInicial = {
+    persona: { completado: false, obligatorio: true },
+    contrato: { completado: false, obligatorio: true },
+    contactoEmergencia: { completado: false, obligatorio: false },
+    caracteristicasFisicas: { completado: false, obligatorio: false },
+    familiares: { completado: false, obligatorio: false },
+};
 
 export const ExpedienteProvider = ({ children }) => {
 
     const [expediente, setExpediente] = useState(ExpedienteInicial);
+    const [estadoSecciones, setEstadoSecciones] = useState(SeccionesEstadoInicial);
 
-    // Estado para controlar si cada sección está completa o no
-    const [seccionesCompletas, setSeccionesCompletas] = useState({
-        persona: false,
-        empleado: false,
-        contrato: false,
-        contactoEmergencia: false,
-        caracteristicasFisicas: false,
-        familiares: false,
-        estudios: false,
-        documentos: false
-    });
+    // Función que verifica si una sección está completa
+    const verificarSeccionCompleta = (seccion, data) => {
 
+        if (!data) return false;
 
-    const actualizarSeccionCompleta = useCallback((seccion, data) => {
-        if (!data) {
-            setSeccionesCompletas(prev => ({ ...prev, [seccion]: false }));
-            return;
-        }
-
-        // campos obligatorios para cada sección
-        const camposObligatorios = {
-            persona: ['pnombre', 'papellido', 'sexo'],
-            empleado: ['numInss', 'fechaIngreso', 'idEstadoEmpleado'],
-            contrato: ['idPlaza', 'fechaInicio', 'tipoContrato', 'salarioMensual'],
-            contactoEmergencia: ['nombreContacto', 'telefono'],
-            caracteristicasFisicas: ['tonoPiel', 'colorOjos'],
-            familiares: (data) => Array.isArray(data) && data.length > 0,
-        };
-
-        const esCompleta = (seccion, data) => {
-            if (seccion === 'familiares') {
+        switch (seccion) {
+            case 'persona':
+                return !!data.pnombre && !!data.papellido;
+            case 'contrato':
+                return !!data.idPlaza && !!data.salarioMensual;
+            case 'contactoEmergencia':
+                return !!(data.nombreContacto && data.telefono);
+            case 'caracteristicasFisicas':
+                return !!(data.estatura && data.peso);
+            case 'familiares':
                 return Array.isArray(data) && data.length > 0;
-            }
-            const campos = camposObligatorios[seccion];
-            if (!campos) return false;
-            return campos.every(campo => {
-                const valor = data?.[campo];
-                return valor !== undefined && valor !== null && valor !== '' && valor !== 0;
-            });
-        };
+            default:
+                return false;
+        }
+    };
 
-        setSeccionesCompletas(prev => ({
+    // Actualiza una sección y marca su estado
+    const actualizarSeccion = useCallback((seccion, data) => {
+        setExpediente((prev) => ({
             ...prev,
-            [seccion]: esCompleta(seccion, data)
+            [seccion]: data,
+        }));
+        // Marcar como completada si tiene datos
+        const estaCompleta = verificarSeccionCompleta(seccion, data);
+        setEstadoSecciones((prev) => ({
+            ...prev,
+            [seccion]: {
+                ...prev[seccion],
+                completado: estaCompleta,
+            },
         }));
     }, []);
-
-    // Actualiza una sección completa
-    const actualizarSeccion = useCallback((seccion, data) => {
-        setExpediente(prev => {
-            const nuevo = { ...prev, [seccion]: data };
-            actualizarSeccionCompleta(seccion, data);
-            return nuevo;
-        });
-    }, [actualizarSeccionCompleta]);
    
     // Actualiza un campo específico dentro de una sección
     const actualizarCampo = useCallback((seccion, campo, valor) => {
-        setExpediente(prev => {
-            const nuevo = {
-                ...prev,
-                [seccion]: {
-                    ...prev[seccion],
-                    [campo]: valor
-                }
+        setExpediente((prev) => {
+            const nuevaSeccion = {
+                ...prev[seccion],
+                [campo]: valor,
             };
-            // Llamar a actualizarSeccionCompleta con los nuevos datos
-            actualizarSeccionCompleta(seccion, nuevo[seccion]);
-            return nuevo;
+            return {
+                ...prev,
+                [seccion]: nuevaSeccion,
+            };
         });
-    }, [actualizarSeccionCompleta]);
+
+        // Verificar si la sección quedó completa después del cambio
+        // (Se hace después de setExpediente, pero usamos el valor actualizado)
+        // Para simplificar, lo hacemos en un useEffect o en la misma función con setTimeout
+        setTimeout(() => {
+            setEstadoSecciones((prev) => {
+                const seccionActual = expediente[seccion];
+                const estaCompleta = verificarSeccionCompleta(seccion, seccionActual);
+                return {
+                    ...prev,
+                    [seccion]: {
+                        ...prev[seccion],
+                        completado: estaCompleta,
+                    },
+                };
+            });
+        }, 0);
+    }, [expediente]);
+
 
     // Resetea todo el formulario
     const resetExpediente = useCallback(() => {
@@ -104,7 +109,7 @@ export const ExpedienteProvider = ({ children }) => {
         actualizarCampo,
         resetExpediente,
         setExpedienteCompleto,
-        seccionesCompletas  
+        estadoSecciones, 
     };
 
     return (

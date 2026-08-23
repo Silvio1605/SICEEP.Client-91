@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useContext } from 'react';
 import {
     Box, Typography, Tabs, Tab, Button, Paper,
     Dialog, DialogTitle, DialogContent, DialogActions,
@@ -14,6 +14,10 @@ import TabInfoAcademica from '../components/crear/TabInfoAcademica';
 import TabCaracteristicas from '../components/crear/TabCaracteristicas';
 import TabNucleofamiliar from '../components/crear/TabNucleofamiliar';
 import TabDocumentos from '../components/crear/TabDocumentos';
+import LinearProgress from '@mui/material/LinearProgress';
+
+import { useProgresoExpediente } from './../hooks/useProgresoExpediente';
+import { ExpedienteContext } from './../context/ExpedienteContext';
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -25,6 +29,10 @@ function CustomTabPanel(props) {
 }
 
 export default function CrearExpediente() {
+
+    const { expediente } = useContext(ExpedienteContext);
+    const progreso = useProgresoExpediente(expediente);
+
     const [tabActiva, setTabActiva] = useState(0);
     const [modalValidacion, setModalValidacion] = useState(false);
 
@@ -103,42 +111,86 @@ export default function CrearExpediente() {
             <Dialog open={modalValidacion} onClose={cerrarValidacion} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ fontWeight: 'bold', color: 'primary.main' }}>Chequeo de Datos Ingresados</DialogTitle>
                 <DialogContent>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>Aquí puedes revisar qué información ya has registrado en el expediente y qué te hace falta:</Typography>
+                    {/* Barra de progreso */}
+                    <Box sx={{ mb: 3 }}>
+                        <Typography variant="body2" color="text.secondary">
+                            Progreso general: {progreso.resumen.porcentaje}%
+                        </Typography>
+                        <LinearProgress
+                            variant="determinate"
+                            value={progreso.resumen.porcentaje}
+                            sx={{ height: 8, borderRadius: 4 }}
+                        />
+                    </Box>
 
-                    <Typography variant="subtitle2" sx={{ color: 'success.main', fontWeight: 'bold', mt: 2 }}>✓ Datos ya registrados:</Typography>
+                    {/* Detalle por sección */}
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mt: 2 }}>
+                        Secciones obligatorias ({progreso.resumen.obligatoriasCompletas}/{progreso.resumen.totalObligatorias} completas):
+                    </Typography>
                     <List dense>
-                        <ListItem>
-                            <ListItemIcon sx={{ minWidth: 35 }}>
-                                <CheckCircleIcon color="success" fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText primary="Datos Generales (Nombres, Cédula)" />
-                        </ListItem>
-                        {/* Se actualizó este texto para reflejar la fusión */}
-                        <ListItem>
-                            <ListItemIcon sx={{ minWidth: 35 }}>
-                                <CheckCircleIcon color="success" fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText primary="Ubicación y Plaza (Info. Laboral)" />
-                        </ListItem>
+                        {['persona', 'contrato'].map(seccion => {
+                            const estado = progreso[seccion];
+                            const nombreSeccion = {
+                                persona: 'Datos Generales',
+                                empleado: 'Info. Laboral',
+                                contrato: 'Contrato'
+                            }[seccion];
+                            return (
+                                <ListItem key={seccion}>
+                                    <ListItemIcon sx={{ minWidth: 35 }}>
+                                        {estado.estado === 'completa' ? (
+                                            <CheckCircleIcon color="success" fontSize="small" />
+                                        ) : (
+                                            <WarningAmberIcon color="warning" fontSize="small" />
+                                        )}
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={nombreSeccion}
+                                        secondary={estado.estado === 'completa' ? 'Completo' : `Faltan: ${estado.faltantes.join(', ')}`}
+                                    />
+                                </ListItem>
+                            );
+                        })}
                     </List>
 
                     <Divider sx={{ my: 1 }} />
 
-                    <Typography variant="subtitle2" sx={{ color: 'warning.main', fontWeight: 'bold', mt: 2 }}>Faltan por ingresar:</Typography>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mt: 2 }}>
+                        Secciones opcionales ({progreso.resumen.opcionalesCompletas}/{progreso.resumen.totalOpcionales} completas):
+                    </Typography>
                     <List dense>
-                        <ListItem>
-                            <ListItemIcon sx={{ minWidth: 35 }}>
-                                <WarningAmberIcon color="warning" fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText primary="Pestaña 2: Salario Devengado." /></ListItem>
-                        <ListItem>
-                            <ListItemIcon sx={{ minWidth: 35 }}>
-                                <WarningAmberIcon color="warning" fontSize="small" />
-                            </ListItemIcon>
-                            <ListItemText primary="Pestaña 6: Fotografía y Cédula." />
-                        </ListItem>
+                        {['contactoEmergencia', 'caracteristicasFisicas', 'familiares'].map(seccion => {
+                            const estado = progreso[seccion];
+                            const nombreSeccion = {
+                                contactoEmergencia: 'Contacto Emergencia',
+                                caracteristicasFisicas: 'Características Físicas',
+                                familiares: 'Núcleo Familiar'
+                            }[seccion];
+                            return (
+                                <ListItem key={seccion}>
+                                    <ListItemIcon sx={{ minWidth: 35 }}>
+                                        {estado.estado === 'no_aplica' ? (
+                                            <CheckCircleIcon color="action" fontSize="small" />
+                                        ) : estado.estado === 'completa' ? (
+                                            <CheckCircleIcon color="success" fontSize="small" />
+                                        ) : (
+                                            <WarningAmberIcon color="warning" fontSize="small" />
+                                        )}
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={nombreSeccion}
+                                        secondary={estado.estado === 'no_aplica' ? 'No aplica' : estado.estado === 'completa' ?
+                                            (
+                                                <CheckCircleIcon color="success" fontSize="small" />
+                                                
+                                            ) : <WarningAmberIcon color="warning" fontSize="small" />}
+                                    />
+                                </ListItem>
+                            );
+                        })}
                     </List>
                 </DialogContent>
+                
                 <DialogActions sx={{ p: 2, pt: 0 }}>
                     <Button variant="outlined" onClick={cerrarValidacion}>Cerrar y Continuar</Button>
                 </DialogActions>
