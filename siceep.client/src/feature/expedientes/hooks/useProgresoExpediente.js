@@ -6,25 +6,26 @@ export const useProgresoExpediente = (expediente) => {
     const prevExpedienteRef = useRef();
 
     const computeProgreso = (exp) => {
-        const secciones = ['persona', 'empleado', 'contrato', 'contactoEmergencia', 'caracteristicasFisicas', 'familiares'];
+        const secciones = ['persona', 'contrato', 'contactoEmergencia', 'caracteristicasFisicas', 'familiares'];
 
         const resultado = {};
         let completas = 0;
         let totalObligatorias = 0;
         let totalOpcionales = 0;
-        let opcionalesCompletas = 0;
+        let opcionalesResueltas = 0;
 
         secciones.forEach(seccion => {
             const datos = exp[seccion];
             const validacion = validarSeccion(seccion, datos);
             resultado[seccion] = validacion;
 
-            if (validacion.estado === 'completa') {
+            // "completa" o "no_aplica" (opcional vacía) cuentan como resuelta
+            const resuelta = validacion.estado === 'completa' || validacion.estado === 'no_aplica';
+
+            if (resuelta) {
                 completas++;
-                if (esquemaValidacion[seccion]?.seccionObligatoria) {
-                    // Es obligatoria y está completa
-                } else {
-                    opcionalesCompletas++;
+                if (!esquemaValidacion[seccion]?.seccionObligatoria) {
+                    opcionalesResueltas++;
                 }
             }
 
@@ -44,9 +45,9 @@ export const useProgresoExpediente = (expediente) => {
                 completas,
                 totalSecciones,
                 porcentaje,
-                obligatoriasCompletas: completas - opcionalesCompletas,
+                obligatoriasCompletas: completas - opcionalesResueltas,
                 totalObligatorias,
-                opcionalesCompletas,
+                opcionalesCompletas: opcionalesResueltas,
                 totalOpcionales
             }
         };

@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ExpedienteContext } from './ExpedienteContext';
 
-// Clave del borrador en localStorage (bump de versi�n si cambia el esquema)
+// Clave del borrador en localStorage
 const CACHE_KEY = 'siceep_expediente_borrador_v1';
 
-// Estado inicial del expediente (vac�o)
+// Estado inicial del expediente
 const ExpedienteInicial = {
-    persona: { pnombre: '', papellido: '', sexo: '', fechaNacimiento: null }, // campos obligatorios
-    contrato: { ordinal: null, numInss: '', tipoContrato: '', fechaInicio: null, fechaCese: null, salarioMensual: 0, plaza: null },
+    persona: { pnombre: '', papellido: '', sexo: 'M', fechaNacimiento: null }, // campos obligatorios
+    contrato: { ordinal: null, numInss: '', tipoContrato: 'P', fechaInicio: null, fechaCese: null, salarioMensual: 0, plaza: null },
     contactoEmergencia: null,
     caracteristicasFisicas: null,
     familiares: [],
@@ -27,7 +27,7 @@ const SeccionesEstadoInicial = {
     familiares: { completado: false, obligatorio: false },
 };
 
-// Funci�n que verifica si una secci�n est� completa (independiente del componente)
+// Funcion que verifica si una seccion esta completa (independiente del componente)
 const verificarSeccionCompleta = (seccion, data) => {
     if (!data) return false;
 
@@ -111,7 +111,7 @@ export const ExpedienteProvider = ({ children }) => {
         }
     }, [expediente]);
 
-    // Actualiza una secci�n y marca su estado
+    // Actualiza una seccion y marca su estado
     const actualizarSeccion = useCallback((seccion, data) => {
         setExpediente((prev) => ({
             ...prev,
@@ -128,7 +128,7 @@ export const ExpedienteProvider = ({ children }) => {
         }));
     }, []);
 
-    // Actualiza un campo espec�fico dentro de una secci�n
+    // Actualiza un campo especifico dentro de una seccion
     const actualizarCampo = useCallback((seccion, campo, valor) => {
         setExpediente((prev) => {
             const nuevaSeccion = {
