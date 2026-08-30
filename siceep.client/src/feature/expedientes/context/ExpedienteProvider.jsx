@@ -95,7 +95,11 @@ export const ExpedienteProvider = ({ children }) => {
         return estados;
     });
     const [ultimoGuardado, setUltimoGuardado] = useState(null);
+    const [editandoId, setEditandoId] = useState(null);
     const omitirAutoguardado = useRef(false);
+
+    // Durante la edición se usa una clave propia para no pisar el borrador de "crear"
+    const storageKey = editandoId ? `${CACHE_KEY}_edicion_${editandoId}` : CACHE_KEY;
 
     // Autoguardado: persiste el borrador cada vez que cambia el expediente
     useEffect(() => {
@@ -104,12 +108,33 @@ export const ExpedienteProvider = ({ children }) => {
             return;
         }
         try {
-            localStorage.setItem(CACHE_KEY, JSON.stringify(expediente));
+            localStorage.setItem(storageKey, JSON.stringify(expediente));
             queueMicrotask(() => setUltimoGuardado(new Date()));
         } catch {
             // Almacenamiento no disponible (cuota llena o modo privado): ignora silenciosamente
         }
-    }, [expediente]);
+    }, [expediente, storageKey]);
+
+    // Conmuta el provider al modo edición (uso una clave de autoguardado independiente)
+    const iniciarEdicionExpediente = useCallback((idEmpleado) => {
+        omitirAutoguardado.current = true;
+        setEditandoId(idEmpleado);
+    }, []);
+
+    // Sale del modo edición y elimina el borrador temporal de edición
+    const finalizarEdicionExpediente = useCallback(() => {
+        omitirAutoguardado.current = true;
+        setEditandoId((prev) => {
+            if (prev) {
+                try {
+                    localStorage.removeItem(`${CACHE_KEY}_edicion_${prev}`);
+                } catch {
+                    // sin almacenamiento disponible
+                }
+            }
+            return null;
+        });
+    }, []);
 
     // Actualiza una seccion y marca su estado
     const actualizarSeccion = useCallback((seccion, data) => {
@@ -183,6 +208,8 @@ export const ExpedienteProvider = ({ children }) => {
         actualizarCampo,
         resetExpediente,
         setExpedienteCompleto,
+        iniciarEdicionExpediente,
+        finalizarEdicionExpediente,
         estadoSecciones,
         ultimoGuardado,
     };

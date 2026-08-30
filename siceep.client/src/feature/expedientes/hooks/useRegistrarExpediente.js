@@ -9,12 +9,12 @@ const transformarNucleoAFamiliares = (expediente) => {
     const sexoEmpleado = expediente.persona?.sexo;
     const resultado = [];
 
-    // Mapeo de clave -> idParentesco (ajusta seg�n tu cat�logo)
+    // Mapeo de clave -> idParentesco (catálogo: 1=Cónyuge, 2=Hijo, 3=Hija, 4=Madre, 5=Padre)
     const parentescos = {
-        madre: 4,    
+        madre: 4,
         padre: 5,
-        conyuge: 2,
-        hijo: 2, // todos los hijos usan este mismo id
+        conyuge: 1,
+        hijo: 2,
         hija: 3
     };
 
@@ -54,9 +54,9 @@ const transformarNucleoAFamiliares = (expediente) => {
     const sexoConyuge = sexoEmpleado === 'M' ? 'F' : sexoEmpleado === 'F' ? 'M' : 'F';
     agregar(nucleo.conyuge, parentescos.conyuge, sexoConyuge);
 
-    // Agregar hijos (todos con parentesco HIJO), respetando el sexo de cada uno
+    // Agregar hijos (Hijo=2 para varones, Hija=3 para mujeres), respetando su sexo
     if (nucleo.hijos && nucleo.hijos.length) {
-        nucleo.hijos.forEach(hijo => agregar(hijo, parentescos.hijo));
+        nucleo.hijos.forEach(hijo => agregar(hijo, hijo.sexo === 'F' ? parentescos.hija : parentescos.hijo));
     }
 
     return resultado;

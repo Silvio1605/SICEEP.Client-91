@@ -12,6 +12,14 @@ export const crearExpediente = (expediente) => {
     return api.post(`Expediente`, expediente);
 }
 
+export const getExpedienteCompleto = (idEmpleado) => {
+    return api.get(`Expediente/${idEmpleado}`);
+}
+
+export const actualizarExpediente = (idEmpleado, expediente) => {
+    return api.put(`Expediente/${idEmpleado}`, expediente);
+}
+
 // tab infromacion laboral
 export const searchPlaza = (ordinal, top) => {
     if (!ordinal || ordinal === '') {

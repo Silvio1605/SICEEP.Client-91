@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, Paper, Button, Tabs, Tab, CircularProgress } from '@mui/material';
+import { Box, Typography, Paper, Button, Tabs, Tab, CircularProgress, Alert } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -13,6 +13,12 @@ import InfoAcademica from '../components/ver/InfoAcademica';
 import TabDocumentos from '../components/crear/TabDocumentos';
 import ModalImpresion from '../components/ModalImpresion';
 
+import { getExpedienteCompleto, getSelectEstCivil } from '../services/expedienteService';
+import { mapearCompletoADetalle } from '../utils/expedienteMappers';
+
+// Mapa local por si el catálogo no responde
+const ESTADOS_CIVIL_FALLBACK = { 1: 'SOLTERO', 2: 'CASADO', 1002: 'UNION DE HECHO' };
+
 export default function DetalleExpediente() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -20,26 +26,53 @@ export default function DetalleExpediente() {
 
     // Estados principales
     const [tabValue, setTabValue] = useState(0);
+    const [datosExpediente, setDatosExpediente] = useState(null);
     const [datosEmpleado, setDatosEmpleado] = useState(null);
     const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState(null);
     const [modalAbierto, setModalAbierto] = useState(false);
 
-    // OBTENCIÓN DE DATOS (MOCK) - Pendiente de reemplazar por API real
+    // OBTENCIÓN DE DATOS REALES: GET /api/Expediente/{idEmpleado}
     useEffect(() => {
-        setTimeout(() => {
-            setCargando(true);
-            const mockDatabase = {
-                "1": { nombreCompleto: "JUAN PEREZ", cedula: "001-123456-0000A", edad: 30, estadoCivil: "CASADO", lugarNacimiento: "MANAGUA", religion: "CATOLICA", direccion: "MANAGUA, ZONA CENTRAL", familiares: [], recorrido: [], historialBajas: [], preparacionProfesional: [], educacionBasica: [], cursosVarios: [] },
-                "2": { nombreCompleto: "ANA LOPEZ", cedula: "002-654321-0000B", edad: 28, estadoCivil: "SOLTERA", lugarNacimiento: "LEON", religion: "NINGUNA", direccion: "LEON, CENTRO", familiares: [], recorrido: [], historialBajas: [], preparacionProfesional: [], educacionBasica: [], cursosVarios: [] }
-            };
+        let activo = true;
 
-            const empleadoEncontrado = mockDatabase[id] || {
-                nombreCompleto: "SILVIO JUNIOR MORALES DOMINGUEZ", cedula: "203-160500-1000K", edad: 26, estadoCivil: "SOLTERO", lugarNacimiento: "DIRIOMO, GRANADA", religion: "CRISTIANA", direccion: "RPTO. RICARDO RIVERA", familiares: [], recorrido: [], historialBajas: [], preparacionProfesional: [], educacionBasica: [], cursosVarios: []
-            };
+        const cargar = async () => {
+            try {
+                setCargando(true);
+                setError(null);
+                const [expResponse, civilResponse] = await Promise.all([
+                    getExpedienteCompleto(id),
+                    getSelectEstCivil().catch(() => ({
+                        data: [
+                            { id: 1, nombre: ESTADOS_CIVIL_FALLBACK[1] },
+                            { id: 2, nombre: ESTADOS_CIVIL_FALLBACK[2] },
+                            { id: 1002, nombre: ESTADOS_CIVIL_FALLBACK[1002] },
+                        ],
+                    })),
+                ]);
 
-            setDatosEmpleado(empleadoEncontrado);
-            setCargando(false);
-        }, 300);
+                if (!activo) return;
+
+                const dto = expResponse.data;
+                const civilMap = { ...ESTADOS_CIVIL_FALLBACK };
+                (civilResponse.data || []).forEach((e) => {
+                    civilMap[e.id] = e.nombre;
+                });
+
+                const detalle = mapearCompletoADetalle(dto);
+                detalle.estadoCivil = dto?.persona?.idEstadoCivil ? (civilMap[dto.persona.idEstadoCivil] || 'NO DISPONIBLE') : 'NO DISPONIBLE';
+
+                setDatosExpediente(dto);
+                setDatosEmpleado(detalle);
+            } catch (err) {
+                if (activo) setError(err);
+            } finally {
+                if (activo) setCargando(false);
+            }
+        };
+
+        cargar();
+        return () => { activo = false; };
     }, [id]);
 
     // MANEJO DE NAVEGACIÓN Y PESTAÑAS
@@ -62,16 +95,31 @@ export default function DetalleExpediente() {
     };
     // ACCIONES
     const ejecutarImpresionFinal = (opcionesSeleccionadas) => {
-        // Silvio: Aquí puedes enviar las opciones seleccionadas a tu backend
-        // para que genere el PDF solo con las secciones marcadas.
         console.log("El usuario solicitó imprimir:", opcionesSeleccionadas);
         alert("Petición de impresión enviada. Revisa la consola.");
     };
 
-    if (cargando || !datosEmpleado) {
+    const irAEditar = () => {
+        navigate(`/index/editar-expediente/${id}`);
+    };
+
+    if (cargando) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
                 <CircularProgress />
+            </Box>
+        );
+    }
+
+    if (error || !datosExpediente) {
+        return (
+            <Box sx={{ p: 3 }}>
+                <Button startIcon={<ArrowBackIcon />} onClick={() => navigate('/index/expedientes')} color="inherit" sx={{ mb: 3 }}>
+                    Volver al listado
+                </Button>
+                <Alert severity="error" variant="filled">
+                    No se pudo cargar el expediente ({id}): {error?.response?.data?.message || error?.message || 'Error desconocido'}
+                </Alert>
             </Box>
         );
     }
@@ -88,14 +136,18 @@ export default function DetalleExpediente() {
                     <Button variant="outlined" startIcon={<PrintIcon />} onClick={() => setModalAbierto(true)}>
                         Imprimir
                     </Button>
-                    <Button variant="contained" startIcon={<EditIcon />}>Editar</Button>
+                    <Button variant="contained" startIcon={<EditIcon />} onClick={irAEditar}>
+                        Editar
+                    </Button>
                 </Box>
             </Box>
 
             {/* Cabecera del Expediente */}
             <Paper elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
                 <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{datosEmpleado.nombreCompleto}</Typography>
-                <Typography variant="subtitle1" color="text.secondary">Número de Expediente: {id ? `EXP-00${id}` : '42996259'}</Typography>
+                <Typography variant="subtitle1" color="text.secondary">
+                    Número de Expediente: {datosExpediente.numeroExpediente || datosExpediente.codigo || `EXP-${String(id).padStart(6, '0')}`}
+                </Typography>
             </Paper>
 
             {/* Pestañas */}
@@ -111,9 +163,9 @@ export default function DetalleExpediente() {
 
             {/* Contenido Dinámico */}
             <Box>
-                {tabValue === 0 && <InfoPersonal data={datosEmpleado} />}
-                {tabValue === 1 && <InfoFamiliar data={datosEmpleado} />}
-                {tabValue === 2 && <InfoLaboral data={datosEmpleado} />}
+                {tabValue === 0 && <InfoPersonal data={datosExpediente} />}
+                {tabValue === 1 && <InfoFamiliar data={datosExpediente} />}
+                {tabValue === 2 && <InfoLaboral data={datosExpediente} />}
                 {tabValue === 3 && <InfoAcademica data={datosEmpleado} />}
                 {tabValue === 4 && <TabDocumentos />}
             </Box>

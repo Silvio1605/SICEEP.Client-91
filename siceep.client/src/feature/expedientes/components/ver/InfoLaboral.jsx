@@ -1,89 +1,90 @@
 import React from 'react';
-import { Box, Grid, TextField, Typography, Paper, MenuItem } from '@mui/material';
+import { Box, Grid, Typography, Paper, Divider } from '@mui/material';
+import { formatearFechaLegible, nombreTipoContrato } from '../../utils/expedienteMappers';
 
-export default function TabInfoLaboral() {
+const CampoInfo = ({ etiqueta, valor }) => (
+    <Box sx={{ mb: 2 }}>
+        <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5 }}>
+            {etiqueta.toUpperCase()}
+        </Typography>
+        <Typography variant="body1" color="text.primary">
+            {valor || 'NO DISPONIBLE'}
+        </Typography>
+    </Box>
+);
+
+const Seccion = ({ titulo, children }) => (
+    <Box sx={{ mb: 4 }}>
+        <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
+            {titulo}
+        </Typography>
+        <Divider sx={{ mb: 2 }} />
+        {children}
+    </Box>
+);
+
+export default function InfoLaboral({ data }) {
+    const contrato = data?.contrato || {};
+    const plaza = data?.plaza || {};
+
     return (
-        <Box>
-            <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
-                Información del Contrato
-            </Typography>
-            <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
-                <Grid container spacing={3}>
-                    <Grid size={{ xs: 12, md: 4 }}> 
-                        <TextField select fullWidth size="small" label="Tipo de Contrato" defaultValue="">
-                            <MenuItem value="INDETERMINADO">Indeterminado</MenuItem>
-                            <MenuItem value="DETERMINADO">Determinado</MenuItem>
-                        </TextField>
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" type="date" label="Fecha de Inicio" InputLabelProps={{ shrink: true }} />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" type="date" label="Fecha de Cese" InputLabelProps={{ shrink: true }} />
-                    </Grid>
-                </Grid>
-            </Paper>
+        <Box sx={{ mt: 3, mb: 3 }}>
+            <Paper variant="outlined" sx={{ p: 3, borderRadius: 2 }}>
+                <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', textTransform: 'uppercase', mb: 3 }}>
+                    Información Laboral
+                </Typography>
 
-            <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
-                Información de la Plaza
-            </Typography>
-            <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2, mb: 4 }}>
-                <Grid container spacing={3}>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField fullWidth size="small" label="Código de Plaza (Número)" />
+                <Seccion titulo="Información del Contrato">
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="N° INSS" valor={data?.numInss || contrato?.numInss} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Tipo de Contrato" valor={nombreTipoContrato(contrato?.tipoContrato)} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Fecha de Ingreso" valor={formatearFechaLegible(data?.fechaIngreso || contrato?.fechaInicio)} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Fecha de Cese" valor={formatearFechaLegible(contrato?.fechaCese)} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <CampoInfo etiqueta="Número de Expediente" valor={data?.numeroExpediente || data?.codigo} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={4}>
+                            <CampoInfo etiqueta="Salario Mensual" valor={contrato?.salarioMensual ? `C$ ${Number(contrato.salarioMensual).toLocaleString()}` : null} />
+                        </Grid>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField select fullWidth size="small" label="Estado de la Plaza" defaultValue="">
-                            <MenuItem value="ACTIVA">Activa</MenuItem>
-                            <MenuItem value="INACTIVA">Inactiva</MenuItem>
-                        </TextField>
-                    </Grid>
+                </Seccion>
 
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Orden" />
+                <Seccion titulo="Información de la Plaza (se administra por separado)">
+                    <Grid container spacing={3}>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Código de Plaza" valor={plaza?.ordinal} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Orden" valor={plaza?.orden} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Estructura" valor={plaza?.estructura} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Unidad Administrativa" valor={plaza?.unidad} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Cargo Asignado" valor={plaza?.cargo} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Nivel / Categoría" valor={plaza?.categoria} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Salario Presupuestado" valor={plaza?.salario ? `C$ ${Number(plaza.salario).toLocaleString()}` : null} />
+                        </Grid>
+                        <Grid item xs={12} sm={6} md={3}>
+                            <CampoInfo etiqueta="Estado de la Plaza" valor={plaza?.estado} />
+                        </Grid>
                     </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Estructura" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Unidad Administrativa" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Cargo Asignado" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Nivel / Categoría" />
-                    </Grid>
-                </Grid>
-            </Paper>
-
-            <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
-                Desglose Salarial
-            </Typography>
-            <Paper elevation={0} sx={{ p: 3, border: '1px solid #e0e0e0', borderRadius: 2 }}>
-                <Grid container spacing={3}>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Devengado" type="number" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Deducciones" type="number" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 4 }}>
-                        <TextField fullWidth size="small" label="Salario Ordinario" type="number" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField fullWidth size="small" label="Salario Bruto" type="number" />
-                    </Grid>
-                    <Grid size={{ xs: 12, md: 6 }}>
-                        <TextField
-                            fullWidth
-                            size="small"
-                            label="Salario Neto"
-                            type="number"
-                            sx={{ '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'success.main', borderWidth: 2 } } }}
-                        />
-                    </Grid>
-                </Grid>
+                </Seccion>
             </Paper>
         </Box>
     );
