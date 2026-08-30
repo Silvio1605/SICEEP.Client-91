@@ -1,4 +1,9 @@
 ﻿import axios from 'axios';
+import { cerrarSesionPorTokenExpirado } from './../utils/sesion';
+
+// Las peticiones de auth (Login, Me, etc.) se manejan sin redirigir:
+// el login fallido no debe expulsar al usuario de la página de acceso.
+const esRutaAuth = (url) => /Auth\//.test(url || '');
 
 const api = axios.create({
     baseURL: 'https://localhost:7109/api',
@@ -34,6 +39,9 @@ api.interceptors.response.use(
             switch (status) {
                 case 401:
                     console.warn('Error de validación:', message);
+                    if (!esRutaAuth(error.config?.url)) {
+                        cerrarSesionPorTokenExpirado('Tu sesión ha expirado. Ingresa nuevamente.');
+                    }
                     break;
                 case 400:
                     console.warn('Error de validación:', message);
@@ -50,6 +58,9 @@ api.interceptors.response.use(
             }
         } else {
             console.error('Error de red o sin respuesta:', error.message);
+            if (!esRutaAuth(error.config?.url)) {
+                cerrarSesionPorTokenExpirado('No se pudo conectar con el servidor.');
+            }
         }
 
         return Promise.reject(error);

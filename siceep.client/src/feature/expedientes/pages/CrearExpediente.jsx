@@ -1,4 +1,5 @@
 import { useState, useContext } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Box, Typography, Tabs, Tab, Button, Paper,
     Dialog, DialogTitle, DialogContent, DialogActions,
@@ -12,10 +13,8 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import TabDatosGenerales from '../components/crear/TabDatosGenerales';
 import TabInfoLaboral from '../components/crear/TabInfoLaboral';
-import TabInfoAcademica from '../components/crear/TabInfoAcademica';
 import TabCaracteristicas from '../components/crear/TabCaracteristicas';
 import TabNucleofamiliar from '../components/crear/TabNucleofamiliar';
-import TabDocumentos from '../components/crear/TabDocumentos';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { useProgresoExpediente } from './../hooks/useProgresoExpediente';
@@ -33,6 +32,7 @@ function CustomTabPanel(props) {
 
 export default function CrearExpediente() {
 
+    const navigate = useNavigate();
     const { expediente, resetExpediente, ultimoGuardado } = useContext(ExpedienteContext);
     const progreso = useProgresoExpediente(expediente);
     const { registrar, loading } = useRegistroExpediente();
@@ -75,7 +75,8 @@ export default function CrearExpediente() {
             const payload = { ...expediente, contrato: normalizarContrato(expediente.contrato) };
             await registrar(payload);
             resetExpediente();
-            setAviso({ open: true, mensaje: 'Expediente creado exitosamente. Formulario reiniciado.', severidad: 'success' });
+            setAviso({ open: true, mensaje: 'Expediente creado exitosamente.', severidad: 'success' });
+            navigate('/index/expedientes');
         } catch (e) {
             setAviso({ open: true, mensaje: e?.message || 'Error al guardar el expediente.', severidad: 'error' });
         }
@@ -153,8 +154,6 @@ export default function CrearExpediente() {
                         <Tab label="2 - Info. Laboral *" />
                         <Tab label="3 - Características" />
                         <Tab label="4 - Núcleo Familiar" />
-                        <Tab label="5 - Prep. Académica" />
-                        <Tab label="6 - Documentos" />
                     </Tabs>
                 </Box>
 
@@ -162,8 +161,6 @@ export default function CrearExpediente() {
                 <CustomTabPanel value={tabActiva} index={1}><TabInfoLaboral /></CustomTabPanel>
                 <CustomTabPanel value={tabActiva} index={2}><TabCaracteristicas /></CustomTabPanel>
                 <CustomTabPanel value={tabActiva} index={3}><TabNucleofamiliar /></CustomTabPanel>
-                <CustomTabPanel value={tabActiva} index={4}><TabInfoAcademica /></CustomTabPanel>
-                <CustomTabPanel value={tabActiva} index={5}><TabDocumentos /></CustomTabPanel>
             </Paper>
 
             {/* MODAL DE CHEQUEO ACTUALIZADO */}

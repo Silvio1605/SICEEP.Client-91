@@ -11,7 +11,7 @@ const transformarNucleoAFamiliares = (expediente) => {
 
     // Mapeo de clave -> idParentesco (ajusta seg�n tu cat�logo)
     const parentescos = {
-        madre: 4,    // ejemplo
+        madre: 4,    
         padre: 5,
         conyuge: 2,
         hijo: 2, // todos los hijos usan este mismo id

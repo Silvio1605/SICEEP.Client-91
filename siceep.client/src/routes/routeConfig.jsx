@@ -44,6 +44,7 @@ export const privateRoutes = [
     { path: "info-familiar/:id", element: <DetalleExpediente /> },
     { path: "info-laboral/:id", element: <DetalleExpediente /> },
     { path: "info-academica/:id", element: <DetalleExpediente /> },
+    { path: "documentos/:id", element: <DetalleExpediente /> },
     { path: "deducciones", element: <GestionDeducciones /> },
     { path: "busqueda-rapida", element: <BusquedaRapida /> }
 ];

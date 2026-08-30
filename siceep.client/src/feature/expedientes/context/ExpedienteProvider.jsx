@@ -7,7 +7,7 @@ const CACHE_KEY = 'siceep_expediente_borrador_v1';
 // Estado inicial del expediente (vac�o)
 const ExpedienteInicial = {
     persona: { pnombre: '', papellido: '', sexo: '', fechaNacimiento: null }, // campos obligatorios
-    contrato: { ordinal: null, numInss: '', tipoContrato: '', fechaInicio: null, fechaCese: null, salarioMensual: 0 },
+    contrato: { ordinal: null, numInss: '', tipoContrato: '', fechaInicio: null, fechaCese: null, salarioMensual: 0, plaza: null },
     contactoEmergencia: null,
     caracteristicasFisicas: null,
     familiares: [],

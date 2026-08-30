@@ -65,9 +65,31 @@ export default function TabInfoLaboral() {
     };
 
     const handlePlazaSelected = (plazaSelect) => {
-        setPlazaSeleccionada(plazaSelect);
-        actualizarCampo('contrato', 'ordinal', plazaSelect?.ordinal ?? null);
-        actualizarCampo('contrato', 'salarioMensual', Number(plazaSelect?.salario) || 0);
+        const esObjeto = plazaSelect && typeof plazaSelect === 'object';
+        const esPlazaValida = esObjeto && !!plazaSelect.ordinal;
+
+        // 1) Seleccion real de la lista -> guarda la plaza completa
+        if (esPlazaValida) {
+            setPlazaSeleccionada(plazaSelect);
+            actualizarCampo('contrato', 'plaza', plazaSelect);
+            actualizarCampo('contrato', 'ordinal', plazaSelect.ordinal);
+            actualizarCampo('contrato', 'salarioMensual', Number(plazaSelect.salario) || 0);
+            return;
+        }
+
+        // 2) Codigo tecleado manualmente (freeSolo) -> conserva el texto en ordinal
+        if (typeof plazaSelect === 'string' && plazaSelect.trim()) {
+            setPlazaSeleccionada(null);
+            actualizarCampo('contrato', 'plaza', null);
+            actualizarCampo('contrato', 'ordinal', plazaSelect.trim());
+            return;
+        }
+
+        // 3) Limpieza / nada
+        setPlazaSeleccionada(null);
+        actualizarCampo('contrato', 'plaza', null);
+        actualizarCampo('contrato', 'ordinal', null);
+        actualizarCampo('contrato', 'salarioMensual', 0);
     }
 
     return (

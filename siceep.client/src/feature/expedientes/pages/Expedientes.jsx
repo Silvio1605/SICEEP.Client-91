@@ -113,7 +113,6 @@ export default function Expedientes() {
                         initialState={{
                             pagination: { paginationModel: { pageSize: 10 } },
                         }}
-                        autoHeight={false}
                         localeText={{
                             noRowsLabel: "No hay expedientes",
                             noResultsOverlayLabel: "No se encontraron resultados",

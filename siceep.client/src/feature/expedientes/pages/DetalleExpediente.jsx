@@ -10,6 +10,7 @@ import InfoPersonal from '../components/ver/InfoPersonal';
 import InfoFamiliar from '../components/ver/InfoFamiliar';
 import InfoLaboral from '../components/ver/InfoLaboral';
 import InfoAcademica from '../components/ver/InfoAcademica';
+import TabDocumentos from '../components/crear/TabDocumentos';
 import ModalImpresion from '../components/ModalImpresion';
 
 export default function DetalleExpediente() {
@@ -25,8 +26,8 @@ export default function DetalleExpediente() {
 
     // OBTENCIÓN DE DATOS (MOCK) - Pendiente de reemplazar por API real
     useEffect(() => {
-        setCargando(true);
         setTimeout(() => {
+            setCargando(true);
             const mockDatabase = {
                 "1": { nombreCompleto: "JUAN PEREZ", cedula: "001-123456-0000A", edad: 30, estadoCivil: "CASADO", lugarNacimiento: "MANAGUA", religion: "CATOLICA", direccion: "MANAGUA, ZONA CENTRAL", familiares: [], recorrido: [], historialBajas: [], preparacionProfesional: [], educacionBasica: [], cursosVarios: [] },
                 "2": { nombreCompleto: "ANA LOPEZ", cedula: "002-654321-0000B", edad: 28, estadoCivil: "SOLTERA", lugarNacimiento: "LEON", religion: "NINGUNA", direccion: "LEON, CENTRO", familiares: [], recorrido: [], historialBajas: [], preparacionProfesional: [], educacionBasica: [], cursosVarios: [] }
@@ -43,18 +44,20 @@ export default function DetalleExpediente() {
 
     // MANEJO DE NAVEGACIÓN Y PESTAÑAS
     useEffect(() => {
-        const path = location.pathname;
-        if (path.includes('info-personal')) setTabValue(0);
-        else if (path.includes('info-familiar')) setTabValue(1);
-        else if (path.includes('info-laboral')) setTabValue(2);
-        else if (path.includes('info-academica')) setTabValue(3);
-
+        queueMicrotask(() => {
+            const path = location.pathname;
+            if (path.includes('info-personal')) setTabValue(0);
+            else if (path.includes('info-familiar')) setTabValue(1);
+            else if (path.includes('info-laboral')) setTabValue(2);
+            else if (path.includes('info-academica')) setTabValue(3);
+            else if (path.includes('documentos')) setTabValue(4);
+        });
     }, [location.pathname]);
 
     const handleTabChange = (event, newValue) => {
         setTabValue(newValue);
         const expedienteId = id || "1";
-        const rutas = ['info-personal', 'info-familiar', 'info-laboral', 'info-academica'];
+        const rutas = ['info-personal', 'info-familiar', 'info-laboral', 'info-academica', 'documentos'];
         navigate(`/index/${rutas[newValue]}/${expedienteId}`);
     };
     // ACCIONES
@@ -102,6 +105,7 @@ export default function DetalleExpediente() {
                     <Tab label="Info. Familiar" />
                     <Tab label="Info. Laboral" />
                     <Tab label="Info. Académica" />
+                    <Tab label="Documentos" />
                 </Tabs>
             </Paper>
 
@@ -111,6 +115,7 @@ export default function DetalleExpediente() {
                 {tabValue === 1 && <InfoFamiliar data={datosEmpleado} />}
                 {tabValue === 2 && <InfoLaboral data={datosEmpleado} />}
                 {tabValue === 3 && <InfoAcademica data={datosEmpleado} />}
+                {tabValue === 4 && <TabDocumentos />}
             </Box>
 
             {/* Componente Modular del Modal */}
