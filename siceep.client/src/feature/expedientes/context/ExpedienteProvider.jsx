@@ -1,13 +1,22 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ExpedienteContext } from './ExpedienteContext';
 
-// Estado inicial del expediente (vacío)
+// Clave del borrador en localStorage (bump de versiï¿½n si cambia el esquema)
+const CACHE_KEY = 'siceep_expediente_borrador_v1';
+
+// Estado inicial del expediente (vacï¿½o)
 const ExpedienteInicial = {
     persona: { pnombre: '', papellido: '', sexo: '', fechaNacimiento: null }, // campos obligatorios
     contrato: { ordinal: null, numInss: '', tipoContrato: '', fechaInicio: null, fechaCese: null, salarioMensual: 0 },
     contactoEmergencia: null,
     caracteristicasFisicas: null,
     familiares: [],
+    nucleoFamiliar: {
+        madre: { pnombre: '', snombre: '', papellido: '', sapellido: '', sexo: 'F', cedula: '', fechaNacimiento: '' },
+        padre: { pnombre: '', snombre: '', papellido: '', sapellido: '', sexo: 'M', cedula: '', fechaNacimiento: '' },
+        conyuge: { pnombre: '', snombre: '', papellido: '', sapellido: '', sexo: '', cedula: '', fechaNacimiento: '', tipoUnion: '', observaciones: '' },
+        hijos: []
+    }
 };
 
 const SeccionesEstadoInicial = {
@@ -18,33 +27,91 @@ const SeccionesEstadoInicial = {
     familiares: { completado: false, obligatorio: false },
 };
 
+// Funciï¿½n que verifica si una secciï¿½n estï¿½ completa (independiente del componente)
+const verificarSeccionCompleta = (seccion, data) => {
+    if (!data) return false;
+
+    switch (seccion) {
+        case 'persona':
+            return !!data.pnombre && !!data.papellido;
+        case 'contrato':
+            return !!data.ordinal && !!data.salarioMensual;
+        case 'contactoEmergencia':
+            return !!(data.nombreContacto && data.telefono);
+        case 'caracteristicasFisicas':
+            return !!(data.estatura && data.peso);
+        case 'familiares':
+            return Array.isArray(data) && data.length > 0;
+        default:
+            return false;
+    }
+};
+
+// Mezcla el borrador guardado con el esquema inicial (defensivo ante cambios de estructura)
+const mezclarBorrador = (guardado) => ({
+    ...ExpedienteInicial,
+    ...guardado,
+    persona: { ...ExpedienteInicial.persona, ...(guardado.persona || {}) },
+    contrato: { ...ExpedienteInicial.contrato, ...(guardado.contrato || {}) },
+    contactoEmergencia: guardado.contactoEmergencia ?? null,
+    caracteristicasFisicas: guardado.caracteristicasFisicas ?? null,
+    familiares: guardado.familiares || [],
+    nucleoFamiliar: {
+        ...ExpedienteInicial.nucleoFamiliar,
+        ...(guardado.nucleoFamiliar || {}),
+        madre: { ...ExpedienteInicial.nucleoFamiliar.madre, ...(guardado.nucleoFamiliar?.madre || {}) },
+        padre: { ...ExpedienteInicial.nucleoFamiliar.padre, ...(guardado.nucleoFamiliar?.padre || {}) },
+        conyuge: { ...ExpedienteInicial.nucleoFamiliar.conyuge, ...(guardado.nucleoFamiliar?.conyuge || {}) },
+        hijos: guardado.nucleoFamiliar?.hijos || []
+    }
+});
+
+// Carga el borrador desde localStorage (null si no existe o es invï¿½lido)
+const cargarBorrador = () => {
+    try {
+        const raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        const guardado = JSON.parse(raw);
+        if (!guardado || typeof guardado !== 'object') return null;
+        return mezclarBorrador(guardado);
+    } catch {
+        return null;
+    }
+};
+
 export const ExpedienteProvider = ({ children }) => {
 
-    const [expediente, setExpediente] = useState(ExpedienteInicial);
-    const [estadoSecciones, setEstadoSecciones] = useState(SeccionesEstadoInicial);
+    const [expediente, setExpediente] = useState(() => cargarBorrador() ?? ExpedienteInicial);
+    const [estadoSecciones, setEstadoSecciones] = useState(() => {
+        const borrador = cargarBorrador();
+        if (!borrador) return SeccionesEstadoInicial;
+        const estados = { ...SeccionesEstadoInicial };
+        Object.keys(estados).forEach((seccion) => {
+            estados[seccion] = {
+                ...estados[seccion],
+                completado: verificarSeccionCompleta(seccion, borrador[seccion]),
+            };
+        });
+        return estados;
+    });
+    const [ultimoGuardado, setUltimoGuardado] = useState(null);
+    const omitirAutoguardado = useRef(false);
 
-    // Función que verifica si una sección está completa
-    const verificarSeccionCompleta = (seccion, data) => {
-
-        if (!data) return false;
-
-        switch (seccion) {
-            case 'persona':
-                return !!data.pnombre && !!data.papellido;
-            case 'contrato':
-                return !!data.ordinal && !!data.salarioMensual;
-            case 'contactoEmergencia':
-                return !!(data.nombreContacto && data.telefono);
-            case 'caracteristicasFisicas':
-                return !!(data.estatura && data.peso);
-            case 'familiares':
-                return Array.isArray(data) && data.length > 0;
-            default:
-                return false;
+    // Autoguardado: persiste el borrador cada vez que cambia el expediente
+    useEffect(() => {
+        if (omitirAutoguardado.current) {
+            omitirAutoguardado.current = false;
+            return;
         }
-    };
+        try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(expediente));
+            queueMicrotask(() => setUltimoGuardado(new Date()));
+        } catch {
+            // Almacenamiento no disponible (cuota llena o modo privado): ignora silenciosamente
+        }
+    }, [expediente]);
 
-    // Actualiza una sección y marca su estado
+    // Actualiza una secciï¿½n y marca su estado
     const actualizarSeccion = useCallback((seccion, data) => {
         setExpediente((prev) => ({
             ...prev,
@@ -60,8 +127,8 @@ export const ExpedienteProvider = ({ children }) => {
             },
         }));
     }, []);
-   
-    // Actualiza un campo específico dentro de una sección
+
+    // Actualiza un campo especï¿½fico dentro de una secciï¿½n
     const actualizarCampo = useCallback((seccion, campo, valor) => {
         setExpediente((prev) => {
             const nuevaSeccion = {
@@ -74,9 +141,9 @@ export const ExpedienteProvider = ({ children }) => {
             };
         });
 
-        // Verificar si la sección quedó completa después del cambio
-        // (Se hace después de setExpediente, pero usamos el valor actualizado)
-        // Para simplificar, lo hacemos en un useEffect o en la misma función con setTimeout
+        // Verificar si la secciï¿½n quedï¿½ completa despuï¿½s del cambio
+        // (Se hace despuï¿½s de setExpediente, pero usamos el valor actualizado)
+        // Para simplificar, lo hacemos en un useEffect o en la misma funciï¿½n con setTimeout
         setTimeout(() => {
             setEstadoSecciones((prev) => {
                 const seccionActual = expediente[seccion];
@@ -92,10 +159,17 @@ export const ExpedienteProvider = ({ children }) => {
         }, 0);
     }, [expediente]);
 
-
-    // Resetea todo el formulario
+    // Resetea todo el formulario y limpia el borrador guardado
     const resetExpediente = useCallback(() => {
+        omitirAutoguardado.current = true;
         setExpediente(ExpedienteInicial);
+        setEstadoSecciones(SeccionesEstadoInicial);
+        setUltimoGuardado(null);
+        try {
+            localStorage.removeItem(CACHE_KEY);
+        } catch {
+            // sin almacenamiento disponible
+        }
     }, []);
 
     // Carga un expediente completo
@@ -109,7 +183,8 @@ export const ExpedienteProvider = ({ children }) => {
         actualizarCampo,
         resetExpediente,
         setExpedienteCompleto,
-        estadoSecciones, 
+        estadoSecciones,
+        ultimoGuardado,
     };
 
     return (

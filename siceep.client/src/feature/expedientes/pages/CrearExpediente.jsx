@@ -2,9 +2,11 @@ import { useState, useContext } from 'react';
 import {
     Box, Typography, Tabs, Tab, Button, Paper,
     Dialog, DialogTitle, DialogContent, DialogActions,
-    List, ListItem, ListItemIcon, ListItemText, Divider
+    List, ListItem, ListItemIcon, ListItemText, Divider,
+    Snackbar, Alert, CircularProgress
 } from '@mui/material';
 import SaveIcon from '@mui/icons-material/Save';
+import CloudDoneIcon from '@mui/icons-material/CloudDone';
 import FactCheckIcon from '@mui/icons-material/FactCheck';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
@@ -17,6 +19,7 @@ import TabDocumentos from '../components/crear/TabDocumentos';
 import LinearProgress from '@mui/material/LinearProgress';
 
 import { useProgresoExpediente } from './../hooks/useProgresoExpediente';
+import { useRegistroExpediente } from './../hooks/useRegistrarExpediente';
 import { ExpedienteContext } from './../context/ExpedienteContext';
 
 function CustomTabPanel(props) {
@@ -30,11 +33,55 @@ function CustomTabPanel(props) {
 
 export default function CrearExpediente() {
 
-    const { expediente } = useContext(ExpedienteContext);
+    const { expediente, resetExpediente, ultimoGuardado } = useContext(ExpedienteContext);
     const progreso = useProgresoExpediente(expediente);
+    const { registrar, loading } = useRegistroExpediente();
 
     const [tabActiva, setTabActiva] = useState(0);
     const [modalValidacion, setModalValidacion] = useState(false);
+    const [aviso, setAviso] = useState({ open: false, mensaje: '', severidad: 'success' });
+
+    // Campos que el backend exige (contrato): nunca pueden ir vacíos/nulos
+    const normalizarContrato = (contrato) => ({
+        ...contrato,
+        numInss: (contrato?.numInss || '').toString().trim(),
+        ordinal: contrato?.ordinal !== null && contrato?.ordinal !== undefined ? String(contrato.ordinal).trim() : '',
+        salarioMensual: Number(contrato?.salarioMensual) || 0,
+    });
+
+    // Valida los obligatorios del DTO antes de enviar
+    const validarExpediente = (exp) => {
+        const faltantes = [];
+        const p = exp.persona || {};
+        const c = exp.contrato || {};
+        if (!p.pnombre?.trim()) faltantes.push('Primer nombre');
+        if (!p.papellido?.trim()) faltantes.push('Primer apellido');
+        if (!p.fechaNacimiento) faltantes.push('Fecha de nacimiento');
+        if (!p.sexo) faltantes.push('Sexo');
+        if (!c.numInss?.toString().trim()) faltantes.push('Número INSS');
+        if (c.ordinal === null || c.ordinal === undefined || c.ordinal === '') faltantes.push('Código de plaza (ordinal)');
+        if (!(Number(c.salarioMensual) > 0)) faltantes.push('Salario mensual');
+        if (!c.fechaInicio) faltantes.push('Fecha de ingreso');
+        return faltantes;
+    };
+
+    const guardarRegistro = async () => {
+        const faltantes = validarExpediente(expediente);
+        if (faltantes.length > 0) {
+            setAviso({ open: true, mensaje: `Faltan datos requeridos: ${faltantes.join(', ')}`, severidad: 'warning' });
+            return;
+        }
+        try {
+            const payload = { ...expediente, contrato: normalizarContrato(expediente.contrato) };
+            await registrar(payload);
+            resetExpediente();
+            setAviso({ open: true, mensaje: 'Expediente creado exitosamente. Formulario reiniciado.', severidad: 'success' });
+        } catch (e) {
+            setAviso({ open: true, mensaje: e?.message || 'Error al guardar el expediente.', severidad: 'error' });
+        }
+    };
+
+    const cerrarAviso = () => setAviso((prev) => ({ ...prev, open: false }));
 
     const handleChangeTab = (event, newValue) => {
         setTabActiva(newValue);
@@ -60,6 +107,16 @@ export default function CrearExpediente() {
                     <Typography variant="subtitle1" color="text.secondary">
                         Registro de un nuevo funcionario en el sistema
                     </Typography>
+                    <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}
+                    >
+                        <CloudDoneIcon fontSize="small" color="success" />
+                        {ultimoGuardado
+                            ? `Borrador guardado automáticamente a las ${ultimoGuardado.toLocaleTimeString()}`
+                            : 'Tu borrador se guardará automáticamente en este navegador'}
+                    </Typography>
                 </Box>
                 <Box sx={{
                     display: 'flex',
@@ -79,10 +136,12 @@ export default function CrearExpediente() {
                     <Button
                         variant="contained"
                         color="primary"
-                        startIcon={<SaveIcon />}
+                        startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
+                        onClick={guardarRegistro}
+                        disabled={loading}
                         sx={{ width: { xs: '100%', sm: 'auto' } }}
                     >
-                        Guardar Registro
+                        {loading ? 'Guardando...' : 'Guardar Registro'}
                     </Button>
                 </Box>
             </Box>
@@ -195,6 +254,17 @@ export default function CrearExpediente() {
                     <Button variant="outlined" onClick={cerrarValidacion}>Cerrar y Continuar</Button>
                 </DialogActions>
             </Dialog>
+
+            <Snackbar
+                open={aviso.open}
+                autoHideDuration={6000}
+                onClose={cerrarAviso}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={cerrarAviso} severity={aviso.severidad} variant="filled" sx={{ width: '100%' }}>
+                    {aviso.mensaje}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

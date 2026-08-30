@@ -27,12 +27,11 @@ export default function TabInfoLaboral() {
     const { expediente, actualizarSeccion, actualizarCampo } = useContext(ExpedienteContext);
 
     // Estados para los campos (ejemplo)
-    const [salarioMensual, setSalarioMensual] = useState(expediente.contrato?.salarioMensual || '');
     const [devengado, setDevengado] = useState('');
     const [deducciones, setDeducciones] = useState('');
 
-    // Calcular salario bruto y neto (ejemplo)
-    const salarioBruto = parseFloat(salarioMensual) || 0;
+    // Calcular salario bruto y neto desde el contexto (contrato)
+    const salarioBruto = Number(expediente.contrato?.salarioMensual) || 0;
     const totalDeducciones = parseFloat(deducciones) || 0;
     const salarioNeto = salarioBruto - totalDeducciones;
 
@@ -67,8 +66,8 @@ export default function TabInfoLaboral() {
 
     const handlePlazaSelected = (plazaSelect) => {
         setPlazaSeleccionada(plazaSelect);
-        actualizarCampo('contrato', 'ordinal', plazaSelect.ordinal);
-        actualizarCampo('contrato', 'salarioMensual', plazaSelect.salario);
+        actualizarCampo('contrato', 'ordinal', plazaSelect?.ordinal ?? null);
+        actualizarCampo('contrato', 'salarioMensual', Number(plazaSelect?.salario) || 0);
     }
 
     return (
@@ -84,8 +83,11 @@ export default function TabInfoLaboral() {
                         <TextField
                             fullWidth
                             size="small"
+                            required
                             label="Numero de seguro Inss"
                             value={contrato.numInss || ''}
+                            error={contrato.numInss === '' || contrato.numInss == null}
+                            helperText={(contrato.numInss === '' || contrato.numInss == null) ? 'El número de INSS es requerido para guardar' : ''}
                             onChange={(e) => handleChangeSimple('numInss', e.target.value)}
                         />
                     </Grid>
@@ -265,15 +267,19 @@ export default function TabInfoLaboral() {
                                     id="salario-plaza"
                                     fullWidth
                                     size="small"
+                                    required
                                     label="Salario Ordinario"
                                     variant="outlined"
                                     placeholder="0.00"
+                                    type="number"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start">C$</InputAdornment>,
                                     }}
                                     value={contrato.salarioMensual || ''}
+                                    error={!(Number(contrato.salarioMensual) > 0)}
+                                    helperText={!(Number(contrato.salarioMensual) > 0) ? 'El salario mensual es requerido y debe ser mayor a 0' : ''}
                                     onChange={(e) => {
-                                        handleChangeSimple('salarioMensual', e.target.value);
+                                        handleChangeSimple('salarioMensual', parseFloat(e.target.value) || 0);
                                     }}
                                 />
                             </Grid>
@@ -307,9 +313,10 @@ export default function TabInfoLaboral() {
                                 <TextField
                                     fullWidth
                                     size="small"
+                                    type="number"
                                     label="Salario Mensual"
-                                    value={salarioMensual}
-                                    onChange={(e) => setSalarioMensual(e.target.value)}
+                                    value={contrato.salarioMensual || ''}
+                                    onChange={(e) => handleChangeSimple('salarioMensual', parseFloat(e.target.value) || 0)}
                                     placeholder="0.00"
                                     InputProps={{
                                         startAdornment: <InputAdornment position="start">C$</InputAdornment>,
