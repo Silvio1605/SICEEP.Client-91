@@ -53,3 +53,32 @@ export const getSelectEstCivil = async () => {
 export const getSelectCaracteristicas = async () => {
     return await api.get(`LookUp/Select_Caracteristicas`);
 };
+
+// ---------- Documentos (expediente digital) ----------
+
+export const listarDocumentos = (idExpediente) => {
+    return api.get(`Documento/${idExpediente}`);
+};
+
+export const subirDocumento = (idExpediente, datos, archivo) => {
+    const form = new FormData();
+    form.append('idTipoDocumento', datos.idTipoDocumento);
+    if (datos.fechaDocumento) form.append('fechaDocumento', datos.fechaDocumento);
+    form.append('archivo', archivo);
+
+    // 'Content-Type: undefined' deja que el navegador ponga el boundary multipart
+    return api.post(`Documento/${idExpediente}`, form, {
+        headers: { 'Content-Type': undefined }
+    });
+};
+
+export const descargarDocumento = (idDocumento) => {
+    return api.get(`Documento/${idDocumento}/descargar`, {
+        responseType: 'blob',
+        headers: { 'Content-Type': 'application/json' }
+    });
+};
+
+export const eliminarDocumento = (idDocumento) => {
+    return api.delete(`Documento/${idDocumento}`);
+};

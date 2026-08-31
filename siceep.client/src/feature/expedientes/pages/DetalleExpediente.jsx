@@ -167,7 +167,7 @@ export default function DetalleExpediente() {
                 {tabValue === 1 && <InfoFamiliar data={datosExpediente} />}
                 {tabValue === 2 && <InfoLaboral data={datosExpediente} />}
                 {tabValue === 3 && <InfoAcademica data={datosEmpleado} />}
-                {tabValue === 4 && <TabDocumentos />}
+                {tabValue === 4 && <TabDocumentos expediente={datosExpediente} />}
             </Box>
 
             {/* Componente Modular del Modal */}
