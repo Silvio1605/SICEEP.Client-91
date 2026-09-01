@@ -11,14 +11,14 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import DomainIcon from '@mui/icons-material/Domain';
 import BadgeIcon from '@mui/icons-material/Badge';
-import GroupsIcon from '@mui/icons-material/Groups';
-import WorkIcon from '@mui/icons-material/Work';
-import SchoolIcon from '@mui/icons-material/School';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import HelpCenterIcon from '@mui/icons-material/HelpCenter';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+
 import logo from "../../../assets/Logo_p.png";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
@@ -40,33 +40,32 @@ const menuSections = [
     {
         titulo: "Localizacion",
         items: [
-            { text: "Ubicacion", icon: <DomainIcon />, path: Rutas.UBICACION, idPermiso: 1 },
+            { text: "Ubicacion", icon: <DomainIcon />, path: Rutas.UBICACION, idPermiso: 3 },
         ]
-    },/*
+    },
     {
         titulo: "Expediente",
         items: [
-            // 2. Aquí está tu nuevo botón maestro unificado
-            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.HISTORIAL, idPermiso: 1 }
+            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: 3 },
+            { text: "Nuevo Expediente", icon: <AddBoxIcon />, path: Rutas.CREAR_EXPEDIENTE, idPermiso: 3 }
         ]
     },
     {
         titulo: "Tramites y Atención",
         items: [
-            { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
-            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: Rutas.HISTORIAL, idPermiso: 1 }
+            { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: 3 },
+            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 3 },
+            { text: "Gestion Deducciones", icon: <AccountBalanceWalletIcon />, path: Rutas.DEDUCCIONES, idPermiso: 3 }
         ]
     },
     {
         titulo: "Reportes y estadisticas",
         items: [
-            { text: "Reportes", icon: <AssessmentIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
-            { text: "Estadisticas", icon: <BarChartIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
-            {
-                text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: Rutas.HISTORIAL, idPermiso: 1
-            },
+            { text: "Reportes", icon: <AssessmentIcon />, path: "/index/reportes", idPermiso: 3 },
+            { text: "Estadisticas", icon: <BarChartIcon />, path: "/index/estadisticas", idPermiso: 3 },
+            { text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: "/index/herramientas-ayuda", idPermiso: 3 },
         ]
-    },*/
+    },
     {
         titulo: "Sesión",
         items: [
@@ -84,22 +83,14 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
         if (!sidebarOpen) return;
 
         const handleClickOutside = (event) => {
-            if (
-                sidebarRef.current &&
-                !sidebarRef.current.contains(event.target)
-            ) {
+            if (sidebarOpen && sidebarRef.current && !sidebarRef.current.contains(event.target)) {
                 setSidebarOpen(false);
             }
         };
 
         document.addEventListener("mousedown", handleClickOutside);
-
-        return () => {
-            document.removeEventListener("mousedown", handleClickOutside);
-        };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sidebarOpen]);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [sidebarOpen, setSidebarOpen]);
 
     const handleToggleSection = (titulo) => {
         if (!sidebarOpen) setSidebarOpen(true);
@@ -110,17 +101,17 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
     };
 
     const toggleSidebar = () => {
-        setSidebarOpen(prev => !prev);
+        setSidebarOpen(!sidebarOpen);
     };
-    /*
+
     const autoCerrarSidebar = () => {
         if (window.innerWidth <= 768) setSidebarOpen(false);
-    };*/
+    };
 
     return (
         <SidebarContainer $isOpen={sidebarOpen} ref={sidebarRef}>
             <button className="Sidebarbutton" onClick={toggleSidebar}>
-                <ArrowBackIosNewIcon />
+               <ArrowBackIosNewIcon />
             </button>
 
             <div className="Logocontent">
@@ -150,36 +141,30 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
                             <Collapse in={openSections[section.titulo]} timeout="auto" unmountOnExit>
                                 <div className="ItemsContainer">
-                                    {section.items.map((item) =>
-                                        tienePermiso(item.idPermiso) && (
-                                            <>
-                                                <ListItem
-                                                    key={`${section.titulo}-${item.text}`}
-                                                    disablePadding
-                                                    sx={{ pl: 2 }}
-                                                >
-                                                    <ListItemButton
-                                                        component={NavLink}
-                                                        to={item.path}
-                                                        className={({ isActive }) =>
-                                                            `Links${isActive ? " active" : ""}`
-                                                        }
-                                                        onClick={() => {
-                                                            if (item.isLogout) {
-                                                                logout();
-                                                            }
-                                                        }}
-                                                    >
-                                                        <ListItemIcon>
-                                                            {item.icon}
-                                                        </ListItemIcon>
+                                    {section.items.map((item) => {
+                                        const rutaCorrecta = item.path === "/" || item.path.startsWith("/index")
+                                            ? item.path
+                                            : `/index${item.path.startsWith("/") ? "" : "/"}${item.path}`;
 
-                                                        <ListItemText primary={item.text} />
-                                                    </ListItemButton>
-                                                </ListItem>
-                                            </>
-                                        )
-                                    )}
+                                        return tienePermiso(item.idPermiso) && (
+                                            <div className="LinkContainer" key={item.text}>
+                                                <NavLink
+                                                    to={rutaCorrecta}
+                                                    className={({ isActive }) => `Links${isActive ? " active" : ""}`}
+                                                    onClick={() => {
+                                                        if (item.isLogout) {
+                                                            logout();
+                                                        } else {
+                                                            autoCerrarSidebar();
+                                                        }
+                                                    }}
+                                                >
+                                                    <div className="Linkicon">{item.icon}</div>
+                                                    {sidebarOpen && <span>{item.text}</span>}
+                                                </NavLink>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </Collapse>
                         </div>

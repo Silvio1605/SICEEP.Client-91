@@ -1,6 +1,7 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { AuthContext } from "./AuthContext";
 import { Login, Logout, Me } from "./../../feature/auth/services/authService";
+import { cerrarSesionPorTokenExpirado } from "./../../utils/sesion";
 
 export const AuthProvider = ({ children }) => {
 
@@ -8,10 +9,9 @@ export const AuthProvider = ({ children }) => {
     const [usuario, setUsuario] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    
+  
     const verificarSesion = async () => {
         try {
-                
             const response = await Me();
 
             setAutenticado(true);
@@ -29,27 +29,62 @@ export const AuthProvider = ({ children }) => {
         }
     };
 
+    useEffect(() => {
+        queueMicrotask(() => verificarSesion());
+    }, []);
+
+    // Heartbeat: cada 5 minutos verifica que la sesión siga válida,
+    // detectando expiración del token o pérdida de conexión estando inactivo.
+    useEffect(() => {
+        if (!autenticado) return;
+
+        const intervalo = setInterval(async () => {
+            try {
+                await Me();
+            } catch {
+                setAutenticado(false);
+                setUsuario(null);
+                clearInterval(intervalo);
+                cerrarSesionPorTokenExpirado('Tu sesión ha expirado. Ingresa nuevamente.');
+            }
+        }, 5 * 60 * 1000);
+
+        return () => clearInterval(intervalo);
+    }, [autenticado]);
+
     const login = useCallback(async (nombreUsuario, contraseña) => {
 
-        const response = await Login({
-            nombreUsuario,
-            contraseña
-        });
+        try {
+            const response = await Login({ nombreUsuario, contraseña });
 
-        if (response.status === 200) {
+            if (response.status === 200) {
 
-            await verificarSesion();
+                await verificarSesion();
+
+                return {
+                    valid: true,
+                    mensaje: response.data?.mensaje
+                };
+            }
 
             return {
-                valid: true,
-                mensaje: response.data.mensaje
+                valid: false,
+                mensaje: response.data?.mensaje || "Credenciales inválidas"
+            };
+        } catch (error) {
+            // Sin respuesta = sin conexión o timeout del servidor
+            if (!error.response) {
+                return {
+                    valid: false,
+                    mensaje: "No se pudo conectar con el servidor. Verifica tu conexión e intente de nuevo."
+                };
+            }
+
+            return {
+                valid: false,
+                mensaje: error.response.data?.mensaje || "Credenciales inválidas"
             };
         }
-
-        return {
-            valid: false,
-            mensaje: "Credenciales inválidas"
-        };
     }, []);
 
     const tienePermiso = useCallback((permiso) => {

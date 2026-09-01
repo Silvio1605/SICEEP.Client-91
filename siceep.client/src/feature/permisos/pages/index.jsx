@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Box } from "@mui/material";
 import AppButton from "../../../shared/components/AppButton";
 import SearchIcon from '@mui/icons-material/Search';
@@ -26,6 +26,14 @@ export default function Index() {
     const handleClose = () => {
         setOpenBusqueda(false);
     };
+
+    const seleccionarCuenta = useCallback((propietario) => {
+        setRegistro(prev => ({
+            ...prev,
+            idPropietario: propietario.id,
+            nombrePropietario: propietario.nombreCompleto,
+        }));
+    }, []);
 
     return (
         <Box>
@@ -65,16 +73,14 @@ export default function Index() {
                     </PermisoProvider>
                     
                 )
-            }
+            }.
             { /* Diálogo para buscar propietario */  }
             <BusquedaPropietario
                 open={openBusqueda}
                 onClose={handleClose}
-                setRegistro={setRegistro}
+                onSeleccionar={seleccionarCuenta}
                 OriginRegistro={false}
-            >
-            </BusquedaPropietario>
-
+            />
         </Box>
     );
 };

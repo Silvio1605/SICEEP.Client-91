@@ -7,7 +7,7 @@ export const getColumnsSelect = ({ Seleccion }) => {
 
     // Columnas base para todos los tabs (excepto ubicaciones)
     const baseColumns = [
-        { field: 'id', headerName: 'Id', width: 50 },
+        { field: 'id', headerName: 'Id', width: 60 },
         { field: 'codigo', headerName: 'Código', width: 100 },
         { field: 'descripcion', headerName: 'Descripción', flex: 1, minWidth: 150 },
         {

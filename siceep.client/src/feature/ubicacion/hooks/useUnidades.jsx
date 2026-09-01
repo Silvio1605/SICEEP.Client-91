@@ -1,18 +1,12 @@
 ﻿import { getUnidades, registrar, actualizar } from './../services/UnidadServices'
 import { useGenericFetch } from './useGenericFetch';
 
-const registrarUnidad = async (id, descripcion, orden) => {
-    if (!descripcion) {
-        return {
-            status: 400,
-            message: "El campo descripcion es obligatorio."
-        };
-    }
+const registrarUnidad = async (datos) => {
 
-    if (!id) {
-        return await registrar(descripcion, orden);
+    if (!datos.id) {
+        return await registrar(datos.descripcion);
     } else {
-        return await actualizar(id, descripcion);
+        return await actualizar(datos.id, datos.descripcion);
     }
 };
 

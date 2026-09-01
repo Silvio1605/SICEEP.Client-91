@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { Box, Typography, Divider } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import AppButton from './../../../../shared/components/AppButton';
 import WorkIcon from '@mui/icons-material/Work';
 

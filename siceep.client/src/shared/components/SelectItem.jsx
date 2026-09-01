@@ -40,7 +40,6 @@ export default function SelectItem({ value, onChange, datos, titulo, incluirTodo
                         fontWeight: 400,
                         color: '#212121',
                     },
-
                 }}
             >
                 <InputLabel

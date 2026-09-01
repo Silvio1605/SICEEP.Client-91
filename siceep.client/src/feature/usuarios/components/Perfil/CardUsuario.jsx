@@ -30,47 +30,40 @@ const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: '#1A2027',
     }),
 }));
+
 const obtenerEstado = (estado) => {
     switch (estado) {
         case 1:
-            return <Chip label="Activo" color="success" />;
+            return <Chip label="Activo" color="success" size="small" sx={{ fontWeight: 'bold' }} />;
         case 2:
-            return <Chip label="Inactivo" color="error" />;
+            return <Chip label="Inactivo" color="error" size="small" sx={{ fontWeight: 'bold' }} />;
         case 3:
-            return <Chip label="Expirado" color="warning" />;
+            return <Chip label="Expirado" color="warning" size="small" sx={{ fontWeight: 'bold' }} />;
         default:
-            return <Chip label="Desconocido" />;
+            return <Chip label="Desconocido" size="small" />;
     }
 };
 
 function CardUsuario({ actualizar }) {
-
     // Funciones para manejo de fechas
     const { permisosHook } = usePermisosContext();
     const { actualizarRol } = useRol();
     const { idSeleccionado } = useBusquedaContext();
     const { perfil, reload } = usePerfil(idSeleccionado);
-
-    // Notificaciones
+    const { ActualizarEstado } = useUsuarios();
     const { mostrarNotificacion } = useNotificacionContext();
 
     // datos para las cajas de selecciones
     const [rol, setRol] = useState("");
-
     const [EstadoComp, setEstadoComp] = useState();
-
-    // Estado para controlar el diálogo de actualización de fecha
     const [dialogo, setDialogo] = useState(null);
-    
-    const { ActualizarEstado } = useUsuarios();
 
     // Funciones para abrir los diálogos de confirmación
     const abrirConfirmRol = () => setDialogo("confirmRol");
     const abrirConfirmDes = () => setDialogo("confirmDesactivar");
     const abrirReestrablecerContra = () => setDialogo("reestrablecerContra");
-
     const cerrar = () => setDialogo(null);
-    
+
     useEffect(() => {
         const cargarEstado = () => {
             setEstadoComp(perfil.usuario?.estado);
@@ -80,58 +73,43 @@ function CardUsuario({ actualizar }) {
     }, [perfil.usuario?.estado]);
 
     const handleConfirmarRol = async () => {
-
         try {
             await actualizarRol(perfil.usuario?.id, rol);
-
-            mostrarNotificacion({
-                message: "Rol actualizado correctamente",
-                severity: "success",
-            });
-
+            mostrarNotificacion({ message: "Rol actualizado correctamente", severity: "success" });
             await permisosHook.refetch();
         } catch {
             mostrarNotificacion({
                 message: "Error al actualizar el rol",
                 severity: "error",
             });
-        } 
+        }
         cerrar();
     };
 
     const handleActEstado = async () => {
-
         try {
             await ActualizarEstado(perfil.usuario?.id, perfil.usuario?.estado);
-
+            const esActivacion = perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3;
             mostrarNotificacion({
-                message: perfil.usuario?.estado === 2 || perfil.usuario?.estado === 3 ? "Usuario activado correctamente" : "Usuario deshabilitado correctamente",
-                severity: "success",
+                message: esActivacion ? "Usuario activado correctamente" : "Usuario deshabilitado correctamente",
+                severity: "success"
             });
 
-            // recargar datos
             await permisosHook.refetch();
-            const nuevoEstado = perfil.usuario?.estado === 1 ? 3 : 1;
-            setEstadoComp(nuevoEstado);
+            setEstadoComp(esActivacion ? 1 : 3);
             await reload();
             await actualizar();
-
         } catch (error) {
-            mostrarNotificacion({
-                message: error.message ?? "Error al actualizar el estado del usuario",
-                severity: "error",
-            });
+            mostrarNotificacion({ message: error.message ?? "Error al actualizar el estado", severity: "error" });
         }
         cerrar();
-
     };
 
     return (
-        
+
         // Información del Usuario
         <Box sx={{ flexGrow: 1, mb: 1 }}>
             <Grid container spacing={2}>
-
                 <Grid size={12}>
                     <Box
                         sx={{
@@ -167,8 +145,8 @@ function CardUsuario({ actualizar }) {
                                 }
                             }}
                         >
-                                Información del Usuario
-                        </Typography> 
+                            Información del Usuario
+                        </Typography>
                     </Box>
                     <Item>
                         <Box sx={{
@@ -226,32 +204,17 @@ function CardUsuario({ actualizar }) {
                                                 {perfil.usuario?.propietario}
                                             </Typography>
                                         </Box>
-
-                                        <Box display="flex" alignItems="baseline">
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    fontWeight: 700,
-                                                    color: '#1565C0',
-                                                    minWidth: '100px',
-                                                    fontSize: '0.85rem'
-                                                }}
-                                            >
-                                                Ubicado en:
-                                            </Typography>
-                                            <Typography variant="body2" sx={{ color: '#424242', fontWeight: 500 }}>
-                                                {perfil.estructura}
-                                            </Typography>
-                                        </Box>
                                     </Box>
                                 </Box>
                             </Box>
                         </Box>
+                        <Typography variant="caption" color="primary" fontWeight="bold">Ubicado en:</Typography>
+                        <Typography variant="body2">{perfil.estructura || 'No asignado'}</Typography>
                     </Item>
                 </Grid>
                 <Grid size={12}>
                     <Item>
-                       <CardRol abrirConfirmRol={abrirConfirmRol} rol={rol} setRol={setRol}></CardRol>
+                        <CardRol abrirConfirmRol={abrirConfirmRol} rol={rol} setRol={setRol}></CardRol>
                     </Item>
                 </Grid>
                 <Grid size={12}>
@@ -265,15 +228,14 @@ function CardUsuario({ actualizar }) {
                     </Item>
                 </Grid>
             </Grid>
+
             <Confirm
                 open={dialogo === "confirmRol"}
                 handleClose={cerrar}
                 onConfirm={handleConfirmarRol}
                 title="Confirmar cambio"
-                content="¿Estás seguro de que deseas actualizar el rol del usuario? Esta acción no se puede deshacer.?"
-            >
-                {/* contenido */}
-            </Confirm>
+                content="¿Estás seguro de que deseas actualizar el rol del usuario? Esta acción no se puede deshacer."
+            />
             <Confirm
                 open={dialogo === "confirmDesactivar"}
                 handleClose={cerrar}

@@ -9,7 +9,6 @@ import GuardarPermisosDialog from '../components/GuardarPermisos';
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
 
-
 export default function Permisos({ idUsuario }) {
 
     //funcion para extraer el valor enviado desde usuario
@@ -33,7 +32,7 @@ export default function Permisos({ idUsuario }) {
     const sectionsRef = useRef({});
 
     const tabsChange = (event, newValue) => {
-        setValue(newValue);  
+        setValue(newValue);
 
         const idModulo = permisosOriginal[newValue]?.idModulo;
         const element = sectionsRef.current[idModulo];
@@ -87,7 +86,7 @@ export default function Permisos({ idUsuario }) {
                 </Typography>
             </Box>
 
-            
+
             {/* Tabs */}
             <Box
                 sx={{
@@ -100,7 +99,7 @@ export default function Permisos({ idUsuario }) {
                     boxShadow: 2
                 }}
             >
-                
+
                 <Tabs
                     value={value}
                     onChange={tabsChange}
@@ -117,12 +116,12 @@ export default function Permisos({ idUsuario }) {
                         <Tab key={m.idModulo} label={m.modulo} />
                     ))}
                 </Tabs>
-               
+
             </Box>
 
             {/* LISTA COMPLETA DE PERMISOS */}
             {permisos?.map((modulo) => (
-                <Box key={modulo.idModulo} sx={{ mb: 4  }} >
+                <Box key={modulo.idModulo} sx={{ mb: 4 }} >
 
                     {/* HEADER DEL MÓDULO */}
                     <Box

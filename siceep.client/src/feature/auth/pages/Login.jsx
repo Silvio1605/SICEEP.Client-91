@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import './../styles/StyleLogin.css';
 import { useNavigate } from 'react-router-dom';
 import { Box } from "@mui/material";
@@ -9,6 +9,7 @@ import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import KeyIcon from '@mui/icons-material/Key';
 import LinearProgress from '@mui/material/LinearProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import Alerta from '../../../shared/components/Alerta';
 import { useAuth } from './../../../providers/Authenticacion/useAuth';
 
@@ -23,6 +24,22 @@ function Login() {
     // Almacena y controla la visibilidad de los mensajes de error en pantalla.
     const [errorMessage, setErrorMessage ] = useState('');
     const [loading, setLoading] = useState(false);
+    const [motivoSesion, setMotivoSesion] = useState('');
+
+    // Si el usuario fue expulsado por token expirado o sin conexión, se le informa el motivo
+    useEffect(() => {
+        queueMicrotask(() => {
+            try {
+                const motivo = sessionStorage.getItem('siceep_motivo_logout');
+                if (motivo) {
+                    setMotivoSesion(motivo);
+                    sessionStorage.removeItem('siceep_motivo_logout');
+                }
+            } catch {
+                // sin almacenamiento disponible
+            }
+        });
+    }, []);
 
     // Hook para redirigir al usuario a otras paginas tras un login exitoso.
     const navigate = useNavigate();
@@ -30,17 +47,20 @@ function Login() {
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        if (loading) return; // evita doble envío
         setLoading(true);
-        const response = await login(username, password);
-        if (response.valid) {
-            // Redirigir a la página principal o mostrar mensaje de éxito
-            setTimeout(() => { }, 5000);
-            setLoading(false);
-            navigate('/index');
-
-        } else {
-            // Mostrar mensaje de error
-            setErrorMessage(response.mensaje);
+        setErrorMessage('');
+        try {
+            const response = await login(username, password);
+            if (response.valid) {
+                navigate('/index');
+            } else {
+                setErrorMessage(response.mensaje);
+            }
+        } catch (err) {
+            // Red de seguridad ante errores inesperados del flujo de login
+            setErrorMessage(err?.message || 'Error inesperado al iniciar sesión.');
+        } finally {
             setLoading(false);
         }
     }
@@ -122,6 +142,11 @@ function Login() {
 
                         {/* --- SECCION DE ALERTAS --- */}
                         {/* Renderizado condicional: Solo existe en el DOM si hay un mensaje de error que mostrar. */}
+                        {motivoSesion && (
+                            <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+                                <Alerta severity="warning" mensaje={motivoSesion} />
+                            </div>
+                        )}
                         {errorMessage && (
                             <div style={{ color: '#d32f2f', marginBottom: '1.5rem', textAlign: 'center', fontWeight: 'bold' }}>
                                 <Alerta severity="error" mensaje={errorMessage} />
@@ -135,8 +160,16 @@ function Login() {
                             className="btn btn-primary"
                             variant="contained"
                             onClick={handleLogin}
+                            disabled={loading}
                         >
-                            Iniciar sesion
+                            {loading ? (
+                                <>
+                                    <CircularProgress size={18} color="inherit" sx={{ mr: 1, verticalAlign: 'middle' }} />
+                                    Validando información...
+                                </>
+                            ) : (
+                                'Iniciar sesión'
+                            )}
                         </button>
                         {loading == true && (
                             <Box sx={{ width: '100%' }}>

@@ -6,14 +6,15 @@ export const getUnidades = (parametro, pagina) => {
     });
 };
 
-export const registrar = (descripcion) => {
-    return api.post(`Unidad`, {
-        params: { nombreUnidad: descripcion }
+export const registrar = (nombreUnidad) => {
+    return api.post(`Unidad`, null, {
+        params: { nombreUnidad }
     });
 };
 
-export const actualizar = (id, descripcion) => {
-    return api.put(`Unidad`, {
-        params: { id, nombreUnidad: descripcion }
+export const actualizar = (id, nombreUnidad) => {
+    console.log(nombreUnidad);
+    return api.put(`Unidad`, null, {
+        params: { id, nombreUnidad }
     });
 };

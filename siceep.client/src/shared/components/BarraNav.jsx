@@ -3,26 +3,29 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
+
+// Ya no importamos IconButton ni MenuIcon porque tu Sidebar ya tiene su propio botón
 
 export default function BarraNav({ toggleNav }) {
-
     return (
-        <Box sx={{ width: "96%", display: "flex"}}>
-            <AppBar position="fixed" sx={{ width: "100%" }}>
-                <Toolbar>
-                    <IconButton
-                        size="large"
-                        edge="start"
-                        color="inherit"
-                        sx={{ mr: 1 }}
-                        onClick={toggleNav(true)}
-                    >
-                        <MenuIcon />
-                    </IconButton>
+        // 1. Quitamos el width 96% para que abarque todo el espacio disponible que le da el Index
+        <Box sx={{ flexGrow: 1, width: "100%" }}>
 
-                    <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            {/* 2. position="static" para que no flote, y el color azul oscuro premium */}
+            <AppBar position="static" sx={{ backgroundColor: '#004080', boxShadow: 'none' }}>
+                <Toolbar>
+
+                    {/* 3. El botón de menú fue eliminado. Solo dejamos el texto. */}
+
+                    <Typography
+                        variant="h6"
+                        sx={{
+                            flexGrow: 1,
+                            fontWeight: 'bold', // Le damos un toque más grueso a la letra
+                            letterSpacing: '1px',
+                            ml: 2 // Un pequeño margen izquierdo para que no quede pegado a la orilla
+                        }}
+                    >
                         SICEEP
                     </Typography>
 

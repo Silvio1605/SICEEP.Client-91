@@ -14,13 +14,12 @@ import IconButton from '@mui/material/IconButton';
 import { Stack, Skeleton } from '@mui/material';
 // datgrid
 import {
-    DataGrid,
-    GridToolbar,
+    DataGrid
 } from '@mui/x-data-grid';
 // iconos
 import SearchIcon from '@mui/icons-material/Search';
 // hooks
-import { useRegistrar } from './../hooks/useRegistrar';
+import { useRegistrar } from './../hooks/useRegistrar'; 
 import { columnsPropietarios } from './../services/propietarioData';
 
 // Funciones para evitar que el botón de mostrar/ocultar contraseña tome el foco al hacer clic
@@ -41,12 +40,6 @@ export default function BusquedaPropietario({ open, onClose, onSeleccionar, Orig
 
     const [buscarPropietario, setBuscarPropietario] = useState(''); 
     
-    // Función para manejar la selección de un propietario
-    const Seleccion = (params) => {
-        onSeleccionar(params);
-        onClose();
-    };
-
     const manejarCambioInput = (e) => {
         setBuscarPropietario(e.target.value);
     };
@@ -57,7 +50,6 @@ export default function BusquedaPropietario({ open, onClose, onSeleccionar, Orig
     };
 
     const manejarSeleccion = useCallback((params) => {
-        
         onSeleccionar(params);
         onClose();
     }, [onSeleccionar, onClose]);
@@ -106,7 +98,7 @@ export default function BusquedaPropietario({ open, onClose, onSeleccionar, Orig
                         <DataGrid
                             rows={propietarios}
                             columns={columnas} // Columnas con flex: 1 aplicado
-                            getRowId={(row) => row.codigo}
+                            getRowId={(row) => row.id}
                             initialState={{
                                 pagination: { paginationModel: { pageSize: 10 } },
                             }}

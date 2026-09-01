@@ -6,18 +6,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material/styles';
-import FormControl from '@mui/material/FormControl';
-import OutlinedInput from '@mui/material/OutlinedInput';
-import InputLabel from '@mui/material/InputLabel';
-import InputAdornment from '@mui/material/InputAdornment';
-import IconButton from '@mui/material/IconButton';
 import { Typography, Paper } from "@mui/material";
-import Grid from '@mui/material/Grid';
 
 // iconos
 import PersonAddIcon from '@mui/icons-material/PersonAdd';
-// Importar el componente SelectItem
-import SelectItem from '../../../../shared/components/SelectItem';
 // importar el hook useSelectRoles para obtener los roles disponibles
 import { useRegistrar } from "../../hooks/useRegistrar";
 // Importar el componente de búsqueda de propietario
@@ -25,7 +17,6 @@ import BusquedaPropietario from '../BusquedaPropietario';
 import { useNotificacionContext } from '../../../../providers/Notificacion/useNotificacionContext';
 // componentes personalizados
 import AppInput from '../../../../shared/components/AppInput';
-import AppButton from '../../../../shared/components/AppButton';
 import { Box } from "@mui/material";
 import LinearProgress from '@mui/material/LinearProgress';
 // componentes del formulario
@@ -55,7 +46,7 @@ export default function CardRegistrar({ open, onClose }) {
     const seleccionarPropietario = useCallback((propietario) => {
         setRegistro(prev => ({
             ...prev,
-            idPropietario: propietario.codigo,
+            idPropietario: propietario.id,
             nombrePropietario: propietario.nombreCompleto,
         }));
     }, []);

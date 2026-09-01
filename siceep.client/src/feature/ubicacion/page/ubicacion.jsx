@@ -1,44 +1,31 @@
-import React, { useState } from 'react';
+import { Add as AddIcon } from '@mui/icons-material';
+import SearchIcon from '@mui/icons-material/Search';
 import {
     Box,
-    Tabs,
-    Tab,
     Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Grid,
-    Paper,
-    Snackbar,
-    Alert,
-    ThemeProvider,
-    createTheme,
     CssBaseline,
-    Chip,
-    Stack
+    Paper,
+    Stack,
+    Tab,
+    Tabs,
+    TextField,
+    ThemeProvider,
+    createTheme
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import {
-    Add as AddIcon,
-} from '@mui/icons-material';
-
-import SearchIcon from '@mui/icons-material/Search';
+import React, { useState, useEffect } from 'react';
+import ModalManager from '../../../shared/components/Modal/ModalManager';
+import useModalManager from '../../../shared/hooks/useModalManager';
+import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
 import { getColumns } from './../components/getColumns';
-import { useUnidades } from './../hooks/useUnidades';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { useUbicaciones } from './../hooks/useUbicaciones';
-import ModalManager from '../../../shared/components/ModalManager';
-import useModalManager from '../../../shared/hooks/useModalManager';
+import { useUnidades } from './../hooks/useUnidades';
 
 const theme = createTheme({
     palette: {
-        primary: {
-            main: '#1a3b5d', // Azul corporativo
-        },
         secondary: {
-            main: '#2e7d32', // Verde para acciones positivas
+            main: '#2e7d32',
         },
         background: {
             default: '#f4f6f8',
@@ -70,18 +57,18 @@ export default function Ubicacion() {
 
     const modal = useModalManager();
 
-    const { data: unidades, search: searchUnidades } = useUnidades();
-    const { data: estructuras, search: searchEstructuras } = useEstructuras();
-    const { data: ubicaciones, search: searchUbicaciones, registrar } = useUbicaciones();
+    // Notificaciones
+    const { mostrarNotificacion } = useNotificacionContext();
 
-    // Estados 
+    const { data: unidades, search: searchUnidades, page : pagUnidad, totalRegistros : totalUnidad } = useUnidades();
+    const { data: estructuras, search: searchEstructuras, page: pagEstructura, totalRegistros: totalE } = useEstructuras();
+    const { data: ubicaciones,
+        search: searchUbicaciones,
+        page: pagUbicacion,
+        totalRegistros: totalU, registrar, actualizar } = useUbicaciones();
+
+    // Estados
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
-
-    // Estado del modal
-    const [openDialog, setOpenDialog] = useState(false);
-
-    // Snackbar para notificaciones
-    const [, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
 
     // Filtro de búsqueda (texto)
     const [searchText, setSearchText] = useState('');
@@ -96,9 +83,23 @@ export default function Ubicacion() {
         }
     };
 
-    const getEntityName = () => {
-        return ['Unidad', 'Estructura', 'Ubicación'][selectedTab] || '';
-    };
+    const getPage = () => {
+        switch (selectedTab) {
+            case 0: return pagUnidad;
+            case 1: return pagEstructura;
+            case 2: return pagUbicacion;
+            default: return 1;
+        }
+    }
+
+    const getTotal = () => {
+        switch (selectedTab) {
+            case 0: return totalUnidad;
+            case 1: return totalE;
+            case 2: return totalU;
+            default: return 0;
+        }
+    }
 
     // --- Filtrado de datos por búsqueda ---
     const getFilteredData = () => {
@@ -129,7 +130,7 @@ export default function Ubicacion() {
     // Manejadores de eventos
     const handleTabChange = (event, newValue) => {
         setSelectedTab(newValue);
-        //setFormData({});
+
         setSearchText('');
         // Refrescar los datos de la nueva pestaña
         switch (newValue) {
@@ -142,44 +143,102 @@ export default function Ubicacion() {
 
     const handleOpenCreate = () => {
 
+        var titulo = (selectedTab === 1) ? "Registrar Estructura" : "Registrar Unidad Administrativa";
+
+        // registrar estructura
         if (selectedTab === 2) {
             
-            setOpenDialog(true);
             modal.abrirModal("registrarUbicacion", {
                 tipo: selectedTab,
-                titulo: titulo
+                titulo: titulo,
+                registrar: registrar,
+                refrescar: handleSearch
             })
         } else {
-            var titulo = (selectedTab === 1) ? "Registrar Estructura" : "Registrar Unidad Administrativa";
-
             modal.abrirModal("registrarEstUnidad", {
                 tipo: selectedTab,
-                titulo: titulo
+                titulo: titulo,
+                refrescar: handleSearch
             })
         }
     };
 
-    const handleSearch = () => {
+    const handleSearch = async (model = 1) => {
         switch (selectedTab) {
-            case 0: return searchUnidades(searchText, 1);
-            case 1: return searchEstructuras(searchText, 1);
-            case 2: return searchUbicaciones(searchText, 1);
+            case 0: return await searchUnidades(searchText, model);
+            case 1: return await searchEstructuras(searchText, model);
+            case 2: return await searchUbicaciones(searchText, model);
             default: return [];
         }
     };
 
-    const handleDelete = () => {
+    useEffect(() => {
+        handleSearch(1);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [])
+
+    const handleDelete = async (id, estado) => {
+
+        // cambiar estado, si esta inactivo, enviar 1 para activar
+        var activo = estado === "Inactivo" ? 1 : 0;
+
+        try {
+            const resultado = await actualizar(id, activo);
+            if (resultado.status == 200) {
+                mostrarNotificacion({
+                    message: resultado.data.message,
+                    severity: "success",
+                });
+            }
+
+            await handleSearch();
+
+        } catch (error) {
+
+            if (error.response) {
+                // La API respondió con un error (400, 409, 500, etc.)
+                mostrarNotificacion({
+                    message: error.response.data.message,
+                    severity: "error",
+                });
+      
+            } else if (error.request) {
+                // La petición se envió pero no hubo respuesta
+                mostrarNotificacion({
+                    message: "No se pudo conectar con el servidor.",
+                    severity: "error",
+                });
+            } else {
+                // Error al crear la petición
+                mostrarNotificacion({
+                    message: error.message,
+                    severity: "error",
+                });
+            }
+        }
         
-        setSnackbar({
-            open: true,
-            message: `${getEntityName()} eliminada correctamente.`,
-            severity: 'success',
-        });
     };
-    
-    const handleCloseDialog = () => {
-        setOpenDialog(false);
-    };
+
+    const handleEdit = (row) => {
+
+        var titulo = (selectedTab === 1) ? "Editar Estructura" : "Editar Unidad Administrativa";
+        const datos = {
+            id: row.id,
+            descripcion: row.descripcion
+        };
+
+        // Solo las estructuras tienen orden
+        if (selectedTab === 1) {
+            datos.orden = row.orden;
+        }
+
+        modal.abrirModal("registrarEstUnidad", {
+            tipo: selectedTab,
+            titulo: titulo,
+            editar: datos,
+            refrescar: handleSearch
+        })
+    }
 
     return (
 
@@ -236,7 +295,7 @@ export default function Ubicacion() {
                                 variant="contained"
                                 color="primary"
                                 startIcon={<SearchIcon />}
-                                onClick={handleSearch}
+                                onClick={() => handleSearch()}
                                 sx={{
                                     borderRadius: 2,
                                     minWidth: 130,
@@ -251,10 +310,18 @@ export default function Ubicacion() {
                     <Paper sx={{ height: 'calc(100% - 180px)', width: '100%', p: 1 }}>
                         <DataGrid
                             rows={getFilteredData()}
-                            columns={getColumns({ handleDelete, selectedTab })}
-                            pageSize={10}
-                            rowsPerPageOptions={[10, 25, 50, 100]}
+                            columns={getColumns({ handleDelete, handleEdit,selectedTab })}
                             pagination
+                            paginationMode="server"
+                            rowCount={getTotal()}
+                            paginationModel={{
+                                page: getPage() - 1,
+                                pageSize: 10
+                            }}
+                            onPaginationModelChange={(model) => {
+                                handleSearch(model.page + 1);
+                            }}
+                            pageSizeOptions={[10]}
                             disableSelectionOnClick
                             autoHeight={false}
                             sx={{
@@ -276,15 +343,8 @@ export default function Ubicacion() {
                 </Box>
             </Box>
 
-            {/* Modal de creación/edición */}
-            <CardCrear
-                open={ openDialog }
-                onClose={ handleCloseDialog }
-                registrar={ registrar }
-            />
-
             <ModalManager
-                modal={modal.modal}
+                modal={modal}
                 onClose={modal.cerrarModal}
                 {...modal.props}
             />
