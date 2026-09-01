@@ -64,10 +64,24 @@ export const subirDocumento = (idExpediente, datos, archivo) => {
     const form = new FormData();
     form.append('idTipoDocumento', datos.idTipoDocumento);
     if (datos.fechaDocumento) form.append('fechaDocumento', datos.fechaDocumento);
+    if (datos.cara) form.append('cara', datos.cara);
+    if (datos.fechaVencimiento) form.append('fechaVencimiento', datos.fechaVencimiento);
     form.append('archivo', archivo);
 
     // 'Content-Type: undefined' deja que el navegador ponga el boundary multipart
     return api.post(`Documento/${idExpediente}`, form, {
+        headers: { 'Content-Type': undefined }
+    });
+};
+
+export const subirCedula = (idExpediente, fechaVencimiento, frente, reverso) => {
+    const form = new FormData();
+    if (fechaVencimiento) form.append('fechaVencimiento', fechaVencimiento);
+    form.append('frente', frente);
+    form.append('reverso', reverso);
+
+    // 'Content-Type: undefined' deja que el navegador ponga el boundary multipart
+    return api.post(`Documento/${idExpediente}/cedula`, form, {
         headers: { 'Content-Type': undefined }
     });
 };
@@ -81,4 +95,39 @@ export const descargarDocumento = (idDocumento) => {
 
 export const eliminarDocumento = (idDocumento) => {
     return api.delete(`Documento/${idDocumento}`);
+};
+
+// ---------- Estudios (información académica) ----------
+
+export const getEstudios = (idPersona) => {
+    return api.get(`Estudios/${idPersona}`);
+};
+
+export const guardarEstudios = (idPersona, estudios) => {
+    return api.post(`Estudios/${idPersona}`, estudios);
+};
+
+export const getNivelesEstudios = () => {
+    return api.get(`Estudios/Niveles`);
+};
+
+export const getInstitucionesEstudios = () => {
+    return api.get(`Estudios/Instituciones`);
+};
+
+export const getModalidadesEstudios = () => {
+    return api.get(`Estudios/Modalidades`);
+};
+
+// Anexa el documento de soporte (tipo DIPLOMA) al estudio; queda registrado
+// como documento del expediente y su URL se guarda en el campo documentoUrl del estudio.
+export const subirDocumentoEstudio = (idEstudio, idTipoDocumento, archivo) => {
+    const form = new FormData();
+    form.append('idTipoDocumento', idTipoDocumento);
+    form.append('archivo', archivo);
+
+    // 'Content-Type: undefined' deja que el navegador ponga el boundary multipart
+    return api.post(`Estudios/${idEstudio}/documento`, form, {
+        headers: { 'Content-Type': undefined }
+    });
 };

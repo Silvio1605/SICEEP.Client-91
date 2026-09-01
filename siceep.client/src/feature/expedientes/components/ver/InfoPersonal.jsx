@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Box, Typography, Paper, Avatar, Divider, Grid } from '@mui/material';
 import PersonIcon from '@mui/icons-material/Person';
 import {
@@ -8,6 +8,10 @@ import {
     nombreSexo,
     nombreEstadoCivil,
 } from '../../utils/expedienteMappers';
+import { descargarDocumento } from '../../services/expedienteService';
+
+// Tipo de documento FOTO_PERFIL = 1
+const TIPO_FOTO_PERFIL = 1;
 
 // Componente auxiliar para que los campos se vean limpios y uniformes
 const CampoInfo = ({ etiqueta, valor }) => (
@@ -37,6 +41,35 @@ export default function InfoPersonal({ data }) {
     const caracteristicas = data?.caracteristicasFisicas || {};
     const contacto = data?.contactoEmergencia || {};
 
+    // Fotografía del funcionario (FOTO_PERFIL más reciente)
+    const [fotoSrc, setFotoSrc] = useState(null);
+
+    const fotoId = (data?.documentos || [])
+        .filter((d) => d.idTipoDocumento === TIPO_FOTO_PERFIL)
+        .sort((a, b) => (b.idDocumento ?? 0) - (a.idDocumento ?? 0))[0]?.idDocumento ?? null;
+
+    useEffect(() => {
+        let activo = true;
+        let urlObjeto = null;
+
+        if (!fotoId) return undefined;
+
+        descargarDocumento(fotoId)
+            .then((res) => {
+                if (!activo) return;
+                urlObjeto = URL.createObjectURL(res.data);
+                setFotoSrc(urlObjeto);
+            })
+            .catch(() => {
+                if (activo) setFotoSrc(null);
+            });
+
+        return () => {
+            activo = false;
+            if (urlObjeto) URL.revokeObjectURL(urlObjeto);
+        };
+    }, [fotoId]);
+
     const edad = calcularEdad(persona.fechaNacimiento);
 
     return (
@@ -45,8 +78,12 @@ export default function InfoPersonal({ data }) {
 
                 {/* Encabezado de Identificación para Impresión */}
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <Avatar sx={{ bgcolor: 'primary.main', width: 56, height: 56, mr: 2 }}>
-                        <PersonIcon fontSize="large" />
+                    <Avatar variant="rounded" sx={{ bgcolor: 'primary.main', width: 72, height: 88, mr: 2 }}>
+                        {fotoId && fotoSrc ? (
+                            <img src={fotoSrc} alt="Fotografía del funcionario" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                        ) : (
+                            <PersonIcon fontSize="large" />
+                        )}
                     </Avatar>
                     <Box>
                         <Typography variant="h6" color="primary" sx={{ fontWeight: 'bold', textTransform: 'uppercase' }}>

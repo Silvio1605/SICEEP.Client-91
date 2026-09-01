@@ -20,6 +20,16 @@ import LinearProgress from '@mui/material/LinearProgress';
 import { useProgresoExpediente } from './../hooks/useProgresoExpediente';
 import { useRegistroExpediente } from './../hooks/useRegistrarExpediente';
 import { ExpedienteContext } from './../context/ExpedienteContext';
+import { validarCalidadExpediente } from './../utils/validacionExpediente';
+
+// Nombres de pestaña a la que pertenece cada problema de calidad de datos
+const TAB_PROBLEMA = {
+    persona: 'Datos Generales',
+    cedula: 'Datos Generales',
+    caracteristicasFisicas: 'Características',
+    nucleoFamiliar: 'Núcleo Familiar',
+    contrato: 'Info. Laboral'
+};
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -40,6 +50,9 @@ export default function CrearExpediente() {
     const [tabActiva, setTabActiva] = useState(0);
     const [modalValidacion, setModalValidacion] = useState(false);
     const [aviso, setAviso] = useState({ open: false, mensaje: '', severidad: 'success' });
+
+    // Problemas de calidad (cédula, fechas, estatura, peso) calculados al vuelo
+    const problemasCalidad = validarCalidadExpediente(expediente);
 
     // Campos que el backend exige (contrato): nunca pueden ir vacíos/nulos
     const normalizarContrato = (contrato) => ({
@@ -71,6 +84,18 @@ export default function CrearExpediente() {
             setAviso({ open: true, mensaje: `Faltan datos requeridos: ${faltantes.join(', ')}`, severidad: 'warning' });
             return;
         }
+
+        // Validación de calidad antes de enviar al backend
+        if (problemasCalidad.length > 0) {
+            setModalValidacion(true);
+            setAviso({
+                open: true,
+                mensaje: `Se encontraron ${problemasCalidad.length} dato(s) con información incorrecta. Corríjalos antes de guardar.`,
+                severidad: 'warning'
+            });
+            return;
+        }
+
         try {
             const payload = { ...expediente, contrato: normalizarContrato(expediente.contrato) };
             await registrar(payload);
@@ -245,6 +270,36 @@ export default function CrearExpediente() {
                             );
                         })}
                     </List>
+
+                    {/* Calidad de los datos */}
+                    <Divider sx={{ mt: 2 }} />
+                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mt: 2, color: 'warning.main' }}>
+                        Calidad de los datos ({problemasCalidad.length} {problemasCalidad.length === 1 ? 'problema' : 'problemas'}):
+                    </Typography>
+                    {problemasCalidad.length === 0 ? (
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                            Cédulas, fechas de nacimiento, estatura y peso con información correcta.
+                        </Typography>
+                    ) : (
+                        <List dense>
+                            {problemasCalidad.map((problema, indice) => (
+                                <ListItem key={`${problema.campo}-${indice}`}>
+                                    <ListItemIcon sx={{ minWidth: 35 }}>
+                                        <WarningAmberIcon color="warning" fontSize="small" />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={`${TAB_PROBLEMA[problema.seccion] || 'General'}`}
+                                        secondary={problema.mensaje}
+                                    />
+                                </ListItem>
+                            ))}
+                        </List>
+                    )}
+                    {problemasCalidad.length > 0 && (
+                        <Typography variant="body2" color="error" sx={{ mt: 1 }}>
+                            Debe corregir los problemas de calidad antes de poder guardar el expediente.
+                        </Typography>
+                    )}
                 </DialogContent>
                 
                 <DialogActions sx={{ p: 2, pt: 0 }}>

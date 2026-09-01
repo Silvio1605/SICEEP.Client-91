@@ -11,20 +11,54 @@ const gridStyles = {
     '& .header-negrita': { fontWeight: 'bold' },
 };
 
-export default function InfoAcademica({ data }) {
+export default function InfoAcademica({ data, estudios }) {
+    const formatearFecha = (fecha) => (fecha ? String(fecha).slice(0, 10) : '—');
+
     const columnsProfesional = [
         { field: 'id', headerName: 'NUM', width: 70 },
-        { field: 'anio', headerName: 'AÑO', width: 100, headerClassName: 'header-negrita' },
-        { field: 'nivel', headerName: 'NIVEL', width: 150, headerClassName: 'header-negrita' },
-        { field: 'carrera', headerName: 'CARRERA', flex: 1.5, headerClassName: 'header-negrita' },
-        { field: 'lugar', headerName: 'LUGAR', flex: 1, headerClassName: 'header-negrita' },
+        { field: 'inicio', headerName: 'INICIO', width: 110, headerClassName: 'header-negrita' },
+        { field: 'fin', headerName: 'FIN', width: 110, headerClassName: 'header-negrita' },
+        { field: 'nivel', headerName: 'NIVEL', width: 170, headerClassName: 'header-negrita' },
+        { field: 'carrera', headerName: 'CARRERA', flex: 1.4, headerClassName: 'header-negrita' },
+        { field: 'modalidad', headerName: 'MODALIDAD', width: 130, headerClassName: 'header-negrita' },
+        { field: 'lugar', headerName: 'INSTITUCIÓN', flex: 1, headerClassName: 'header-negrita' },
+        {
+            field: 'documento',
+            headerName: 'DOCUMENTO',
+            width: 110,
+            headerClassName: 'header-negrita',
+            renderCell: (params) =>
+                params.row.documentoUrl ? (
+                    <a href={params.row.documentoUrl} target="_blank" rel="noreferrer" style={{ color: '#1976d2' }}>
+                        Ver
+                    </a>
+                ) : (
+                    <span style={{ color: '#9e9e9e' }}>—</span>
+                ),
+        },
     ];
 
     const columnsBasica = [
         { field: 'id', headerName: 'NUM', width: 70 },
-        { field: 'anio', headerName: 'AÑO', width: 100, headerClassName: 'header-negrita' },
-        { field: 'nivel', headerName: 'NIVEL', width: 150, headerClassName: 'header-negrita' },
+        { field: 'inicio', headerName: 'INICIO', width: 110, headerClassName: 'header-negrita' },
+        { field: 'fin', headerName: 'FIN', width: 110, headerClassName: 'header-negrita' },
+        { field: 'nivel', headerName: 'NIVEL', width: 170, headerClassName: 'header-negrita' },
+        { field: 'modalidad', headerName: 'MODALIDAD', width: 130, headerClassName: 'header-negrita' },
         { field: 'centro', headerName: 'CENTRO DE ESTUDIO', flex: 1, headerClassName: 'header-negrita' },
+        {
+            field: 'documento',
+            headerName: 'DOCUMENTO',
+            width: 110,
+            headerClassName: 'header-negrita',
+            renderCell: (params) =>
+                params.row.documentoUrl ? (
+                    <a href={params.row.documentoUrl} target="_blank" rel="noreferrer" style={{ color: '#1976d2' }}>
+                        Ver
+                    </a>
+                ) : (
+                    <span style={{ color: '#9e9e9e' }}>—</span>
+                ),
+        },
     ];
 
     const columnsCursos = [
@@ -35,10 +69,36 @@ export default function InfoAcademica({ data }) {
     ];
 
     // =================================================================
-    // INTEGRACIÓN BACKEND: Lectura dinámica de los arreglos
+    // Los estudios se leen de la tabla Estudios (catálogos NivelesEducativos,
+    // Instituciones y Modalidades) y se separan por sección: PROFESIONAL / BASICA.
     // =================================================================
-    const rowsProfesional = data?.preparacionProfesional || [];
-    const rowsBasica = data?.educacionBasica || [];
+    const lista = estudios || data?.estudios || [];
+
+    const rowsProfesional = lista
+        .filter((e) => e.seccion === 'PROFESIONAL')
+        .map((e, index) => ({
+            id: e.idEstudio ?? index + 1,
+            inicio: formatearFecha(e.fechaInicio),
+            fin: formatearFecha(e.fechaFin),
+            nivel: e.nivelNombre || '—',
+            carrera: e.tituloObtenido || '—',
+            modalidad: e.modalidadNombre || '—',
+            lugar: e.institucionNombre || '—',
+            documentoUrl: e.documentoUrl || null,
+        }));
+
+    const rowsBasica = lista
+        .filter((e) => e.seccion === 'BASICA')
+        .map((e, index) => ({
+            id: e.idEstudio ?? index + 1,
+            inicio: formatearFecha(e.fechaInicio),
+            fin: formatearFecha(e.fechaFin),
+            nivel: e.nivelNombre || '—',
+            modalidad: e.modalidadNombre || '—',
+            centro: e.institucionNombre || '—',
+            documentoUrl: e.documentoUrl || null,
+        }));
+
     const rowsCursos = data?.cursosVarios || [];
 
     return (

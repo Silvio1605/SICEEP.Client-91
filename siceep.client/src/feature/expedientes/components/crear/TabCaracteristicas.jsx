@@ -4,6 +4,7 @@ import SelectItemB from './../../../../shared/components/Select/SelectItemB';
 
 import { ExpedienteContext } from './../../context/ExpedienteContext';
 import { useSelectCaracteristicas } from '../../hooks/Select/useSelectCaracteristicas';
+import { validarEstatura, validarPeso } from '../../utils/validacionExpediente';
 
 export default function TabCaracteristicas() {
     const { selCaracteristicas, loadingCaracteristicas } = useSelectCaracteristicas();
@@ -50,6 +51,12 @@ export default function TabCaracteristicas() {
     const caracteristicas = expediente.caracteristicasFisicas || {};
     const contacto = expediente.contactoEmergencia || {};
 
+    // Indicadores de calidad de los datos (estatura en metros, peso en libras)
+    const resultadoEstatura = validarEstatura(caracteristicas.estatura);
+    const resultadoPeso = validarPeso(caracteristicas.peso);
+    const errorEstatura = Boolean(caracteristicas.estatura) && !resultadoEstatura.valida;
+    const errorPeso = Boolean(caracteristicas.peso) && !resultadoPeso.valida;
+
     return (
         <Box>
             {/* Características Físicas */}
@@ -65,9 +72,12 @@ export default function TabCaracteristicas() {
                             size="small"
                             label="Estatura (metros)"
                             type="number"
+                            inputProps={{ step: '0.01' }}
                             value={caracteristicas.estatura || ''}
                             onChange={(e) => handleChangeSimple('estatura', parseFloat(e.target.value) || 0)}
                             InputLabelProps={{ shrink: true }}
+                            error={errorEstatura}
+                            helperText={errorEstatura ? resultadoEstatura.mensaje : ''}
                         />
                     </Grid>
 
@@ -78,9 +88,12 @@ export default function TabCaracteristicas() {
                             size="small"
                             label="Peso (Libras)"
                             type="number"
+                            inputProps={{ step: '0.1' }}
                             value={caracteristicas.peso || ''}
                             onChange={(e) => handleChangeSimple('peso', parseFloat(e.target.value) || 0)}
                             InputLabelProps={{ shrink: true }}
+                            error={errorPeso}
+                            helperText={errorPeso ? resultadoPeso.mensaje : ''}
                         />
                     </Grid>
 

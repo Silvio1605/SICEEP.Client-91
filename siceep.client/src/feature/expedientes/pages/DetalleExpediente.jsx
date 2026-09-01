@@ -13,7 +13,7 @@ import InfoAcademica from '../components/ver/InfoAcademica';
 import TabDocumentos from '../components/crear/TabDocumentos';
 import ModalImpresion from '../components/ModalImpresion';
 
-import { getExpedienteCompleto, getSelectEstCivil } from '../services/expedienteService';
+import { getExpedienteCompleto, getSelectEstCivil, getEstudios } from '../services/expedienteService';
 import { mapearCompletoADetalle } from '../utils/expedienteMappers';
 
 // Mapa local por si el catálogo no responde
@@ -28,6 +28,7 @@ export default function DetalleExpediente() {
     const [tabValue, setTabValue] = useState(0);
     const [datosExpediente, setDatosExpediente] = useState(null);
     const [datosEmpleado, setDatosEmpleado] = useState(null);
+    const [estudios, setEstudios] = useState([]);
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState(null);
     const [modalAbierto, setModalAbierto] = useState(false);
@@ -62,6 +63,12 @@ export default function DetalleExpediente() {
                 const detalle = mapearCompletoADetalle(dto);
                 detalle.estadoCivil = dto?.persona?.idEstadoCivil ? (civilMap[dto.persona.idEstadoCivil] || 'NO DISPONIBLE') : 'NO DISPONIBLE';
 
+                const estudiosResponse = dto?.persona?.idPersona
+                    ? await getEstudios(dto.persona.idPersona).catch(() => ({ data: [] }))
+                    : null;
+
+                if (!activo) return;
+                setEstudios(estudiosResponse?.data || []);
                 setDatosExpediente(dto);
                 setDatosEmpleado(detalle);
             } catch (err) {
@@ -166,7 +173,7 @@ export default function DetalleExpediente() {
                 {tabValue === 0 && <InfoPersonal data={datosExpediente} />}
                 {tabValue === 1 && <InfoFamiliar data={datosExpediente} />}
                 {tabValue === 2 && <InfoLaboral data={datosExpediente} />}
-                {tabValue === 3 && <InfoAcademica data={datosEmpleado} />}
+                {tabValue === 3 && <InfoAcademica data={datosEmpleado} estudios={estudios} />}
                 {tabValue === 4 && <TabDocumentos expediente={datosExpediente} />}
             </Box>
 

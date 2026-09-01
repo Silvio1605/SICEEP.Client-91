@@ -102,6 +102,8 @@ export const mapearCompletoAFormulario = (dto) => {
 
     return {
         idEmpleado: dto?.idEmpleado,
+        idExpediente: dto?.idExpediente,
+        documentos: dto?.documentos || [],
         persona: {
             idPersona: persona.idPersona,
             pnombre: persona.pnombre || '',

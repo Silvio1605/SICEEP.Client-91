@@ -16,6 +16,7 @@ import TabDatosGenerales from '../components/crear/TabDatosGenerales';
 import TabInfoLaboral from '../components/crear/TabInfoLaboral';
 import TabCaracteristicas from '../components/crear/TabCaracteristicas';
 import TabNucleofamiliar from '../components/crear/TabNucleofamiliar';
+import TabInfoAcademica from '../components/crear/TabInfoAcademica';
 
 import { ExpedienteContext } from './../context/ExpedienteContext';
 import { useProgresoExpediente } from './../hooks/useProgresoExpediente';
@@ -50,6 +51,9 @@ export default function EditarExpediente() {
     const [tabActiva, setTabActiva] = useState(0);
     const [modalValidacion, setModalValidacion] = useState(false);
     const [aviso, setAviso] = useState({ open: false, mensaje: '', severidad: 'success' });
+
+    // La Info. Académica se guarda por separado (Estudios) y no usa "Guardar Cambios"
+    const esTabAcademica = tabActiva === 4;
 
     // Carga el expediente real (GET) y lo deja listo en el contexto para las pestañas
     useEffect(() => {
@@ -151,7 +155,9 @@ export default function EditarExpediente() {
                         Editar Expediente
                     </Typography>
                     <Typography variant="subtitle1" color="text.secondary">
-                        Actualiza los datos del funcionario (la plaza se administra por separado)
+                        {esTabAcademica
+                            ? 'La formación académica se guarda con su propio botón dentro de esta pestaña (no con "Guardar Cambios").'
+                            : 'Actualiza los datos del funcionario (la plaza se administra por separado)'}
                     </Typography>
                 </Box>
                 <Box sx={{
@@ -169,27 +175,41 @@ export default function EditarExpediente() {
                     >
                         Cancelar
                     </Button>
-                    <Button
-                        variant="outlined"
-                        color="info"
-                        startIcon={<FactCheckIcon />}
-                        onClick={() => setModalValidacion(true)}
-                        sx={{ width: { xs: '100%', sm: 'auto' } }}
-                    >
-                        Chequear Datos
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
-                        startIcon={guardando ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
-                        onClick={guardarCambios}
-                        disabled={guardando}
-                        sx={{ width: { xs: '100%', sm: 'auto' } }}
-                    >
-                        {guardando ? 'Guardando...' : 'Guardar Cambios'}
-                    </Button>
+                    {!esTabAcademica && (
+                        <>
+                            <Button
+                                variant="outlined"
+                                color="info"
+                                startIcon={<FactCheckIcon />}
+                                onClick={() => setModalValidacion(true)}
+                                sx={{ width: { xs: '100%', sm: 'auto' } }}
+                            >
+                                Chequear Datos
+                            </Button>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={guardando ? <CircularProgress size={18} color="inherit" /> : <SaveIcon />}
+                                onClick={guardarCambios}
+                                disabled={guardando}
+                                sx={{ width: { xs: '100%', sm: 'auto' } }}
+                            >
+                                {guardando ? 'Guardando...' : 'Guardar Cambios'}
+                            </Button>
+                        </>
+                    )}
                 </Box>
             </Box>
+
+            {esTabAcademica && (
+                <Alert severity="info" variant="outlined" sx={{ mb: 2 }}>
+                    Esta pestaña se guarda de forma independiente con el botón{' '}
+                    <strong>“Guardar Información Académica”</strong>. Los registros académicos se
+                    guardan en la sección de estudios del expediente y se visualizan en el detalle
+                    del expediente (Info. Académica). No se incluyen en “Guardar Cambios” ni en el
+                    “Chequear Datos”, que corresponden a los datos generales y laborales.
+                </Alert>
+            )}
 
             <Paper elevation={2} sx={{ width: '100%', borderRadius: 2 }}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider', backgroundColor: '#f8f9fa', borderRadius: '8px 8px 0 0' }}>
@@ -198,6 +218,7 @@ export default function EditarExpediente() {
                         <Tab label="2 - Info. Laboral *" />
                         <Tab label="3 - Características" />
                         <Tab label="4 - Núcleo Familiar" />
+                        <Tab label="5 - Info. Académica (guardado propio)" />
                     </Tabs>
                 </Box>
 
@@ -205,6 +226,7 @@ export default function EditarExpediente() {
                 <CustomTabPanel value={tabActiva} index={1}><TabInfoLaboral /></CustomTabPanel>
                 <CustomTabPanel value={tabActiva} index={2}><TabCaracteristicas /></CustomTabPanel>
                 <CustomTabPanel value={tabActiva} index={3}><TabNucleofamiliar /></CustomTabPanel>
+                <CustomTabPanel value={tabActiva} index={4}><TabInfoAcademica idPersona={expediente?.persona?.idPersona} /></CustomTabPanel>
             </Paper>
 
             {/* MODAL DE CHEQUEO */}
