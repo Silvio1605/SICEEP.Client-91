@@ -24,7 +24,7 @@ const BotonVerExpediente = ({ idExpediente }) => {
 export const columnsExpedientes = () => {
 
     return [
-        { field: 'id', headerName: 'No.', width: 70 },
+        { field: 'index', headerName: 'No.', width: 70 },
         { field: 'codigo', headerName: 'No. de Expediente', flex: 1 },
         { field: 'nombreCompleto', headerName: 'Nombre Completo', flex: 1.5 },
         { field: 'estructura', headerName: 'Estuctura', flex: 1 },

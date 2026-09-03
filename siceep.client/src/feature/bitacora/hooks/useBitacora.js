@@ -22,7 +22,10 @@ export const useBitacora = () => {
 
         const res = await getBitacora(filtro);
 
-        setHistorial(res.data.data);
+        setHistorial((res.data.data || []).map((item, index) => ({
+            ...item,
+            index: index + 1,
+        })));
     };
 
     useEffect(() => {

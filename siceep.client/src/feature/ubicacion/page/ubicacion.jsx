@@ -60,12 +60,13 @@ export default function Ubicacion() {
     // Notificaciones
     const { mostrarNotificacion } = useNotificacionContext();
 
-    const { data: unidades, search: searchUnidades, page : pagUnidad, totalRegistros : totalUnidad } = useUnidades();
-    const { data: estructuras, search: searchEstructuras, page: pagEstructura, totalRegistros: totalE } = useEstructuras();
+    const { data: unidades, search: searchUnidades, page : pagUnidad, totalRegistros : totalUnidad, loading: loadingUnidades } = useUnidades();
+    const { data: estructuras, search: searchEstructuras, page: pagEstructura, totalRegistros: totalE, loading: loadingEstructuras } = useEstructuras();
     const { data: ubicaciones,
         search: searchUbicaciones,
         page: pagUbicacion,
-        totalRegistros: totalU, registrar, actualizar } = useUbicaciones();
+        totalRegistros: totalU, registrar, actualizar,
+        loading: loadingUbicaciones } = useUbicaciones();
 
     // Estados
     const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
@@ -80,6 +81,15 @@ export default function Ubicacion() {
             case 1: return estructuras;
             case 2: return ubicaciones;
             default: return [];
+        }
+    };
+
+    const getCurrentLoading = () => {
+        switch (selectedTab) {
+            case 0: return loadingUnidades;
+            case 1: return loadingEstructuras;
+            case 2: return loadingUbicaciones;
+            default: return false;
         }
     };
 
@@ -105,26 +115,39 @@ export default function Ubicacion() {
     const getFilteredData = () => {
         const data = getCurrentData();
 
-        if (!searchText.trim()) return data;
+        let result = data;
 
-        const lowerSearch = searchText.toLowerCase();
+        if (searchText.trim()) {
+            const lowerSearch = searchText.toLowerCase();
 
-        switch (selectedTab) {
-            case 0: // Unidades
-            case 1: // Estructuras
-                return data.filter(item =>
-                    (item.descripcion ?? "").toLowerCase().includes(lowerSearch) ||
-                    String(item.codigo ?? "").toLowerCase().includes(lowerSearch)
-                );
-            case 2: // Ubicaciones
-                return data.filter(item =>
-                    (item.estructura ?? "").toLowerCase().includes(lowerSearch) ||
-                    (item.unidad ?? "").toLowerCase().includes(lowerSearch) ||
-                    (item.estado ?? "").toLowerCase().includes(lowerSearch)
-                );
-            default:
-                return data;
+            switch (selectedTab) {
+                case 0: // Unidades
+                case 1: // Estructuras
+                    result = data.filter(item =>
+                        (item.descripcion ?? "").toLowerCase().includes(lowerSearch) ||
+                        String(item.codigo ?? "").toLowerCase().includes(lowerSearch)
+                    );
+                    break;
+                case 2: // Ubicaciones
+                    result = data.filter(item =>
+                        (item.estructura ?? "").toLowerCase().includes(lowerSearch) ||
+                        (item.unidad ?? "").toLowerCase().includes(lowerSearch) ||
+                        (item.estado ?? "").toLowerCase().includes(lowerSearch)
+                    );
+                    break;
+                default:
+                    result = data;
+            }
         }
+
+        const pageSize = 10;
+        const currentPage = getPage();
+
+        // Añadir columna de índice secuencial (No.)
+        return (result || []).map((item, index) => ({
+            ...item,
+            index: (currentPage - 1) * pageSize + index + 1,
+        }));
     };
 
     // Manejadores de eventos
@@ -311,6 +334,7 @@ export default function Ubicacion() {
                         <DataGrid
                             rows={getFilteredData()}
                             columns={getColumns({ handleDelete, handleEdit,selectedTab })}
+                            loading={getCurrentLoading()}
                             pagination
                             paginationMode="server"
                             rowCount={getTotal()}

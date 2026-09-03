@@ -64,7 +64,7 @@ export const getColumns = ({ handleDelete, handleEdit, selectedTab }) => {
     // Si es ubicaciones, construimos el array específico
     if (selectedTab === 2) {
         return [
-            { field: 'id', headerName: 'Id', width: 50 }, // id explícito
+            { field: 'index', headerName: 'No.', width: 60 },
             ...locationColumns,
             actionsColumn(handleDelete),
         ];
@@ -72,7 +72,7 @@ export const getColumns = ({ handleDelete, handleEdit, selectedTab }) => {
 
     // Columnas base para todos los tabs (excepto ubicaciones)
     const baseColumns = [
-        { field: 'id', headerName: 'Id', width: 60 },
+        { field: 'index', headerName: 'No.', width: 60 },
         { field: 'codigo', headerName: 'Código', width: 100 },
         ...(selectedTab === 1
             ? [{ field: 'orden', headerName: 'Orden', flex: 1, minWidth: 60 }]

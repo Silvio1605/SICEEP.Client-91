@@ -1,6 +1,6 @@
 export const columnsBitacora = ({ isMobile }) => [
     {
-        field: 'id', headerName: 'No.', flex: 1, minWidth: 5,
+        field: 'index', headerName: 'No.', flex: 1, minWidth: 5,
         align: 'center', headerAlign: 'center'
     },
     {

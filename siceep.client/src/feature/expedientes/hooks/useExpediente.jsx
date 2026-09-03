@@ -14,9 +14,15 @@ export const useExpediente = () => {
         }
 
         const res = await getExpedientes(filtro);
+        const pagina = res.data.pagina;
+        const paginaActual = Number(pagina) || 1;
+        const pageSize = 10;
 
-        setExpedinetes(res.data.data);
-        setPage(res.data.pagina);
+        setExpedinetes((res.data.data || []).map((item, index) => ({
+            ...item,
+            index: (paginaActual - 1) * pageSize + index + 1,
+        })));
+        setPage(pagina);
         setTotal(res.data.totalRegistros);
     };
 

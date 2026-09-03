@@ -15,7 +15,10 @@ export const useUsuarios = () => {
         filtro.tamañoPagina = 10;
 
         const res = await getUsuarios(filtro);
-        setUsuariosData(res.data.data);
+        setUsuariosData((res.data.data || []).map((item, index) => ({
+            ...item,
+            index: index + 1,
+        })));
 
     };
 

@@ -2,7 +2,8 @@ import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
     Box, Typography, Paper, Button, Divider, Alert, CircularProgress,
     Table, TableHead, TableRow, TableCell, TableBody, IconButton,
-    TextField, Grid, Dialog, DialogTitle, DialogContent, DialogActions
+    TextField, Grid, Dialog, DialogTitle, DialogContent, DialogActions,
+    Stack, Skeleton
 } from '@mui/material';
 import FileUploadOutlinedIcon from '@mui/icons-material/FileUploadOutlined';
 import DownloadOutlinedIcon from '@mui/icons-material/DownloadOutlined';
@@ -215,9 +216,12 @@ export default function TabDocumentos({ expediente }) {
             )}
 
             {cargando && (
-                <Box sx={{ display: 'flex', justifyContent: 'center', py: 3 }}>
-                    <CircularProgress size={28} />
-                </Box>
+                <Stack spacing={1} sx={{ py: 2 }}>
+                    <Skeleton variant="text" width={'35%'} />
+                    <Skeleton variant="rectangular" width={'100%'} height={20} />
+                    <Skeleton variant="rounded" width={'100%'} height={45} />
+                    <Skeleton variant="rounded" width={'100%'} height={45} />
+                </Stack>
             )}
 
             <Paper elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 2 }}>

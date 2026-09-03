@@ -28,7 +28,7 @@ const opcionesImpresionPorDefecto = {
     perfilAcademico: false
 };
 
-// Mapa de estados (numÃ©rico) -> etiqueta/color (igual que columnsExpediente)
+// Mapa de estados (numérico) -> etiqueta/color (igual que columnsExpediente)
 const ESTADO_MAP = {
     1: { label: 'Baja', color: '#d32f2f' },
     2: { label: 'Activo', color: '#2e7d32' },
@@ -44,7 +44,7 @@ const mapearOpcionesImpresion = (opciones) => {
         laboral: opciones.trayectoria,
         academica: opciones.perfilAcademico,
     };
-    // Si ninguna se marcÃ³, se imprime todo
+    // Si ninguna se marcó, se imprime todo
     const algunaMarcada = Object.values(secciones).some(Boolean);
     return algunaMarcada ? secciones : { todo: true };
 };
@@ -54,7 +54,7 @@ export default function BusquedaRapida() {
     const [anchorEl, setAnchorEl] = useState(null);
     const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
 
-    // Modal de opciones de impresiÃ³n
+    // Modal de opciones de impresión
     const [modalImpresionAbierto, setModalImpresionAbierto] = useState(false);
     const [opcionesImpresion, setOpcionesImpresion] = useState(opcionesImpresionPorDefecto);
 
