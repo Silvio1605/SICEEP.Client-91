@@ -8,6 +8,11 @@
 *.suo
 *.user
 *.userosscache
+
+# Environment variables (Vite)
+.env
+.env.*
+!.env.example
 *.sln.docstates
 
 # User-specific files (MonoDevelop/Xamarin Studio)

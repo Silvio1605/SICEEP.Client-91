@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
+﻿import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
-    Box, Typography, Paper, TextField, InputAdornment,
+    Box, Typography, Paper, TextField, InputAdornment, Stack, Skeleton,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
     IconButton, Menu, MenuItem, Dialog, DialogTitle,
     DialogContent, DialogActions, Button, FormGroup, FormControlLabel,
-    Checkbox, Divider, ListItemIcon, TablePagination
+    Checkbox, Divider, ListItemIcon, TablePagination, Alert, CircularProgress
 } from '@mui/material';
 
 import SearchIcon from '@mui/icons-material/Search';
@@ -15,6 +15,11 @@ import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import PrintIcon from '@mui/icons-material/Print';
 import CancelIcon from '@mui/icons-material/Cancel';
 
+import { getExpedientes, getExpedienteCompleto, getEstudios } from '../../expedientes/services/expedienteService';
+import { mapearCompletoADetalle } from '../../expedientes/utils/expedienteMappers';
+import { generarFichaExpedienteURL, obtenerFotoPerfilURL, generarConstanciaURL } from '../../expedientes/services/pdfService.jsx';
+import ModalVistaPreviaPDF from '../../expedientes/components/ModalVistaPreviaPDF';
+
 const opcionesImpresionPorDefecto = {
     fichaCompleta: false,
     infoPersonal: false,
@@ -23,22 +28,92 @@ const opcionesImpresionPorDefecto = {
     perfilAcademico: false
 };
 
-const MOCK_EXPEDIENTES_DATA = [
-    { id: 1, noExp: 'EXP-001', nombre: 'Juan Perez', ubicacion: 'Managua', estado: 'Activo' },
-    { id: 2, noExp: 'EXP-002', nombre: 'Ana Lopez', ubicacion: 'Leon', estado: 'Inactivo' },
-    { id: 3, noExp: 'EXP-003', nombre: 'Carlos Gomez', ubicacion: 'Estelí', estado: 'Activo' },
-];
+// Mapa de estados (numÃ©rico) -> etiqueta/color (igual que columnsExpediente)
+const ESTADO_MAP = {
+    1: { label: 'Baja', color: '#d32f2f' },
+    2: { label: 'Activo', color: '#2e7d32' },
+    3: { label: 'Com/Servicio', color: '#ed6c02' },
+};
+
+// Traduce las opciones del modal (fichaCompleta, etc.) a las que espera el PDF
+const mapearOpcionesImpresion = (opciones) => {
+    if (opciones.fichaCompleta) return { todo: true };
+    const secciones = {
+        personal: opciones.infoPersonal,
+        familiar: opciones.infoFamiliar,
+        laboral: opciones.trayectoria,
+        academica: opciones.perfilAcademico,
+    };
+    // Si ninguna se marcÃ³, se imprime todo
+    const algunaMarcada = Object.values(secciones).some(Boolean);
+    return algunaMarcada ? secciones : { todo: true };
+};
 
 export default function BusquedaRapida() {
+    // Menu flotante / acciones
     const [anchorEl, setAnchorEl] = useState(null);
     const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
+
+    // Modal de opciones de impresiÃ³n
     const [modalImpresionAbierto, setModalImpresionAbierto] = useState(false);
     const [opcionesImpresion, setOpcionesImpresion] = useState(opcionesImpresionPorDefecto);
 
+    // Vista previa del PDF
+    const [generandoPDF, setGenerandoPDF] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState(null);
+    const [vistaPreviaAbierta, setVistaPreviaAbierta] = useState(false);
+    const [nombreDescarga, setNombreDescarga] = useState('Documento.pdf');
+    const fotoUrlRef = useRef(null);
+
+    // Datos reales
+    const [expedientes, setExpedientes] = useState([]);
+    const [total, setTotal] = useState(0);
+    const [cargando, setCargando] = useState(false);
+    const [error, setError] = useState(null);
+    const [busqueda, setBusqueda] = useState('');
     const [page, setPage] = useState(0);
-    const [rowsPerPage, setRowsPerPage] = useState(10);
+    // El backend pagina de a 10 fijos (PaginacionDto.TamaÃ±oPagina = 10)
+    const ROWS_PER_PAGE = 10;
 
     const isMenuOpen = Boolean(anchorEl);
+
+    // Carga de expedientes reales
+    const cargarExpedientes = useCallback(async (termino, pagina) => {
+        setCargando(true);
+        setError(null);
+        try {
+            const filtro = {
+                busqueda: termino && termino.trim() !== '' ? termino.trim() : null,
+                estado: null,
+                estructura: null,
+                cargo: null,
+                pagina: pagina + 1,
+            };
+            const res = await getExpedientes(filtro);
+            setExpedientes(res?.data?.data || []);
+            setTotal(res?.data?.totalRegistros || 0);
+        } catch (err) {
+            setError(err?.message || 'Error al cargar los expedientes.');
+            setExpedientes([]);
+            setTotal(0);
+        } finally {
+            setCargando(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            const termino = busqueda && busqueda.trim() !== '' ? busqueda.trim() : null;
+            cargarExpedientes(termino, page);
+        }, 400);
+        return () => clearTimeout(timer);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [busqueda, page]);
+
+    const manejarBusqueda = (event) => {
+        setBusqueda(event.target.value);
+        setPage(0);
+    };
 
     const abrirMenuOpciones = useCallback((event, empleado) => {
         setAnchorEl(event.currentTarget);
@@ -57,35 +132,83 @@ export default function BusquedaRapida() {
     const cerrarModal = useCallback(() => {
         setModalImpresionAbierto(false);
         setOpcionesImpresion(opcionesImpresionPorDefecto);
-        setEmpleadoSeleccionado(null);
     }, []);
 
     const manejarCambioCheckbox = useCallback((event) => {
         const { name, checked } = event.target;
-        setOpcionesImpresion(prev => ({
+        setOpcionesImpresion((prev) => ({
             ...prev,
-            [name]: checked
+            [name]: checked,
         }));
     }, []);
 
-    const mandarAImprimir = async () => {
+    const cargarExpedienteCompleto = async (empleado) => {
+        const dto = (await getExpedienteCompleto(empleado?.id)).data;
+        const detalle = mapearCompletoADetalle(dto);
+        const estudios = dto?.persona?.idPersona
+            ? (await getEstudios(dto.persona.idPersona).catch(() => ({ data: [] }))).data
+            : [];
+        return { dto, detalle, estudios };
+    };
+
+    const generarConstancia = async () => {
         try {
-            console.log("Generando documento para: ", empleadoSeleccionado?.nombre);
-            cerrarModal();
-        } catch (error) {
-            console.error("Error al generar el PDF: ", error);
+            cerrarMenuOpciones();
+            setGenerandoPDF(true);
+            setVistaPreviaAbierta(true);
+
+            const { dto } = await cargarExpedienteCompleto(empleadoSeleccionado);
+            const codigo = dto?.codigo || empleadoSeleccionado?.codigo || 'sincodigo';
+            setNombreDescarga(`Constancia-${codigo}.pdf`);
+
+            const url = await generarConstanciaURL({ ...dto }, {});
+            setPdfUrl(url);
+        } catch (err) {
+            console.error("Error al generar la constancia: ", err);
+            setVistaPreviaAbierta(false);
+            setPdfUrl(null);
+            if (typeof alert === 'function') alert(`Error al generar la constancia: ${err?.message || 'desconocido'}`);
+        } finally {
+            setGenerandoPDF(false);
         }
     };
 
-    
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage);
+    const mandarAImprimir = async () => {
+        try {
+            cerrarModal();
+            setGenerandoPDF(true);
+            setVistaPreviaAbierta(true);
+
+            const { dto, detalle, estudios } = await cargarExpedienteCompleto(empleadoSeleccionado);
+            setNombreDescarga(`Ficha-Expediente-${dto?.codigo || 'sin-codigo'}.pdf`);
+
+            const fotoUrl = await obtenerFotoPerfilURL(dto);
+            fotoUrlRef.current = fotoUrl;
+
+            const opcionesPDF = mapearOpcionesImpresion(opcionesImpresion);
+            const url = await generarFichaExpedienteURL({ ...dto, ...detalle }, estudios, opcionesPDF, fotoUrl);
+            setPdfUrl(url);
+        } catch (err) {
+            console.error("Error al generar el PDF: ", err);
+            setVistaPreviaAbierta(false);
+            setPdfUrl(null);
+            if (typeof alert === 'function') alert(`Error al generar el documento: ${err?.message || 'desconocido'}`);
+        } finally {
+            setGenerandoPDF(false);
+        }
     };
 
-    const handleChangeRowsPerPage = (event) => {
-        setRowsPerPage(parseInt(event.target.value, 10));
-        setPage(0);
+    const cerrarVistaPrevia = () => {
+        if (pdfUrl) URL.revokeObjectURL(pdfUrl);
+        if (fotoUrlRef.current) {
+            URL.revokeObjectURL(fotoUrlRef.current);
+            fotoUrlRef.current = null;
+        }
+        setPdfUrl(null);
+        setVistaPreviaAbierta(false);
     };
+
+    const handleChangePage = (event, newPage) => setPage(newPage);
 
     return (
         <Box sx={{ width: '100%', pb: 5 }}>
@@ -96,12 +219,13 @@ export default function BusquedaRapida() {
                 Consulta ágil de expedientes y generación de reportes.
             </Typography>
 
-            
             <Box sx={{ mb: 4 }}>
                 <TextField
                     fullWidth
                     size="small"
                     placeholder="Buscar por nombre del propietario"
+                    value={busqueda}
+                    onChange={manejarBusqueda}
                     sx={{ backgroundColor: '#fff' }}
                     InputProps={{
                         startAdornment: <InputAdornment position="start"><SearchIcon color="action" /></InputAdornment>
@@ -109,12 +233,14 @@ export default function BusquedaRapida() {
                 />
             </Box>
 
-           
             <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
                 Registros de expedientes
             </Typography>
 
-            
+            {error && (
+                <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+            )}
+
             <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid #e0e0e0', borderRadius: 1 }}>
                 <Table size="medium">
                     <TableHead sx={{ backgroundColor: '#fafafa' }}>
@@ -122,57 +248,70 @@ export default function BusquedaRapida() {
                             <TableCell sx={{ color: 'text.secondary' }}>No.</TableCell>
                             <TableCell sx={{ color: 'text.secondary' }}>Número de Expediente</TableCell>
                             <TableCell sx={{ color: 'text.secondary' }}>Nombre Completo</TableCell>
-                            <TableCell sx={{ color: 'text.secondary' }}>Ubicación</TableCell>
+                            <TableCell sx={{ color: 'text.secondary' }}>Estructura</TableCell>
                             <TableCell sx={{ color: 'text.secondary' }}>Estado</TableCell>
                             <TableCell align="center" sx={{ color: 'text.secondary' }}>Acciones</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {MOCK_EXPEDIENTES_DATA
-                            .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            .map((row) => (
-                                <TableRow key={row.id} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell>{row.id}</TableCell>
-                                    <TableCell>{row.noExp}</TableCell>
-                                    <TableCell>{row.nombre}</TableCell>
-                                    <TableCell>{row.ubicacion}</TableCell>
-                                    <TableCell>
-                                        <Typography
-                                            variant="body2"
-                                            fontWeight="bold"
-                                            color={row.estado === 'Activo' ? '#2e7d32' : '#d32f2f'}
-                                        >
-                                            {row.estado}
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <IconButton
-                                            size="small"
-                                            color="primary"
-                                            onClick={(e) => abrirMenuOpciones(e, row)}
-                                        >
-                                            <MoreVertIcon />
-                                        </IconButton>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                        {cargando ? (
+                            <TableRow>
+                                <TableCell colSpan={6}>
+                                    <Stack spacing={1} sx={{ py: 2 }}>
+                                        <Skeleton variant="rectangular" width={'100%'} height={20} />
+                                        <Skeleton variant="rounded" width={'100%'} height={45} />
+                                    </Stack>
+                                </TableCell>
+                            </TableRow>
+                        ) : expedientes.length === 0 ? (
+                            <TableRow>
+                                <TableCell colSpan={6} align="center" sx={{ py: 4, color: 'text.secondary' }}>
+                                    No se encontraron expedientes
+                                </TableCell>
+                            </TableRow>
+                        ) : (
+                            expedientes.map((row, index) => {
+                                const estado = ESTADO_MAP[row.estado] || { label: 'Desconocido', color: '#757575' };
+                                return (
+                                    <TableRow key={row.id ?? index} hover sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell>{page * ROWS_PER_PAGE + index + 1}</TableCell>
+                                        <TableCell>{row.codigo || row.noExp || 'S/D'}</TableCell>
+                                        <TableCell>{row.nombreCompleto || row.nombre || 'S/D'}</TableCell>
+                                        <TableCell>{row.estructura || row.ubicacion || 'S/D'}</TableCell>
+                                        <TableCell>
+                                            <Typography variant="body2" fontWeight="bold" color={estado.color}>
+                                                {estado.label}
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            <IconButton
+                                                size="small"
+                                                color="primary"
+                                                onClick={(e) => abrirMenuOpciones(e, row)}
+                                            >
+                                                <MoreVertIcon />
+                                            </IconButton>
+                                        </TableCell>
+                                    </TableRow>
+                                );
+                            })
+                        )}
                     </TableBody>
                 </Table>
 
-                
                 <TablePagination
-                    rowsPerPageOptions={[10, 25, 50]}
+                    rowsPerPageOptions={[10]}
                     component="div"
-                    count={MOCK_EXPEDIENTES_DATA.length}
-                    rowsPerPage={rowsPerPage}
+                    count={total}
+                    rowsPerPage={ROWS_PER_PAGE}
                     page={page}
                     onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
                     labelRowsPerPage="Filas:"
-                    labelDisplayedRows={({ from, to, count }) => `${from}–${to} of ${count}`}
+                    labelDisplayedRows={({ from, to, count }) => `${from}–${to} de ${count}`}
                 />
             </TableContainer>
 
+            {/* Menú flotante de acciones */}
             <Menu
                 anchorEl={anchorEl}
                 open={isMenuOpen}
@@ -185,7 +324,7 @@ export default function BusquedaRapida() {
                     <ListItemIcon><DescriptionIcon fontSize="small" color="primary" /></ListItemIcon>
                     Ficha
                 </MenuItem>
-                <MenuItem onClick={cerrarMenuOpciones}>
+                <MenuItem onClick={generarConstancia}>
                     <ListItemIcon><AssignmentIcon fontSize="small" color="secondary" /></ListItemIcon>
                     Constancia
                 </MenuItem>
@@ -196,6 +335,7 @@ export default function BusquedaRapida() {
                 </MenuItem>
             </Menu>
 
+            {/* Modal de opciones de impresiÃ³n */}
             <Dialog open={modalImpresionAbierto} onClose={cerrarModal} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main', fontWeight: 'bold' }}>
                     <PrintIcon /> Opciones de Impresión
@@ -214,11 +354,11 @@ export default function BusquedaRapida() {
 
                         <FormControlLabel
                             control={<Checkbox checked={opcionesImpresion.infoPersonal} onChange={manejarCambioCheckbox} name="infoPersonal" disabled={opcionesImpresion.fichaCompleta} />}
-                            label="Información Personal"
+                            label="InformaciÃ³n Personal"
                         />
                         <FormControlLabel
                             control={<Checkbox checked={opcionesImpresion.infoFamiliar} onChange={manejarCambioCheckbox} name="infoFamiliar" disabled={opcionesImpresion.fichaCompleta} />}
-                            label="Información Familiar"
+                            label="InformaciÃ³n Familiar"
                         />
                         <FormControlLabel
                             control={<Checkbox checked={opcionesImpresion.trayectoria} onChange={manejarCambioCheckbox} name="trayectoria" disabled={opcionesImpresion.fichaCompleta} />}
@@ -226,7 +366,7 @@ export default function BusquedaRapida() {
                         />
                         <FormControlLabel
                             control={<Checkbox checked={opcionesImpresion.perfilAcademico} onChange={manejarCambioCheckbox} name="perfilAcademico" disabled={opcionesImpresion.fichaCompleta} />}
-                            label="Perfil Académico y Cursos"
+                            label="Perfil AcadÃ©mico y Cursos"
                         />
                     </FormGroup>
                 </DialogContent>
@@ -239,6 +379,15 @@ export default function BusquedaRapida() {
                     </Button>
                 </DialogActions>
             </Dialog>
+
+            {/* Vista previa del PDF */}
+            <ModalVistaPreviaPDF
+                abierto={vistaPreviaAbierta}
+                pdfUrl={pdfUrl}
+                nombreDescarga={nombreDescarga}
+                cargando={generandoPDF}
+                alCerrar={cerrarVistaPrevia}
+            />
         </Box>
     );
 }

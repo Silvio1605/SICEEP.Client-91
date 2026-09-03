@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, Paper, Button, Tabs, Tab, CircularProgress, Alert } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import EditIcon from '@mui/icons-material/Edit';
@@ -12,9 +12,11 @@ import InfoLaboral from '../components/ver/InfoLaboral';
 import InfoAcademica from '../components/ver/InfoAcademica';
 import TabDocumentos from '../components/crear/TabDocumentos';
 import ModalImpresion from '../components/ModalImpresion';
+import ModalVistaPreviaPDF from '../components/ModalVistaPreviaPDF';
 
 import { getExpedienteCompleto, getSelectEstCivil, getEstudios } from '../services/expedienteService';
 import { mapearCompletoADetalle } from '../utils/expedienteMappers';
+import { generarFichaExpedienteURL, obtenerFotoPerfilURL } from '../services/pdfService.jsx';
 
 // Mapa local por si el catálogo no responde
 const ESTADOS_CIVIL_FALLBACK = { 1: 'SOLTERO', 2: 'CASADO', 1002: 'UNION DE HECHO' };
@@ -101,9 +103,39 @@ export default function DetalleExpediente() {
         navigate(`/index/${rutas[newValue]}/${expedienteId}`);
     };
     // ACCIONES
-    const ejecutarImpresionFinal = (opcionesSeleccionadas) => {
-        console.log("El usuario solicitó imprimir:", opcionesSeleccionadas);
-        alert("Petición de impresión enviada. Revisa la consola.");
+    const [generandoPDF, setGenerandoPDF] = useState(false);
+    const [pdfUrl, setPdfUrl] = useState(null);
+    const [vistaPreviaAbierta, setVistaPreviaAbierta] = useState(false);
+    const fotoUrlRef = useRef(null);
+
+    const ejecutarImpresionFinal = async (opcionesSeleccionadas) => {
+        try {
+            setGenerandoPDF(true);
+            setVistaPreviaAbierta(true);
+            const fotoUrl = await obtenerFotoPerfilURL(datosExpediente);
+            fotoUrlRef.current = fotoUrl;
+            const url = await generarFichaExpedienteURL(datosExpediente, estudios, opcionesSeleccionadas, fotoUrl);
+            setPdfUrl(url);
+        } catch (err) {
+            const mensaje = err?.message || 'No se pudo generar el documento PDF.';
+            if (typeof alert === 'function') alert(`Error al generar el documento: ${mensaje}`);
+            setVistaPreviaAbierta(false);
+            setPdfUrl(null);
+        } finally {
+            setGenerandoPDF(false);
+        }
+    };
+
+    const cerrarVistaPrevia = () => {
+        if (pdfUrl) {
+            URL.revokeObjectURL(pdfUrl);
+        }
+        if (fotoUrlRef.current) {
+            URL.revokeObjectURL(fotoUrlRef.current);
+            fotoUrlRef.current = null;
+        }
+        setPdfUrl(null);
+        setVistaPreviaAbierta(false);
     };
 
     const irAEditar = () => {
@@ -140,7 +172,7 @@ export default function DetalleExpediente() {
                     Volver al listado
                 </Button>
                 <Box display="flex" gap={2}>
-                    <Button variant="outlined" startIcon={<PrintIcon />} onClick={() => setModalAbierto(true)}>
+                    <Button variant="outlined" startIcon={<PrintIcon />} onClick={() => setModalAbierto(true)} disabled={generandoPDF}>
                         Imprimir
                     </Button>
                     <Button variant="contained" startIcon={<EditIcon />} onClick={irAEditar}>
@@ -182,6 +214,15 @@ export default function DetalleExpediente() {
                 abierto={modalAbierto}
                 alCerrar={() => setModalAbierto(false)}
                 alImprimir={ejecutarImpresionFinal}
+            />
+
+            {/* Vista Previa del PDF antes de descargar */}
+            <ModalVistaPreviaPDF
+                abierto={vistaPreviaAbierta}
+                pdfUrl={pdfUrl}
+                nombreDescarga={`Ficha-Expediente-${datosExpediente?.numeroExpediente || 'sin-numero'}.pdf`}
+                cargando={generandoPDF}
+                alCerrar={cerrarVistaPrevia}
             />
 
         </Box>

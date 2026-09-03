@@ -6,7 +6,7 @@ import { cerrarSesionPorTokenExpirado } from './../utils/sesion';
 const esRutaAuth = (url) => /Auth\//.test(url || '');
 
 const api = axios.create({
-    baseURL: 'https://localhost:7109/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://localhost:8444/api',
     withCredentials: true,
     timeout: 20000,
     headers: {
