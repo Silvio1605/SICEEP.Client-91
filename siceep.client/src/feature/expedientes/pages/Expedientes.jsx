@@ -10,10 +10,11 @@ import Stack from '@mui/material/Stack';
 import { columnsExpedientes } from '../components/columns/columnsExpediente';
 import FiltroExpediente from '../components/FiltroExpediente';
 import { useExpediente } from '../hooks/useExpediente';
+import { useScreenType } from '../../../shared/hooks/useScreenType';
 
 export default function Expedientes() {
 
-    //const { isMobile } = useScreenType();
+    const { isMobile } = useScreenType();
     const [searchParams, setSearchParams] = useSearchParams();
     const { expedientes, buscar, page, total } = useExpediente();
 
@@ -22,6 +23,8 @@ export default function Expedientes() {
         estado: searchParams.get("estado") || "",
         estructura: searchParams.get("estructura") || "",
         cargo: searchParams.get("cargo") || "",
+        cedula: searchParams.get("cedula") || "",
+        numInss: searchParams.get("numInss") || "",
         pagina: 1
     }), [searchParams]);
 
@@ -52,8 +55,8 @@ export default function Expedientes() {
     }, [filtro]);
 
     const registros = useMemo(() => {
-        return columnsExpedientes();
-    }, []);
+        return columnsExpedientes(isMobile);
+    }, [isMobile]);
 
     return (
         <Box sx={{ width: '100%', pb: 5 }}>

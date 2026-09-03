@@ -1,4 +1,4 @@
-﻿import { IconButton, Tooltip } from '@mui/material';
+﻿import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 import { useNavigate } from 'react-router-dom';
 
@@ -20,41 +20,87 @@ const BotonVerExpediente = ({ idExpediente }) => {
     );
 };
 
+// Celda combinada: etiqueta pequeña en gris + valor en la línea siguiente
+// eslint-disable-next-line react-refresh/only-export-components
+const CeldaDoble = ({ etiqueta, valor, valorColor }) => (
+    <Box sx={{ display: 'flex', flexDirection: 'column', py: 0.5, minWidth: 0 }}>
+        <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1.2 }}>
+            {etiqueta}
+        </Typography>
+        <Typography
+            variant="body2"
+            sx={{ color: valorColor || 'text.primary', fontWeight: valorColor ? 'bold' : 'normal', lineHeight: 1.3 }}
+            noWrap
+        >
+            {valor || 'S/D'}
+        </Typography>
+    </Box>
+);
+
 // columnas de expediente
-export const columnsExpedientes = () => {
+export const columnsExpedientes = (isMobile = false) => {
+    const estadoMap = {
+        1: { label: 'Baja', color: 'error.main' },
+        2: { label: 'Activo', color: 'success.main' },
+        3: { label: 'Com/Servicio', color: 'warning.main' },
+    };
 
-    return [
-        { field: 'index', headerName: 'No.', width: 70 },
-        { field: 'codigo', headerName: 'No. de Expediente', flex: 1 },
-        { field: 'nombreCompleto', headerName: 'Nombre Completo', flex: 1.5 },
-        { field: 'estructura', headerName: 'Estuctura', flex: 1 },
+    // En móvil se prioriza la información esencial; el resto queda oculto
+    // para que la tabla no se rompa en pantallas pequeñas.
+    const columnasEscritorio = [
+        { field: 'index', headerName: 'No.', width: 70, sortable: false, filterable: false },
+        ...(isMobile ? [] : [{ field: 'codigo', headerName: 'No. de Expediente', flex: 0.9, sortable: false, filterable: false }]),
+        { field: 'nombreCompleto', headerName: 'Nombre Completo', flex: 1.2, sortable: false, filterable: false },
+        ...(isMobile ? [] : [
+            {
+                field: 'identificacion',
+                headerName: 'Identificación',
+                flex: 1,
+                sortable: false,
+                filterable: false,
+                renderCell: (params) => (
+                    <CeldaDoble etiqueta={`Cédula: ${params.row.cedula || 'S/D'}`} valor={`INSS: ${params.row.numInss || 'S/D'}`} />
+                ),
+            },
+            {
+                field: 'laboral',
+                headerName: 'Cargo / Estructura',
+                flex: 1.2,
+                sortable: false,
+                filterable: false,
+                renderCell: (params) => (
+                    <CeldaDoble etiqueta={params.row.cargo || 'S/D'} valor={params.row.estructura || 'S/D'} />
+                ),
+            },
+        ]),
         {
-            field: 'estado',
-            headerName: 'Estado',
-            width: 120,
-            renderCell: (params) => {
-                const estadoMap = {
-                    1: { label: 'Baja', color: 'red' },
-                    2: { label: 'Activo', color: 'green' },
-                    3: { label: 'Com/Servicio', color: 'orange' },
-                };
-                const estado = estadoMap[params.row.estado] || { label: 'Desconocido', color: 'gray' };
-
-                return (
-                    <span style={{ color: estado.color, fontWeight: 'bold' }}>
-                        {estado.label}
-                    </span>
-                );
-            }
-        },
-        {
-            field: 'acciones',
-            headerName: 'Acciones',
-            width: 100,
+            field: 'ingreso',
+            headerName: isMobile ? 'Estado' : 'Ingreso / Estado',
+            flex: isMobile ? 0.8 : 1,
             sortable: false,
-            renderCell: (params) => (
-                <BotonVerExpediente idExpediente={params.row.id} />
-            )
+            filterable: false,
+            renderCell: (params) => {
+                const est = estadoMap[params.row.estado] || { label: 'Desconocido', color: 'text.secondary' };
+                if (isMobile) {
+                    return <Typography variant="body2" sx={{ color: est.color, fontWeight: 'bold' }}>{est.label}</Typography>;
+                }
+                const fecha = params.row.fecha ? String(params.row.fecha).slice(0, 10) : 'S/D';
+                return <CeldaDoble etiqueta={`Ingreso: ${fecha}`} valor={est.label} valorColor={est.color} />;
+            },
         },
     ];
+
+    return [
+        ...columnasEscritorio,
+        {
+            field: 'acciones',
+            headerName: '',
+            width: 70,
+            sortable: false,
+            filterable: false,
+            renderCell: (params) => (
+                <BotonVerExpediente idExpediente={params.row.id} />
+            ),
+        },
+    ].filter(Boolean);
 };

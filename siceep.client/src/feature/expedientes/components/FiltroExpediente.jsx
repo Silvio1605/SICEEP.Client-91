@@ -17,6 +17,8 @@ export default function FiltroExpediente({ filtro, actualizarFiltro, buscar }) {
     const [inputFiltro, setInputFiltro] = useState(filtro.busqueda || "");
     const [inputEstructura, setInputEstructura] = useState(filtro.estructura || "");
     const [inputCargo, setInputCargo] = useState(filtro.cargo || "");
+    const [inputCedula, setInputCedula] = useState(filtro.cedula || "");
+    const [inputNumInss, setInputNumInss] = useState(filtro.numInss || "");
     
     const [activeFilter, setActiveFilter] = useState(false);
 
@@ -28,6 +30,8 @@ export default function FiltroExpediente({ filtro, actualizarFiltro, buscar }) {
             busqueda: inputFiltro,
             estructura: activeFilter ? inputEstructura : "",
             cargo: activeFilter ? inputCargo : "",
+            cedula: activeFilter ? inputCedula : "",
+            numInss: activeFilter ? inputNumInss : "",
             estado: activeFilter ? filtro.estado : null
         });
         buscar(filtro);
@@ -136,6 +140,40 @@ export default function FiltroExpediente({ filtro, actualizarFiltro, buscar }) {
                                 placeholder="Buscar por Cargo"
                                 value={inputCargo}
                                 onChange={(e) => setInputCargo(e.target.value)}
+                            />
+                        </Box>
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: '200px' }}>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            border: '1px solid #ced4da',
+                            borderRadius: 1,
+                            backgroundColor: '#ffffff',
+                            px: 1, py: 0.5
+                        }}>
+                            <InputBase
+                                sx={{ ml: 1, flex: 1 }}
+                                placeholder="Buscar por No. Cédula"
+                                value={inputCedula}
+                                onChange={(e) => setInputCedula(e.target.value)}
+                            />
+                        </Box>
+                    </Box>
+                    <Box sx={{ flex: 1, minWidth: '200px' }}>
+                        <Box sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            border: '1px solid #ced4da',
+                            borderRadius: 1,
+                            backgroundColor: '#ffffff',
+                            px: 1, py: 0.5
+                        }}>
+                            <InputBase
+                                sx={{ ml: 1, flex: 1 }}
+                                placeholder="Buscar por No. INSS"
+                                value={inputNumInss}
+                                onChange={(e) => setInputNumInss(e.target.value)}
                             />
                         </Box>
                     </Box>

@@ -103,16 +103,7 @@ export default function InfoPersonal({ data }) {
                             <CampoInfo etiqueta="Cédula" valor={persona.cedula} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={4}>
-                            <CampoInfo etiqueta="Primer Nombre" valor={persona.pnombre} />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <CampoInfo etiqueta="Segundo Nombre" valor={persona.snombre} />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <CampoInfo etiqueta="Primer Apellido" valor={persona.papellido} />
-                        </Grid>
-                        <Grid item xs={12} sm={6} md={4}>
-                            <CampoInfo etiqueta="Segundo Apellido" valor={persona.sapellido} />
+                            <CampoInfo etiqueta="Nombre Completo" valor={nombreCompletoPersona(persona)} />
                         </Grid>
                         <Grid item xs={12} sm={6} md={4}>
                             <CampoInfo etiqueta="Sexo" valor={nombreSexo(persona.sexo)} />
