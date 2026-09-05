@@ -1,4 +1,4 @@
-// Ayudante: normaliza fechas del backend a 'YYYY-MM-DD' (lo que entienden los inputs date)
+// normaliza fechas del backend a 'YYYY-MM-DD' (lo que entienden los inputs date)
 export const aISO = (valor) => {
     if (!valor) return '';
     if (valor instanceof Date && !Number.isNaN(valor.getTime())) return valor.toISOString().slice(0, 10);
