@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, Divider } from "@mui/material";
-import { styled } from '@mui/material/styles';
-import Avatar from '@mui/material/Avatar';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import LockClockIcon from '@mui/icons-material/LockClock';
-import Confirm from '../../../../shared/components/Confirm';
-import Chip from '@mui/material/Chip';
-import Stack from '@mui/material/Stack';
+import { Box, Typography, Divider, Avatar, Chip } from "@mui/material";
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import PersonIcon from '@mui/icons-material/Person';
+import FmdGoodIcon from '@mui/icons-material/FmdGood';
+import WorkIcon from '@mui/icons-material/Work';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import LockResetIcon from '@mui/icons-material/LockReset';
 // servicios
 import { useNotificacionContext } from '../../../../providers/Notificacion/useNotificacionContext';
 import { useBusquedaContext } from '../../../../providers/BusquedaUsers/useBusquedaContext';
@@ -15,21 +16,10 @@ import { usePerfil } from '../../hooks/usePerfil';
 import { usePermisosContext } from '../../../../providers/Permisos/usePermisoContext';
 import { useRol } from '../../hooks/useRol';
 import { useUsuarios } from '../../hooks/useUsuarios';
-import AppButton from '../../../../shared/components/AppButton';
+import Confirm from '../../../../shared/components/Confirm';
 import CardRol from './CardRol';
 import CardCuenta from './CardCuenta';
 import CardReestablecer from './CardReestablecer';
-
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: '#fff',
-    ...theme.typography.body2,
-    padding: theme.spacing(1),
-    textAlign: 'left',
-    color: (theme.vars ?? theme).palette.text.secondary,
-    ...theme.applyStyles('dark', {
-        backgroundColor: '#1A2027',
-    }),
-}));
 
 const obtenerEstado = (estado) => {
     switch (estado) {
@@ -44,6 +34,29 @@ const obtenerEstado = (estado) => {
     }
 };
 
+const getIniciales = (nombre) => {
+    if (!nombre) return '?';
+    const partes = nombre.trim().split(/\s+/).filter(Boolean);
+    if (partes.length === 1) return partes[0][0].toUpperCase();
+    return (partes[0][0] + partes[partes.length - 1][0]).toUpperCase();
+};
+
+const estilosAcordeon = {
+    mb: 2,
+    borderRadius: 3,
+    overflow: 'hidden',
+    boxShadow: 'none',
+    border: '1px solid',
+    borderColor: 'divider',
+    '&:before': { display: 'none' },
+};
+
+const tituloSeccion = (estilos) => ({
+    fontWeight: 700,
+    color: 'text.primary',
+    ...(estilos || {})
+});
+
 function CardUsuario({ actualizar }) {
     // Funciones para manejo de fechas
     const { permisosHook } = usePermisosContext();
@@ -57,6 +70,12 @@ function CardUsuario({ actualizar }) {
     const [rol, setRol] = useState("");
     const [EstadoComp, setEstadoComp] = useState();
     const [dialogo, setDialogo] = useState(null);
+
+    // Acordeón: solo una sección abierta a la vez
+    const [expanded, setExpanded] = useState('info');
+    const handleToggle = (panel) => (event, isExpanded) => {
+        setExpanded(isExpanded ? panel : false);
+    };
 
     // Funciones para abrir los diálogos de confirmación
     const abrirConfirmRol = () => setDialogo("confirmRol");
@@ -109,125 +128,140 @@ function CardUsuario({ actualizar }) {
 
         // Información del Usuario
         <Box sx={{ flexGrow: 1, mb: 1 }}>
-            <Grid container spacing={2}>
-                <Grid size={12}>
-                    <Box
+            {/* Información del Usuario */}
+            <Accordion
+                expanded={expanded === 'info'}
+                onChange={handleToggle('info')}
+                disableGutters
+                sx={estilosAcordeon}
+            >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon sx={{ color: '#fff' }} />}
+                    sx={{
+                        background: 'linear-gradient(135deg, #1565C0 0%, #42A5F5 100%)',
+                        color: '#fff',
+                        p: 2.5,
+                        '& .MuiAccordionSummary-content': { alignItems: 'center', m: 0 }
+                    }}
+                >
+                    <Avatar
                         sx={{
-                            bgcolor: "background.paper",
-                            borderBottom: 1,
-                            borderColor: "divider",
-                            boxShadow: 2,
-                            px: 4,
-                            pb: 1,
-                            pt: 1,
-                            mb: 2,
-                            borderRadius: '12px 12px 0 0',
+                            width: 64,
+                            height: 64,
+                            mr: 2.5,
+                            bgcolor: '#fff',
+                            color: '#1565C0',
+                            fontWeight: 700,
+                            fontSize: '1.6rem',
+                            boxShadow: 3
                         }}
                     >
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                fontWeight: 700,
-                                color: '#1565C0',
-                                letterSpacing: '0.5px',
-                                textTransform: 'uppercase',
-                                fontSize: '1rem',
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 1,
-                                '&::before': {
-                                    content: '""',
-                                    width: '4px',
-                                    height: '20px',
-                                    backgroundColor: '#1565C0',
-                                    borderRadius: '2px',
-                                    display: 'inline-block',
-                                }
-                            }}
-                        >
-                            Información del Usuario
+                        {getIniciales(perfil.usuario?.usuario || perfil.usuario?.propietario)}
+                    </Avatar>
+
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                            <Typography variant="h6" sx={{ fontWeight: 700, color: '#fff' }} noWrap>
+                                {perfil.usuario?.usuario || 'Usuario'}
+                            </Typography>
+                            {obtenerEstado(EstadoComp)}
+                        </Box>
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.85)' }} noWrap>
+                            {perfil.usuario?.propietario}
                         </Typography>
                     </Box>
-                    <Item>
-                        <Box sx={{
-                            p: 2,
-                            bgcolor: 'background.paper',
-                            borderRadius: '0 0 12px 12px',
-                            transition: 'all 0.3s ease',
-                            '&:hover': {
-                                boxShadow: 3,
-                            }
-                        }}>
-                            <Box display="flex" alignItems="center" sx={{ pl: 1 }}>
+                </AccordionSummary>
 
-                                {/* Avatar */}
-                                <Avatar
-                                    alt="user"
-                                    src="/image/default-user.jpg"
-                                    sx={{
-                                        width: 80,
-                                        height: 80,
-                                        border: '3px',
-                                        boxShadow: 2
-                                    }}
-                                />
+                <AccordionDetails sx={{ p: 2.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <PersonIcon fontSize="small" color="primary" />
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            <strong>Propietario:</strong>
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {perfil.usuario?.propietario || '—'}
+                        </Typography>
+                    </Box>
 
-                                {/* Textos */}
-                                <Box sx={{ ml: 3, flex: 1 }}>
-                                    <Box sx={{ mb: 1.5 }}>
-                                        <Stack spacing={1} sx={{ alignItems: 'flex-start' }}>
-                                            <Stack direction="row" spacing={2} alignItems="center" flexWrap="wrap">
-                                                <Typography variant="h5" sx={{ fontWeight: 700, color: '#1a1a1a' }}>
-                                                    {perfil.usuario?.usuario}
-                                                </Typography>
-                                                {obtenerEstado(EstadoComp)}
-                                            </Stack>
-                                        </Stack>
-                                    </Box>
+                    <Divider sx={{ my: 1.5 }} />
 
-                                    <Divider sx={{ my: 1.5 }} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <FmdGoodIcon fontSize="small" color="action" />
+                        <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            <strong>Ubicado en:</strong>
+                        </Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                            {perfil.estructura || 'No asignado'}
+                        </Typography>
+                    </Box>
+                </AccordionDetails>
+            </Accordion>
 
-                                    <Box sx={{ mt: 1.5 }}>
-                                        <Box display="flex" alignItems="baseline" sx={{ mb: 1 }}>
-                                            <Typography
-                                                variant="body2"
-                                                sx={{
-                                                    fontWeight: 700,
-                                                    color: '#1565C0',
-                                                    minWidth: '100px',
-                                                    fontSize: '0.85rem'
-                                                }}
-                                            >
-                                                Propietario:
-                                            </Typography>
-                                            <Typography variant="body2" sx={{ color: '#424242', fontWeight: 500 }}>
-                                                {perfil.usuario?.propietario}
-                                            </Typography>
-                                        </Box>
-                                    </Box>
-                                </Box>
-                            </Box>
-                        </Box>
-                        <Typography variant="caption" color="primary" fontWeight="bold">Ubicado en:</Typography>
-                        <Typography variant="body2">{perfil.estructura || 'No asignado'}</Typography>
-                    </Item>
-                </Grid>
-                <Grid size={12}>
-                    <Item>
-                        <CardRol abrirConfirmRol={abrirConfirmRol} rol={rol} setRol={setRol}></CardRol>
-                    </Item>
-                </Grid>
-                <Grid size={12}>
-                    <Item>
-                        <CardCuenta perfil={perfil} reload={reload} abrirConfirmDes={abrirConfirmDes} EstadoComp={EstadoComp} ></CardCuenta>
-                    </Item>
-                </Grid>
-                <Grid size={12}>
-                    <Item>
-                        <CardReestablecer perfil={perfil} abrirReestrablecerContra={abrirReestrablecerContra} dialogo={dialogo} cerrar={cerrar}></CardReestablecer>
-                    </Item>
-                </Grid>
-            </Grid>
+            {/* Rol */}
+            <Accordion
+                expanded={expanded === 'rol'}
+                onChange={handleToggle('rol')}
+                disableGutters
+                sx={estilosAcordeon}
+            >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ '& .MuiAccordionSummary-content': { alignItems: 'center', gap: 1 } }}
+                >
+                    <Box sx={{ width: '4px', height: '20px', backgroundColor: '#1565C0', borderRadius: '2px' }} />
+                    <WorkIcon fontSize="small" color="primary" />
+                    <Typography variant="subtitle1" sx={tituloSeccion()}>
+                        Rol
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ px: 2.5, pb: 2.5, pt: 0.5 }}>
+                    <CardRol abrirConfirmRol={abrirConfirmRol} rol={rol} setRol={setRol} />
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Cuenta */}
+            <Accordion
+                expanded={expanded === 'cuenta'}
+                onChange={handleToggle('cuenta')}
+                disableGutters
+                sx={estilosAcordeon}
+            >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ '& .MuiAccordionSummary-content': { alignItems: 'center', gap: 1 } }}
+                >
+                    <Box sx={{ width: '4px', height: '20px', backgroundColor: '#1565C0', borderRadius: '2px' }} />
+                    <AccountBoxIcon fontSize="small" color="primary" />
+                    <Typography variant="subtitle1" sx={tituloSeccion()}>
+                        Cuenta
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ px: 2.5, pb: 2.5, pt: 0.5 }}>
+                    <CardCuenta perfil={perfil} reload={reload} abrirConfirmDes={abrirConfirmDes} EstadoComp={EstadoComp} />
+                </AccordionDetails>
+            </Accordion>
+
+            {/* Reestablecer Contraseña */}
+            <Accordion
+                expanded={expanded === 'reestablecer'}
+                onChange={handleToggle('reestablecer')}
+                disableGutters
+                sx={estilosAcordeon}
+            >
+                <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{ '& .MuiAccordionSummary-content': { alignItems: 'center', gap: 1 } }}
+                >
+                    <Box sx={{ width: '4px', height: '20px', backgroundColor: '#1565C0', borderRadius: '2px' }} />
+                    <LockResetIcon fontSize="small" color="primary" />
+                    <Typography variant="subtitle1" sx={tituloSeccion()}>
+                        Reestablecer Contraseña
+                    </Typography>
+                </AccordionSummary>
+                <AccordionDetails sx={{ px: 2.5, pb: 2.5, pt: 0.5 }}>
+                    <CardReestablecer perfil={perfil} abrirReestrablecerContra={abrirReestrablecerContra} dialogo={dialogo} cerrar={cerrar} />
+                </AccordionDetails>
+            </Accordion>
 
             <Confirm
                 open={dialogo === "confirmRol"}

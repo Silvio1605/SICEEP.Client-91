@@ -1,17 +1,17 @@
 ﻿import React from 'react';
-import { Card, CardContent, Typography, Checkbox } from '@mui/material';
+import { Card, CardContent, Typography, Checkbox, Box, Chip } from '@mui/material';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import EditNoteIcon from '@mui/icons-material/EditNote';
 import { alpha } from '@mui/material/styles';
-import { Grid } from "@mui/material";
 
-const CardPermiso = ({ id, nombrePermiso, descripcion, checked, cambiarPermiso }) => {
-    
+const CardPermiso = ({ id, nombrePermiso, descripcion, checked, modificado, cambiarPermiso }) => {
 
     return (
         <Card
             onClick={() => cambiarPermiso(id)}
             sx={{
+                height: '100%',
                 borderRadius: 3,
                 bgcolor: checked ? alpha('#0288d1', 0.08) : 'background.paper',
                 border: checked ? '2px solid #0288d1' : '1px solid',
@@ -25,51 +25,48 @@ const CardPermiso = ({ id, nombrePermiso, descripcion, checked, cambiarPermiso }
                 }
             }}
         >
-            <CardContent sx={{ px: 2, py: 1.5 }}>
-                <Grid container alignItems="center">
+            <CardContent
+                sx={{
+                    px: 2,
+                    py: 1.5,
+                    display: 'flex',
+                    alignItems: 'flex-start',
+                    gap: 0.5
+                }}
+            >
+                <Checkbox
+                    checked={checked}
+                    onChange={() => cambiarPermiso(id)}
+                    onClick={(e) => e.stopPropagation()}
+                    color="primary"
+                    icon={<RadioButtonUncheckedIcon />}
+                    checkedIcon={<CheckCircleIcon />}
+                    sx={{ mt: -0.75, '& .MuiSvgIcon-root': { fontSize: 26 } }}
+                />
 
-                    {/* Checkbox */}
-                    <Grid
-                        size={{ xs: 2 }}
-                        display="flex"
-                        justifyContent="center"
-                        alignItems="center"
-                    >
-                        <Checkbox
-                            checked={checked}
-                            onChange={() => cambiarPermiso(id)}
-                            onClick={(e) => e.stopPropagation()}
-                            color="primary"
-                            icon={<RadioButtonUncheckedIcon />}
-                            checkedIcon={<CheckCircleIcon />}
-                            sx={{
-                                transform: 'scale(1.3)',
-                            }}
-                        />
-                    </Grid>
-
-                    {/* Texto */}
-                    <Grid size={{ xs: 10 }}>
-                        <Typography
-                            variant="subtitle1"
-                            fontWeight="600"
-                            color="text.primary"
-                        >
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                        <Typography variant="subtitle1" fontWeight="600" color="text.primary">
                             {nombrePermiso}
                         </Typography>
+                        {modificado && (
+                            <Chip
+                                icon={<EditNoteIcon />}
+                                label="Sin guardar"
+                                size="small"
+                                color="warning"
+                                variant="outlined"
+                                sx={{ height: 20, '& .MuiChip-label': { px: 1, fontSize: '0.65rem' } }}
+                            />
+                        )}
+                    </Box>
 
-                        <Typography
-                            variant="body2"
-                            color="text.secondary"
-                            sx={{ mt: 0.3 }}
-                        >
+                    {descripcion && (
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 0.3 }}>
                             {descripcion}
                         </Typography>
-                    </Grid>
-
-                   
-
-                </Grid>
+                    )}
+                </Box>
             </CardContent>
         </Card>
     );

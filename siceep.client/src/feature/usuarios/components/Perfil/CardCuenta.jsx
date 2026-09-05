@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Box, Typography, Divider } from "@mui/material";
+import { Box, Typography, TextField, Stack } from "@mui/material";
+import { alpha } from '@mui/material/styles';
 import { useFecha } from './../../hooks/useFecha';
-import TextField from '@mui/material/TextField';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 // personalizados
 import AppButton from './../../../../shared/components/AppButton';
@@ -64,72 +64,86 @@ function CardCuenta({ perfil, abrirConfirmDes, EstadoComp, reload }) {
     }
 
     return (
-      <Box>
-          <Typography
-              variant="h7"
-              sx={{
-                  fontWeight: 600,
-                  color: '#1565C0',
-                  letterSpacing: '0.5px',
-                  ml: 2
-              }}
-          >
-              Cuenta
-          </Typography>
+        <Box>
+            <Stack spacing={2}>
+                <AppButton
+                    colorBtn={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
+                    iconBtn={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
+                    isfullWidth={true}
+                    content={EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
+                    onClick={(e) => {
+                        // Evitar que el botón mantenga el foco después de hacer clic
+                        e.currentTarget.blur();
+                        abrirConfirmDes();
+                    }}
+                />
 
-          <AppButton
-              colorBtn={EstadoComp === 2 || EstadoComp === 3 ? "primary" : "error"}
-              iconBtn={EstadoComp === 2 || EstadoComp === 3 ? <PersonIcon /> : <PersonOffIcon />}
-              isfullWidth={true}
-              content={EstadoComp === 2 || EstadoComp === 3 ? "Activar Usuario" : "Desactivar Usuario"}
-              onClick={(e) => {
-                  // Evitar que el botón mantenga el foco después de hacer clic
-                  e.currentTarget.blur();
-                  abrirConfirmDes();
-              }}
-          />
-          <Box>
-              <TextField
-                  type="date"
-                  label="Fecha de Expiración"
-                  value={fecha}
-                  onChange={(e) => setFecha(e.target.value)}
-                  InputLabelProps={{ shrink: true }}
-                  fullWidth
-              />
+                <TextField
+                    type="date"
+                    label="Fecha de Expiración"
+                    value={fecha}
+                    onChange={(e) => setFecha(e.target.value)}
+                    InputLabelProps={{ shrink: true }}
+                    fullWidth
+                />
 
-              <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
-                  <LockClockIcon sx={{ mr: 1 }} />
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 1,
+                        bgcolor: alpha('#ed6c02', 0.12),
+                        border: '1px solid',
+                        borderColor: '#ed6c02',
+                        borderRadius: 2,
+                        px: 1.5,
+                        py: 1
+                    }}
+                >
+                    <LockClockIcon fontSize="small" color="warning" />
 
-                  <Typography variant="body2">
-                      <strong>Tiempo actual restante:</strong> {tiempoRestante(perfil.usuario?.fechaExpiracion)}
-                  </Typography>
-              </Box>
-              {fecha && fecha !== fechaPerfil ? (
-                  <Box display="flex" alignItems="center" sx={{ ml: 2, pb: 1, pt: 1 }}>
-                      <LockClockIcon sx={{ mr: 1, color: 'primary.main' }} />
+                    <Typography variant="body2">
+                        <strong>Tiempo actual restante:</strong> {tiempoRestante(perfil.usuario?.fechaExpiracion)}
+                    </Typography>
+                </Box>
 
-                      <Typography variant="body2" sx={{ color: 'primary.main' }}>
-                          <strong>Tiempo nuevo periodo:</strong> {tiempoRestante(fecha)}
-                      </Typography>
-                  </Box>
+                {fecha && fecha !== fechaPerfil ? (
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 1,
+                            bgcolor: alpha('#1565C0', 0.08),
+                            border: '1px solid',
+                            borderColor: 'primary.main',
+                            borderRadius: 2,
+                            px: 1.5,
+                            py: 1
+                        }}
+                    >
+                        <LockClockIcon fontSize="small" color="primary" />
 
-              ) : ("")
-              }
+                        <Typography variant="body2" sx={{ color: 'primary.main' }}>
+                            <strong>Tiempo nuevo periodo:</strong> {tiempoRestante(fecha)}
+                        </Typography>
+                    </Box>
 
-              <AppButton
-                  colorBtn={"primary"}
-                  iconBtn={<CalendarTodayIcon />}
-                  isfullWidth={true}
-                  content={"Actualizar Fecha"}
-                  onClick={(e) => {
-                      // Evitar que el botón mantenga el foco después de hacer clic
-                      e.currentTarget.blur();
-                      esMayor(perfil.usuario?.fechaExpiracion, fecha);
-                      abrirConfirmExp();
-                  }}
-              />
-            </Box>
+                ) : ("")
+                }
+
+                <AppButton
+                    colorBtn={"primary"}
+                    iconBtn={<CalendarTodayIcon />}
+                    isfullWidth={true}
+                    content={"Actualizar Fecha"}
+                    onClick={(e) => {
+                        // Evitar que el botón mantenga el foco después de hacer clic
+                        e.currentTarget.blur();
+                        esMayor(perfil.usuario?.fechaExpiracion, fecha);
+                        abrirConfirmExp();
+                    }}
+                />
+            </Stack>
 
             <Confirm
                 open={dialogo === "confirmExpiracion"}
@@ -142,7 +156,7 @@ function CardCuenta({ perfil, abrirConfirmDes, EstadoComp, reload }) {
             </Confirm>
         </Box>
 
-  );
+    );
 }
 
 export default CardCuenta;

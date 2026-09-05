@@ -2,6 +2,7 @@
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import ListItemText from '@mui/material/ListItemText';
+import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemButton from '@mui/material/ListItemButton';
 import List from '@mui/material/List';
 import AppBar from '@mui/material/AppBar';
@@ -11,7 +12,12 @@ import Typography from '@mui/material/Typography';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import Divider from '@mui/material/Divider';
-import Box from '@mui/material/Box';    
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import SaveIcon from '@mui/icons-material/Save';
 //servicios
 import { guardarPermisos } from '../services/PermisoService';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext'
@@ -30,12 +36,19 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
     const { permisosHook } = usePermisosContext() ?? {};
     const { refetch, PermisosModificados } = permisosHook ?? {};
 
+    const agregados = PermisosModificados?.agregados ?? [];
+    const quitados = PermisosModificados?.quitados ?? [];
+    const totalCambios = PermisosModificados?.cambios?.length ?? 0;
+
+    const [guardando, setGuardando] = React.useState(false);
+
     const handleGuardar = async () => {
-        onClose();
+        if (totalCambios === 0 || guardando) return;
+        setGuardando(true);
 
         const permisosCambiados = PermisosModificados.cambios.map(x => ({
             idRecurso: x.idRecurso,
-            permitido: x.estado === 1 // mejor booleano
+            permitido: x.estado === 1
         }));
 
         const dataEnvio = {
@@ -50,13 +63,15 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
                 message: result,
                 severity: "success",
             });
-            await refetch();
-           
+            await refetch?.();
+            onClose();
         } catch (error) {
             mostrarNotificacion({
                 message: error.message || error || "Error",
                 severity: "warning",
             });
+        } finally {
+            setGuardando(false);
         }
     };
 
@@ -81,44 +96,69 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
                             <CloseIcon />
                         </IconButton>
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
-                            Permisos a Guardar
+                            Resumen de cambios
                         </Typography>
-                        <Button autoFocus color="inherit"
-                            onClick={
-                                handleGuardar
-                            }
+                        <Button
+                            color="inherit"
+                            startIcon={<SaveIcon />}
+                            onClick={handleGuardar}
+                            disabled={guardando || totalCambios === 0}
                         >
-                            Guardar
+                            {guardando ? 'Guardando...' : 'Guardar'}
                         </Button>
                     </Toolbar>
                 </AppBar>
-                <Box sx={{ pl: 3, pt: 2 }}>
-                    <Typography variant="h6">Permisos Agregados</Typography>
-                    <Divider />
-                    {PermisosModificados?.agregados?.length === 0 && (
-                        <Typography variant="body2" color="text.secondary">No hay permisos agregados</Typography>
+
+                <Box sx={{ p: 3 }}>
+                    <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+                        <Chip color="success" variant="outlined" label={`${agregados.length} habilitados`} />
+                        <Chip color="error" variant="outlined" label={`${quitados.length} deshabilitados`} />
+                    </Stack>
+
+                    {totalCambios === 0 && (
+                        <Typography variant="body1" color="text.secondary">
+                            No hay cambios para guardar.
+                        </Typography>
                     )}
-                    <List>
-                        {PermisosModificados?.agregados?.map(p => (
-                            <ListItemButton key={p.idRecurso}>
-                                <ListItemText primary={p.recurso} secondary={p.descripcion} />
-                            </ListItemButton>
-                        ))}
-                    </List>
-                    <Typography variant="h6">Permisos Eliminados</Typography>
-                    <Divider />
-                    {PermisosModificados?.quitados?.length === 0 && (
-                        <Typography variant="body2" color="text.secondary">No hay permisos eliminados</Typography>
+
+                    {agregados.length > 0 && (
+                        <>
+                            <Typography variant="h6" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1 }}>
+                                <CheckCircleOutlineIcon color="success" /> Permisos habilitados
+                            </Typography>
+                            <Divider sx={{ mb: 1 }} />
+                            <List dense>
+                                {agregados.map(p => (
+                                    <ListItemButton key={p.idRecurso} sx={{ borderRadius: 2 }}>
+                                        <ListItemIcon>
+                                            <CheckCircleOutlineIcon color="success" />
+                                        </ListItemIcon>
+                                        <ListItemText primary={p.recurso} secondary={p.descripcion} />
+                                    </ListItemButton>
+                                ))}
+                            </List>
+                        </>
                     )}
-                    <List>
-                        {PermisosModificados?.quitados?.map(p => (
-                            <ListItemButton key={p.idRecurso}>
-                                <ListItemText primary={p.recurso} secondary={p.descripcion} />
-                            </ListItemButton>
-                        ))}
-                    </List>
+
+                    {quitados.length > 0 && (
+                        <>
+                            <Typography variant="h6" sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1, mt: 2 }}>
+                                <HighlightOffIcon color="error" /> Permisos deshabilitados
+                            </Typography>
+                            <Divider sx={{ mb: 1 }} />
+                            <List dense>
+                                {quitados.map(p => (
+                                    <ListItemButton key={p.idRecurso} sx={{ borderRadius: 2 }}>
+                                        <ListItemIcon>
+                                            <HighlightOffIcon color="error" />
+                                        </ListItemIcon>
+                                        <ListItemText primary={p.recurso} secondary={p.descripcion} />
+                                    </ListItemButton>
+                                ))}
+                            </List>
+                        </>
+                    )}
                 </Box>
-               
             </Dialog>
         </React.Fragment>
     );

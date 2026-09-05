@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { Box, Typography } from "@mui/material";
+import { Box, Stack, Skeleton } from "@mui/material";
 import AppButton from './../../../../shared/components/AppButton';
 import WorkIcon from '@mui/icons-material/Work';
 
@@ -23,50 +23,36 @@ function CardRol({ abrirConfirmRol, setRol, rol }) {
         cargarRol();
     }, [perfil.usuario?.idRol, setRol]);
 
-
-  return (
-      <Box>
-          <Typography
-              variant="h7"
-              sx={{
-                  fontWeight: 600,
-                  color: '#1565C0',
-                  letterSpacing: '0.5px',
-                  ml: 2
-
-              }}
-          >
-              Rol
-          </Typography>
-
-          {loading ? (
-              <p>Cargando...</p>
-          ) : (
-              <Box>
-                  <SelectItem
-                      value={rol}
-                      onChange={(selRol) => {
-                          setRol(selRol);
-                      }}
-                      incluirTodo={false}
-                      datos={selRol}
-                      titulo=""
-                  />
-                  <AppButton
-                      colorBtn={'primary'}
-                      iconBtn={<WorkIcon />}
-                      isfullWidth={true}
-                      content={"Actualizar Rol"}
-                      onClick={(e) => {
-                          // Evitar que el botón mantenga el foco después de hacer clic
-                          e.currentTarget.blur();
-                          abrirConfirmRol();
-                      }}
-                  />
-              </Box>
-          )}
-      </Box>
-  );
+    return (
+        <Box>
+            {loading ? (
+                <Skeleton variant="rounded" height={40} />
+            ) : (
+                <Stack spacing={2}>
+                    <SelectItem
+                        value={rol}
+                        onChange={(selRol) => {
+                            setRol(selRol);
+                        }}
+                        incluirTodo={false}
+                        datos={selRol}
+                        titulo=""
+                    />
+                    <AppButton
+                        colorBtn={'primary'}
+                        iconBtn={<WorkIcon />}
+                        isfullWidth={true}
+                        content={"Actualizar Rol"}
+                        onClick={(e) => {
+                            // Evitar que el botón mantenga el foco después de hacer clic
+                            e.currentTarget.blur();
+                            abrirConfirmRol();
+                        }}
+                    />
+                </Stack>
+            )}
+        </Box>
+    );
 }
 
 export default CardRol;

@@ -1,9 +1,9 @@
-import { useState, useEffect, useCallback } from 'react'; 
+import { useState, useEffect, useCallback, useMemo } from 'react'; 
 // servicios
 import { getPermisos } from './../services/PermisoService';
 
 
-// Export - Función para obtener una lista plana de todos los permisos
+// funcíon para obtener una lista plana de todos los permisos
 const obtenerPermisos = (data) =>
     data.flatMap(m => m.permisos);
 
@@ -16,22 +16,30 @@ export const usePermisos = (id) => {
     const [permisos, setPermisosData] = useState([]);
     
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const cargar = useCallback(async () => {
         setLoading(true);
+        setError(null);
         // Si no hay ID, no hacer nada
         if (!id) {
             setLoading(false);
             return;
         }
-        // obtener permisos y estructura del usuario
-        const res = await getPermisos(id);
-        // datos para mostrar permisos con su estado
-        setPermisosData(res.data);
-        // ref para mantener los permisos originales y comparar cambios
-        setPermisosOriginal(
-            structuredClone(res.data)
-        );
+        try {
+            // obtener permisos y estructura del usuario
+            const res = await getPermisos(id);
+            // datos para mostrar permisos con su estado
+            setPermisosData(res.data);
+            // ref para mantener los permisos originales y comparar cambios
+            setPermisosOriginal(
+                structuredClone(res.data)
+            );
+        } catch (e) {
+            setError(e?.response?.data ?? e?.message ?? "Error al cargar los permisos");
+        } finally {
+            setLoading(false);
+        }
     }, [id]);
 
     useEffect(() => {
@@ -56,7 +64,12 @@ export const usePermisos = (id) => {
         );
     };
 
-    // Export - Función para detectar cambios entre los permisos actuales y los originales
+    // Descartar todos los cambios locales y volver al estado original
+    const descartarCambios = useCallback(() => {
+        setPermisosData(structuredClone(permisosOriginal));
+    }, [permisosOriginal]);
+
+    // Detecta los cambios entre los permisos actuales y los originales
     const detectarCambios = () => {
         const originales = obtenerPermisos(permisosOriginal);
         const actuales = obtenerPermisos(permisos);
@@ -85,8 +98,7 @@ export const usePermisos = (id) => {
         return cambios;
     };
 
-    const PermisosModificados = (() => {
-
+    const PermisosModificados = useMemo(() => {
         const lista = detectarCambios();
 
         return {
@@ -95,8 +107,8 @@ export const usePermisos = (id) => {
             quitados: lista.filter(x => x.estado === 0)
         };
 
-    })();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [permisos, permisosOriginal]);
 
-    return { loading, permisos, permisosOriginal, detectarCambios, cambiarPermiso, refetch: cargar, PermisosModificados };
+    return { loading, error, permisos, permisosOriginal, detectarCambios, cambiarPermiso, descartarCambios, refetch: cargar, PermisosModificados };
 }
-

@@ -15,19 +15,28 @@ const nuevoUsuario = async (registro) => {
 export const useRegistrar = () => {
 
     const [propietarios, setPropietarios] = useState([]);
+    const [cargando, setCargando] = useState(false);
 
     const buscar = async (param, OriginRegistro) => {
 
-        if (param == "" || param == null) return;
-        var res;
-
-        if (OriginRegistro) {
-            res = await BuscarPropietario(param);
-        } else {
-            res = await BuscarUsuario(param);
+        if (param == "" || param == null) {
+            setPropietarios([]);
+            return;
         }
-        setPropietarios(res.data);
+
+        setCargando(true);
+        try {
+            const res = OriginRegistro
+                ? await BuscarPropietario(param)
+                : await BuscarUsuario(param);
+
+            setPropietarios(res?.data ?? []);
+        } catch {
+            setPropietarios([]);
+        } finally {
+            setCargando(false);
+        }
     };
 
-    return { propietarios, buscar, nuevoUsuario };
+    return { propietarios, cargando, buscar, nuevoUsuario };
 };
