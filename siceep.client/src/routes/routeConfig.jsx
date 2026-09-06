@@ -8,6 +8,8 @@ import CrearExpediente from "../feature/expedientes/pages/CrearExpediente";
 import EditarExpediente from "../feature/expedientes/pages/EditarExpediente";
 import GestionDeducciones from "../feature/tramites/pages/GestionDeducciones";
 import BusquedaRapida from "../feature/tramites/pages/BusquedaRapida";
+import GestionDocumentos from "../feature/documentos/pages/GestionDocumentos";
+import GestionLaboral from "../feature/laboral/pages/GestionLaboral";
 
 // Context Providers
 import { BusquedaProvider } from './../providers/BusquedaUsers/BusquedaProvider';
@@ -55,5 +57,7 @@ export const privateRoutes = [
     { path: "info-academica/:id", element: <DetalleExpediente /> },
     { path: "documentos/:id", element: <DetalleExpediente /> },
     { path: "deducciones", element: <GestionDeducciones /> },
-    { path: "busqueda-rapida", element: <BusquedaRapida /> }
+    { path: "busqueda-rapida", element: <BusquedaRapida /> },
+    { path: "gestion-documentos", element: <GestionDocumentos /> },
+    { path: "gestion-laboral", element: <GestionLaboral /> }
 ];

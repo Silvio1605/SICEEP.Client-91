@@ -18,6 +18,7 @@ import AssessmentIcon from '@mui/icons-material/Assessment';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import HelpCenterIcon from '@mui/icons-material/HelpCenter';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import WorkIcon from '@mui/icons-material/Work';
 
 import logo from "../../../assets/Logo_p.png";
 import ListItem from "@mui/material/ListItem";
@@ -56,6 +57,12 @@ const menuSections = [
             { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: 3 },
             { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 3 },
             { text: "Gestion Deducciones", icon: <AccountBalanceWalletIcon />, path: Rutas.DEDUCCIONES, idPermiso: 3 }
+        ]
+    },
+    {
+        titulo: "Gestión Laboral",
+        items: [
+            { text: "Plazas y Movimientos", icon: <WorkIcon />, path: "/index/gestion-laboral", idPermiso: 3 },
         ]
     },
     {
