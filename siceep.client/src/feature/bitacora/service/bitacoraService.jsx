@@ -18,3 +18,16 @@ export const getAcciones = async () => {
         console.error("Error al obtener acciones: ", error);
     }
 };
+
+// Registra una acción en la bitácora. Es voluntaria (fire-and-forget):
+// un fallo al auditar nunca debe romper el guardado principal.
+export const registrarBitacora = async (idAccion, descripcion) => {
+    try {
+        await api.post('Bitacora/Registrar', {
+            idAccion,
+            descripcion
+        });
+    } catch (error) {
+        console.warn("No se pudo registrar la acción en la bitácora:", error);
+    }
+};

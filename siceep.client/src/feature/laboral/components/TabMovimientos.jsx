@@ -17,6 +17,7 @@ import { useSituacion } from './../hooks/useSituacion';
 import { useCargos } from './../hooks/useCargos';
 import { getPlazas } from './../services/laboralServices';
 import SelectUbicacion from './SelectUbicacion';
+import { registrarBitacora } from './../../bitacora/service/bitacoraService';
 
 const formatoSalario = (salario) =>
     new Intl.NumberFormat('es-NI', { style: 'currency', currency: 'NIO', maximumFractionDigits: 2 }).format(salario || 0);
@@ -101,6 +102,7 @@ export default function TabMovimientos() {
             if (res?.message) {
                 alert(res.message);
             }
+            await registrarBitacora(2, `Traslado de ${empleado.nombreCompleto} a ${ubicacion.nombre} (${fechaInicio})`);
             // refrescar la situación
             cargarSituacion(empleado.id);
             cargarHistorial(empleado.id);

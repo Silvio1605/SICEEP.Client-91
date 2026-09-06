@@ -8,7 +8,11 @@ export const columnsBitacora = ({ isMobile }) => [
         align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
     },
     {
-        field: 'accion', headerName: 'Acción Ejecutada', flex: 2, minWidth: 50,
+        field: 'accion', headerName: 'Acción Ejecutada', flex: 1, minWidth: 50,
+        align: 'center', headerAlign: 'center'
+    },
+    {
+        field: 'descripcion', headerName: 'Detalle', flex: 2, minWidth: 60,
         align: 'center', headerAlign: 'center'
     },
     !isMobile && {

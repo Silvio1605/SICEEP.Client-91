@@ -23,6 +23,7 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import SearchIcon from '@mui/icons-material/Search';
 import AppButton from './../../../shared/components/AppButton';
+import { registrarBitacora } from './../../bitacora/service/bitacoraService';
 
 export default function CardCrear({ open, onClose, registrar, refrescar }) {
 
@@ -89,6 +90,10 @@ export default function CardCrear({ open, onClose, registrar, refrescar }) {
                 message: resultado.message,
                 severity: resultado.status === 200 ? "success" : "error",
             });
+
+            if (resultado.status === 200) {
+                await registrarBitacora(2, "Ubicación registrada");
+            }
 
         } catch (error) {
 
