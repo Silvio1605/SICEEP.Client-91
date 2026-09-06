@@ -15,27 +15,36 @@ const getEstadoColor = (estado) => {
     }
 };
 
+// Los nombres completos se devuelven separados por espacios; algunos pueden traer
+// espacios múltiples o nulos entremedio. Lo normalizamos para una visualización limpia.
+const formatearNombre = (nombre) => (nombre || '').replace(/\s+/g, ' ').trim();
+
 export const columnsUsuarios = ({ isMobile, abrirPerfil, abrirCambioContra }) => [
     {
-        field: 'index', headerName: 'No.', flex: 2, minWidth: 20, maxWidth: 80,
-        align: 'center', headerAlign: 'center'
+        field: 'index', headerName: 'No.', width: 70,
+        align: 'center', headerAlign: 'center',
     },
     !isMobile && {
-        field: 'id', headerName: 'Ident.', flex: 2, minWidth: 20, maxWidth: 80,
-        align: 'center', headerAlign: 'center'
+        field: 'id', headerName: 'Ident.', width: 80,
+        align: 'center', headerAlign: 'center',
     },
     !isMobile && {
-        field: 'propietario', headerName: 'Nombre Completo', flex: 2, minWidth: 180, 
-        align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
+        field: 'propietario', headerName: 'Nombre Completo', flex: 1, minWidth: 220,
+        align: 'left', headerAlign: 'left', headerClassName: 'header-negrita',
+        valueGetter: (params) => formatearNombre(params?.row?.propietario),
+        renderCell: (params) => (
+            <span style={{ whiteSpace: 'normal', lineHeight: 1.4 }}>{formatearNombre(params?.row?.propietario) || 'S/D'}</span>
+        ),
     },
     {
-        field: 'usuario', headerName: 'Usuario', flex: 2, minWidth: 40,
-        align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
+        field: 'usuario', headerName: 'Usuario', flex: 1, minWidth: 120,
+        align: 'left', headerAlign: 'left', headerClassName: 'header-negrita',
+        renderCell: (params) => <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{params?.row?.usuario || 'S/D'}</span>,
     },
     {
         field: 'estado',
         headerName: 'Estado',
-        flex: 1,
+        width: 110,
         align: 'center',
         headerAlign: 'center',
         renderCell: (params) => (
@@ -46,13 +55,14 @@ export const columnsUsuarios = ({ isMobile, abrirPerfil, abrirCambioContra }) =>
                 variant="filled"
             />
         ),
-    }, 
+    },
     !isMobile && {
-        field: 'fechaExpiracion', headerName: 'Fecha Expiración', flex: 2, minWidth: 30,
-        align: 'center', headerAlign: 'center', headerClassName: 'header-negrita',
+        field: 'fechaExpiracion', headerName: 'Fecha Expiración', width: 150,
+        align: 'left', headerAlign: 'left', headerClassName: 'header-negrita',
+        renderCell: (params) => <span style={{ whiteSpace: 'nowrap' }}>{params?.row?.fechaExpiracion || 'S/D'}</span>,
     },
     {
-        field: 'acciones', headerName: 'Acciones', flex: 1, minWidth: 30,
+        field: 'acciones', headerName: 'Acciones', width: 90,
         sortable: false,
         filterable: false,
         align: 'center',

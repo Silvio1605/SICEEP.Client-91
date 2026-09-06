@@ -26,7 +26,7 @@ export default function Index() {
         nombreUsuario: ''
     });
 
-    // Función para manejar la búsqueda de propietario (puede ser implementada según las necesidades)
+    // Función para manejar la búsqueda de propietario 
     const handleBuscarPropietario = () => {
         setOpenBusqueda(true);
     };

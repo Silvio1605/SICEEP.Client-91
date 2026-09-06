@@ -7,14 +7,6 @@ export const aISO = (valor) => {
     return texto;
 };
 
-// Formatea una fecha del backend a 'dd/mm/aaaa' para mostrar en pantalla
-export const formatearFechaLegible = (valor) => {
-    const iso = aISO(valor);
-    if (!iso) return null;
-    const [anio, mes, dia] = iso.split('-');
-    return `${dia}/${mes}/${anio}`;
-};
-
 // Fecha del backend (DateTime o DateOnly) a ISO 8601 para el DTO del PUT
 const aISOCompleto = (valor) => {
     if (!valor) return null;
@@ -22,6 +14,15 @@ const aISOCompleto = (valor) => {
     const texto = aISO(valor);
     if (!texto) return null;
     return new Date(`${texto}T12:00:00`).toISOString();
+};
+
+
+// Formatea una fecha del backend a 'dd/mm/aaaa' para mostrar en pantalla
+export const formatearFechaLegible = (valor) => {
+    const iso = aISO(valor);
+    if (!iso) return null;
+    const [anio, mes, dia] = iso.split('-');
+    return `${dia}/${mes}/${anio}`;
 };
 
 export const nombreCompletoPersona = (p = {}) =>
