@@ -1,5 +1,7 @@
 ﻿import { Box, IconButton, Tooltip, Typography } from '@mui/material';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
+import PersonRemoveOutlinedIcon from '@mui/icons-material/PersonRemoveOutlined';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { useNavigate } from 'react-router-dom';
 
 // eslint-disable-next-line react-refresh/only-export-components
@@ -16,6 +18,50 @@ const BotonVerExpediente = ({ idExpediente }) => {
             <IconButton onClick={irAlExpediente} color="primary" size="small">
                 <FolderSharedIcon />
             </IconButton>
+        </Tooltip>
+    );
+};
+
+// Da de baja a un empleado activo desde el listado de expedientes
+// eslint-disable-next-line react-refresh/only-export-components
+const BotonBaja = ({ empleado, onDarBaja }) => {
+    const esActivo = empleado.estado === 2;
+
+    if (!esActivo) return null;
+
+    return (
+        <Tooltip title="Dar de Baja">
+            <span>
+                <IconButton
+                    onClick={() => onDarBaja?.(empleado)}
+                    color="error"
+                    size="small"
+                >
+                    <PersonRemoveOutlinedIcon />
+                </IconButton>
+            </span>
+        </Tooltip>
+    );
+};
+
+// Reactiva a un empleado que se encuentra de baja (reingreso)
+// eslint-disable-next-line react-refresh/only-export-components
+const BotonReactivar = ({ empleado, onReactivar }) => {
+    const esBaja = empleado.estado === 1;
+
+    if (!esBaja) return null;
+
+    return (
+        <Tooltip title="Reactivar">
+            <span>
+                <IconButton
+                    onClick={() => onReactivar?.(empleado)}
+                    color="success"
+                    size="small"
+                >
+                    <HowToRegIcon />
+                </IconButton>
+            </span>
         </Tooltip>
     );
 };
@@ -38,7 +84,7 @@ const CeldaDoble = ({ etiqueta, valor, valorColor }) => (
 );
 
 // columnas de expediente
-export const columnsExpedientes = (isMobile = false) => {
+export const columnsExpedientes = (isMobile = false, onDarBaja = null, onReactivar = null) => {
     const estadoMap = {
         1: { label: 'Baja', color: 'error.main' },
         2: { label: 'Activo', color: 'success.main' },
@@ -95,11 +141,19 @@ export const columnsExpedientes = (isMobile = false) => {
         {
             field: 'acciones',
             headerName: '',
-            width: 70,
+            width: (onDarBaja || onReactivar) ? 110 : 70,
             sortable: false,
             filterable: false,
             renderCell: (params) => (
-                <BotonVerExpediente idExpediente={params.row.id} />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <BotonVerExpediente idExpediente={params.row.id} />
+                    {onDarBaja && (
+                        <BotonBaja empleado={params.row} onDarBaja={onDarBaja} />
+                    )}
+                    {onReactivar && (
+                        <BotonReactivar empleado={params.row} onReactivar={onReactivar} />
+                    )}
+                </Box>
             ),
         },
     ].filter(Boolean);

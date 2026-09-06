@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useCallback } from 'react';
+import { useEffect, useMemo, useCallback, useState } from 'react';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { DataGrid } from '@mui/x-data-grid';
@@ -9,6 +9,8 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { columnsExpedientes } from '../components/columns/columnsExpediente';
 import FiltroExpediente from '../components/FiltroExpediente';
+import ModalBaja from '../components/ModalBaja';
+import ModalReactivar from '../components/ModalReactivar';
 import { useExpediente } from '../hooks/useExpediente';
 import { useScreenType } from '../../../shared/hooks/useScreenType';
 
@@ -17,6 +19,8 @@ export default function Expedientes() {
     const { isMobile } = useScreenType();
     const [searchParams, setSearchParams] = useSearchParams();
     const { expedientes, buscar, page, total } = useExpediente();
+    const [empleadoBaja, setEmpleadoBaja] = useState(null);
+    const [empleadoReactivar, setEmpleadoReactivar] = useState(null);
 
     const filtro = useMemo(() => ({
         busqueda: searchParams.get("busqueda") || "",
@@ -54,9 +58,19 @@ export default function Expedientes() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [filtro]);
 
+    // Abre el modal de baja para el empleado seleccionado
+    const abrirBaja = useCallback((empleado) => {
+        setEmpleadoBaja(empleado);
+    }, []);
+
+    // Abre el modal de reactivación para el empleado seleccionado
+    const abrirReactivar = useCallback((empleado) => {
+        setEmpleadoReactivar(empleado);
+    }, []);
+
     const registros = useMemo(() => {
-        return columnsExpedientes(isMobile);
-    }, [isMobile]);
+        return columnsExpedientes(isMobile, abrirBaja, abrirReactivar);
+    }, [isMobile, abrirBaja, abrirReactivar]);
 
     return (
         <Box sx={{ width: '100%', pb: 5 }}>
@@ -136,6 +150,22 @@ export default function Expedientes() {
                     </Stack>
                 )}
             </Box>
+
+            <ModalBaja
+                key={empleadoBaja?.id}
+                open={Boolean(empleadoBaja)}
+                empleado={empleadoBaja}
+                onClose={() => setEmpleadoBaja(null)}
+                onConfirmada={() => buscar(filtro)}
+            />
+
+            <ModalReactivar
+                key={empleadoReactivar?.id}
+                open={Boolean(empleadoReactivar)}
+                empleado={empleadoReactivar}
+                onClose={() => setEmpleadoReactivar(null)}
+                onConfirmada={() => buscar(filtro)}
+            />
         </Box>
     );
 }
