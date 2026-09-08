@@ -43,9 +43,7 @@ export const validarSeccion = (seccion, datos) => {
     };
 };
 
-// ------------------------------------------------------------------
 // Validación de CALIDAD de los datos (cédula, fechas, estatura, peso)
-// ------------------------------------------------------------------
 
 // Alfabeto oficial del dígito verificador de la cédula nicaragüense (Módulo 23, sin I ni O)
 export const LETRAS_CEDULA = 'ABCDEFGHJKLMNPQRSTUVWXY';
