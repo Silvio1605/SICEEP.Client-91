@@ -198,7 +198,12 @@ export default function ConstanciaPDF({ datosExpediente, config }) {
         firmanteTitulo = 'Ingeniero',
         ciudad = 'Managua',
         numeroDocumento = 'C-0001',
+        mostrarSalario = false,
     } = config || {};
+
+    const salarioMensual = mostrarSalario
+        ? (plaza?.salario ?? contrato?.salarioMensual ?? 0)
+        : 0;
 
     const fechaFirma = formatearFechaFirma(ciudad);
 
@@ -253,6 +258,14 @@ export default function ConstanciaPDF({ datosExpediente, config }) {
                         <View style={styles.celdaLabel}><Text>Fecha de Ingreso:</Text></View>
                         <View style={styles.celdaValor}><Text>{fechaIngreso}</Text></View>
                     </View>
+                    {mostrarSalario && (
+                        <View style={styles.fila}>
+                            <View style={styles.celdaLabel}><Text>Salario Mensual:</Text></View>
+                            <View style={styles.celdaValor}>
+                                <Text>C$ {Number(salarioMensual || 0).toLocaleString('es-NI', { maximumFractionDigits: 2 })}</Text>
+                            </View>
+                        </View>
+                    )}
                 </View>
 
                 {/* Firma */}
