@@ -69,16 +69,14 @@ function ContenidoBusqueda({ onClose, onSeleccionar, OriginRegistro }) {
 
     return (
         <React.Fragment>
-            <DialogTitle>
-                <Typography variant="h6" fontWeight={700}>
-                    Seleccione la cuenta
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                    Busque al propietario o al usuario por su nombre
-                </Typography>
+            <DialogTitle sx={{ fontWeight: 700 }}>
+                Seleccione la cuenta
             </DialogTitle>
 
             <DialogContent>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                    Busque al propietario o al usuario por su nombre
+                </Typography>
                 {/* Buscador */}
                 <Box component="form" onSubmit={manejarBusqueda} sx={{ mb: 2 }}>
                     <TextField

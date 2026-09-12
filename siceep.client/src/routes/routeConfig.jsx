@@ -9,7 +9,11 @@ import EditarExpediente from "../feature/expedientes/pages/EditarExpediente";
 import GestionDeducciones from "../feature/tramites/pages/GestionDeducciones";
 import BusquedaRapida from "../feature/tramites/pages/BusquedaRapida";
 import GestionDocumentos from "../feature/documentos/pages/GestionDocumentos";
-import GestionLaboral from "../feature/laboral/pages/GestionLaboral";
+import Plazas from "../feature/laboral/pages/Plazas";
+import Movimientos from "../feature/laboral/pages/Movimientos";
+import Deducciones from "../feature/laboral/pages/Deducciones";
+import InstitucionesAcademicas from "../feature/catalogos/pages/InstitucionesAcademicas";
+import { Navigate } from "react-router-dom";
 
 // Context Providers
 import { BusquedaProvider } from './../providers/BusquedaUsers/BusquedaProvider';
@@ -59,5 +63,11 @@ export const privateRoutes = [
     { path: "deducciones", element: <GestionDeducciones /> },
     { path: "busqueda-rapida", element: <BusquedaRapida /> },
     { path: "gestion-documentos", element: <GestionDocumentos /> },
-    { path: "gestion-laboral", element: <GestionLaboral /> }
+    { path: "gestion-laboral", element: <Navigate to="plazas" replace /> },
+    { path: "plazas", element: <Plazas /> },
+    { path: "movimientos", element: <Movimientos /> },
+    { path: "deducciones", element: <Deducciones /> },
+    { path: "instituciones", element: <InstitucionesAcademicas /> },
+    { path: "catalogos-ubicaciones", element: <Ubicacion /> },
+    { path: "*", element: <Navigate to="/index" replace /> }
 ];

@@ -9,7 +9,6 @@ import PersonIcon from '@mui/icons-material/Person';
 import KeyIcon from '@mui/icons-material/Key';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
-import DomainIcon from '@mui/icons-material/Domain';
 import BadgeIcon from '@mui/icons-material/Badge';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
@@ -17,8 +16,11 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import HelpCenterIcon from '@mui/icons-material/HelpCenter';
-import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import WorkIcon from '@mui/icons-material/Work';
+import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
+import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
+import SchoolIcon from '@mui/icons-material/School';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 import logo from "../../../assets/Logo_p.png";
 import ListItem from "@mui/material/ListItem";
@@ -39,12 +41,6 @@ const menuSections = [
         ]
     },
     {
-        titulo: "Localizacion",
-        items: [
-            { text: "Ubicacion", icon: <DomainIcon />, path: Rutas.UBICACION, idPermiso: 3 },
-        ]
-    },
-    {
         titulo: "Expediente",
         items: [
             { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: 3 },
@@ -55,14 +51,15 @@ const menuSections = [
         titulo: "Tramites y Atención",
         items: [
             { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: 3 },
-            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 3 },
-            { text: "Gestion Deducciones", icon: <AccountBalanceWalletIcon />, path: Rutas.DEDUCCIONES, idPermiso: 3 }
+            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 3 }
         ]
     },
     {
         titulo: "Gestión Laboral",
         items: [
-            { text: "Plazas y Movimientos", icon: <WorkIcon />, path: "/index/gestion-laboral", idPermiso: 3 },
+            { text: "Plazas", icon: <WorkIcon />, path: "/index/plazas", idPermiso: 3 },
+            { text: "Movimientos", icon: <SwapHorizIcon />, path: "/index/movimientos", idPermiso: 3 },
+            { text: "Deducciones", icon: <ReceiptLongIcon />, path: "/index/deducciones", idPermiso: 3 },
         ]
     },
     {
@@ -71,6 +68,13 @@ const menuSections = [
             { text: "Reportes", icon: <AssessmentIcon />, path: "/index/reportes", idPermiso: 3 },
             { text: "Estadisticas", icon: <BarChartIcon />, path: "/index/estadisticas", idPermiso: 3 },
             { text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: "/index/herramientas-ayuda", idPermiso: 3 },
+        ]
+    },
+    {
+        titulo: "Catálogos",
+        items: [
+            { text: "Instituciones Académicas", icon: <SchoolIcon />, path: Rutas.INSTITUCIONES, idPermiso: 3 },
+            { text: "Ubicaciones", icon: <LocationOnIcon />, path: Rutas.CATALOGO_UBICACIONES, idPermiso: 3 },
         ]
     },
     {

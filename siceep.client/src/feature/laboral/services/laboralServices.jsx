@@ -17,3 +17,24 @@ export const getHistorial = (idEmpleado) =>
 
 export const registrarMovimiento = (data) =>
     api.post("Recorrido/Movimiento", data);
+
+export const getDeducciones = (idEmpleado) =>
+    api.get("Deduccion/Listar", { params: { idEmpleado } });
+
+export const getTiposDeduccion = () => api.get("Deduccion/Tipos");
+
+export const getInstitucionesDeduccion = () => api.get("Deduccion/Instituciones");
+
+export const registrarDeduccion = (data) => api.post("Deduccion", data);
+
+export const actualizarDeduccion = (data) => api.put(`Deduccion/${data.idDeduccion}`, data);
+
+export const eliminarDeduccion = (idDeduccion) => api.delete(`Deduccion/${idDeduccion}`);
+
+export const registrarInstitucionDeduccion = (data) => api.post("Deduccion/Instituciones", data);
+
+export const actualizarInstitucionDeduccion = (data) =>
+    api.put(`Deduccion/Instituciones/${data.idInstitucionExterna}`, data);
+
+export const eliminarInstitucionDeduccion = (idInstitucionExterna) =>
+    api.delete(`Deduccion/Instituciones/${idInstitucionExterna}`);
