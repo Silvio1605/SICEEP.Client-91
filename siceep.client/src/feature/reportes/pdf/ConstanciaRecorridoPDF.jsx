@@ -21,6 +21,8 @@ import {
 export default function ConstanciaRecorridoPDF({ datosExpediente, historial, config }) {
     const e = datosExpediente || {};
     const persona = e.persona || {};
+    const contrato = e.contrato || {};
+    const plaza = e.plaza || {};
     const nombre = nombreCompletoPersona(persona) || 'NOMBRE NO DISPONIBLE';
     const recorridos = historial || [];
 
@@ -36,6 +38,35 @@ export default function ConstanciaRecorridoPDF({ datosExpediente, historial, con
                 <Text style={estilos.cuerpo}>
                     Es funcionario de esta institución y presenta el siguiente recorrido laboral:
                 </Text>
+
+                {/* Datos del funcionario */}
+                <Text style={estilos.cuerpo}>
+                    <Text style={{ fontFamily: 'Times-Bold' }}>Datos del Funcionario:</Text>
+                </Text>
+                <View style={estilos.tabla}>
+                    <View style={estilos.fila}>
+                        <View style={estilos.mitadFila}>
+                            <View style={estilos.celdaLabelMitad}><Text>Cédula:</Text></View>
+                            <View style={estilos.celdaValorMitad}><Text>{persona.cedula || 'NO DISPONIBLE'}</Text></View>
+                        </View>
+                        <View style={estilos.mitadFila}>
+                            <View style={estilos.celdaLabelMitad}><Text>INSS:</Text></View>
+                            <View style={estilos.celdaValorMitad}><Text>{e.numInss || contrato?.numInss || 'NO DISPONIBLE'}</Text></View>
+                        </View>
+                    </View>
+                    <View style={estilos.fila}>
+                        <View style={estilos.celdaLabel}><Text>Cargo:</Text></View>
+                        <View style={estilos.celdaValor}><Text>{plaza?.cargo || 'NO DISPONIBLE'}</Text></View>
+                    </View>
+                    <View style={estilos.fila}>
+                        <View style={estilos.celdaLabel}><Text>Estructura:</Text></View>
+                        <View style={estilos.celdaValor}><Text>{plaza?.estructura || 'NO DISPONIBLE'}</Text></View>
+                    </View>
+                    <View style={estilos.fila}>
+                        <View style={estilos.celdaLabel}><Text>Fecha de Ingreso:</Text></View>
+                        <View style={estilos.celdaValor}><Text>{formatearFecha(e.fechaIngreso)}</Text></View>
+                    </View>
+                </View>
 
                 {recorridos.length === 0 ? (
                     <Text style={estilos.cuerpoCentro}>Sin recorrido laboral registrado.</Text>
