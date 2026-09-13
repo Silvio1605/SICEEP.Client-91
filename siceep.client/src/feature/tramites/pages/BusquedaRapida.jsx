@@ -5,11 +5,24 @@ import {
 
 import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
+import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
+import PersonOffOutlinedIcon from '@mui/icons-material/PersonOffOutlined';
+import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
 import FolderSharedIcon from '@mui/icons-material/FolderShared';
 
 import { getExpedienteCompleto, getEstudios } from '../../expedientes/services/expedienteService';
 import { mapearCompletoADetalle } from '../../expedientes/utils/expedienteMappers';
-import { generarFichaExpedienteURL, obtenerFotoPerfilURL, generarConstanciaURL } from '../../expedientes/services/pdfService.jsx';
+import { generarFichaExpedienteURL, obtenerFotoPerfilURL } from '../../expedientes/services/pdfService.jsx';
+import { getHistorial } from '../../laboral/services/laboralServices';
+import { getConstanciaBaja } from '../../reportes/services/reporteService';
+import {
+    generarConstanciaBajaURL,
+    generarConstanciaFamiliarURL,
+    generarConstanciaLaboralURL,
+    generarConstanciaRecorridoURL,
+    generarConstanciaSalarialURL,
+} from '../../reportes/pdf/constanciasPdfService';
 import ModalVistaPreviaPDF from '../../expedientes/components/ModalVistaPreviaPDF';
 import ModalOpcionesImpresion from '../components/ModalOpcionesImpresion';
 import ModalDocumentosDigitales from '../components/ModalDocumentosDigitales';
@@ -80,7 +93,7 @@ export default function BusquedaRapida() {
         return { dto, detalle, estudios };
     };
 
-    const generarConstancia = async () => {
+    const generarConstancia = async (tipo) => {
         try {
             cerrarMenuOpciones();
             setGenerandoPDF(true);
@@ -88,12 +101,41 @@ export default function BusquedaRapida() {
 
             const { dto } = await cargarExpedienteCompleto(empleadoSeleccionado);
             const codigo = dto?.codigo || empleadoSeleccionado?.codigo || 'sincodigo';
-            setNombreDescarga(`Constancia-${codigo}.pdf`);
+            const config = { numeroDocumento: `C-${codigo}` };
 
-            const url = await generarConstanciaURL({ ...dto }, {});
-            setPdfUrl(url);
+            if (tipo === 'baja') {
+                // En BAJA muestra período laborado, salario y motivo de la baja
+                const bajaDto = (await getConstanciaBaja(empleadoSeleccionado.id)).data;
+                setNombreDescarga(`Constancia-Baja-${codigo}.pdf`);
+                setPdfUrl(await generarConstanciaBajaURL(bajaDto, config));
+                return;
+            }
+
+            if (tipo === 'recorrido') {
+                const historial = (await getHistorial(empleadoSeleccionado.id).catch(() => ({ data: [] }))).data;
+                if (!historial?.length) throw new Error('El empleado no presenta recorrido laboral registrado.');
+                setNombreDescarga(`Constancia-Recorrido-${codigo}.pdf`);
+                setPdfUrl(await generarConstanciaRecorridoURL({ ...dto }, historial, config));
+                return;
+            }
+
+            if (tipo === 'familiar') {
+                if (!dto?.familiares?.length) throw new Error('El expediente no contiene miembros de familia registrados.');
+                setNombreDescarga(`Constancia-Familiar-${codigo}.pdf`);
+                setPdfUrl(await generarConstanciaFamiliarURL({ ...dto }, config));
+                return;
+            }
+
+            if (tipo === 'salarial') {
+                setNombreDescarga(`Constancia-Salarial-${codigo}.pdf`);
+                setPdfUrl(await generarConstanciaSalarialURL({ ...dto }, config));
+                return;
+            }
+
+            setNombreDescarga(`Constancia-${codigo}.pdf`);
+            setPdfUrl(await generarConstanciaLaboralURL({ ...dto }, config));
         } catch (err) {
-            console.error("Error al generar la constancia: ", err);
+            console.error('Error al generar la constancia: ', err);
             setVistaPreviaAbierta(false);
             setPdfUrl(null);
             if (typeof alert === 'function') alert(`Error al generar la constancia: ${err?.message || 'desconocido'}`);
@@ -178,9 +220,26 @@ export default function BusquedaRapida() {
                     <ListItemIcon><DescriptionIcon fontSize="small" color="primary" /></ListItemIcon>
                     Ficha
                 </MenuItem>
-                <MenuItem onClick={generarConstancia}>
+                <Divider />
+                <MenuItem onClick={() => generarConstancia('laboral')}>
                     <ListItemIcon><AssignmentIcon fontSize="small" color="secondary" /></ListItemIcon>
-                    Constancia
+                    Constancia Laboral
+                </MenuItem>
+                <MenuItem onClick={() => generarConstancia('salarial')}>
+                    <ListItemIcon><PaymentsOutlinedIcon fontSize="small" color="success" /></ListItemIcon>
+                    Constancia Salarial
+                </MenuItem>
+                <MenuItem onClick={() => generarConstancia('familiar')}>
+                    <ListItemIcon><GroupOutlinedIcon fontSize="small" color="action" /></ListItemIcon>
+                    Constancia Familiar
+                </MenuItem>
+                <MenuItem onClick={() => generarConstancia('baja')}>
+                    <ListItemIcon><PersonOffOutlinedIcon fontSize="small" color="error" /></ListItemIcon>
+                    Constancia de Baja
+                </MenuItem>
+                <MenuItem onClick={() => generarConstancia('recorrido')}>
+                    <ListItemIcon><TimelineOutlinedIcon fontSize="small" color="warning" /></ListItemIcon>
+                    Constancia de Recorrido
                 </MenuItem>
                 <Divider />
                 <MenuItem onClick={abrirDocumentos}>

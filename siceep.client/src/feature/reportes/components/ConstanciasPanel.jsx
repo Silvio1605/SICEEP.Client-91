@@ -3,6 +3,7 @@ import AssignmentIndOutlined from '@mui/icons-material/AssignmentIndOutlined';
 import DescriptionOutlined from '@mui/icons-material/DescriptionOutlined';
 import PaymentsOutlined from '@mui/icons-material/PaymentsOutlined';
 import PersonOffOutlined from '@mui/icons-material/PersonOffOutlined';
+import GroupOutlined from '@mui/icons-material/GroupOutlined';
 import TimelineOutlined from '@mui/icons-material/TimelineOutlined';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import { useConstancias } from './../hooks/useConstancias';
@@ -11,7 +12,7 @@ export default function ConstanciasPanel() {
     const {
         busqueda, buscar, empleados, buscando,
         empleado, seleccionarEmpleado,
-        datosBaja, historial,
+        datosBaja, historial, tieneFamiliares,
         cargandoDatos, generando, error,
         descripcionEstado, generar,
     } = useConstancias();
@@ -19,6 +20,7 @@ export default function ConstanciasPanel() {
     const opciones = {
         general: { icon: <DescriptionOutlined fontSize="small" />, label: 'Constancia Laboral', title: 'Constancia general del empleado' },
         salarial: { icon: <PaymentsOutlined fontSize="small" />, label: 'Constancia Salarial', title: 'Constancia general con el salario mensual' },
+        familiar: { icon: <GroupOutlined fontSize="small" />, label: 'Constancia Familiar', title: 'Datos del trabajador y su núcleo familiar registrado' },
         baja: { icon: <PersonOffOutlined fontSize="small" />, label: 'Constancia de Baja', title: 'Constancia por retiro del personal' },
         recorrido: { icon: <TimelineOutlined fontSize="small" />, label: 'Constancia de Recorrido', title: 'Recorrido laboral del empleado' },
     };
@@ -102,6 +104,12 @@ export default function ConstanciasPanel() {
                                     <Button variant="outlined" color="secondary" startIcon={opciones.salarial.icon}
                                         disabled={generando} onClick={() => generar('salarial')}>
                                         {opciones.salarial.label}
+                                    </Button>
+                                </Tooltip>
+                                <Tooltip title={tieneFamiliares ? opciones.familiar.title : 'Solo disponible si existen familiares activos en el expediente'}>
+                                    <Button variant="outlined" startIcon={opciones.familiar.icon}
+                                        disabled={generando || !tieneFamiliares} onClick={() => generar('familiar')}>
+                                        {opciones.familiar.label}
                                     </Button>
                                 </Tooltip>
                                 <Tooltip title={datosBaja ? opciones.baja.title : 'Solo disponible si el empleado cuenta con un registro de baja'}>

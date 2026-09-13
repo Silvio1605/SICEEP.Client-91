@@ -101,6 +101,11 @@ export const estilos = StyleSheet.create({
     celdaCargo: { width: '24%' },
     celdaEstructura: { width: '24%' },
     celdaUnidad: { width: '20%' },
+    celdaParentesco: { width: '18%' },
+    celdaNombre: { width: '26%' },
+    celdaCedula: { width: '22%' },
+    celdaNacimiento: { width: '18%' },
+    celdaTelefono: { width: '16%' },
     filaRecorrido: {
         flexDirection: 'row',
         borderBottomWidth: 1,
@@ -163,6 +168,35 @@ export const formatearFecha = (valor) => {
 
 // Para la columna "Hasta": un recorrido sin fecha de fin es el activo
 export const formatearFechaFin = (valor) => (valor ? formatearFecha(valor) : 'ACTUAL');
+
+// Calcula el tiempo transcurrido entre dos fechas en años, meses y días
+export const calculoTiempoLaborado = (inicio, fin) => {
+    if (!inicio || !fin) return 'S/D';
+    const parsear = (valor) => {
+        const match = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+        return match ? new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3])) : null;
+    };
+    const a = parsear(inicio);
+    const b = parsear(fin);
+    if (!a || !b) return 'S/D';
+    let anios = b.getFullYear() - a.getFullYear();
+    let meses = b.getMonth() - a.getMonth();
+    let dias = b.getDate() - a.getDate();
+    if (dias < 0) {
+        meses -= 1;
+        const diasMesAnterior = new Date(b.getFullYear(), b.getMonth(), 0).getDate();
+        dias += diasMesAnterior;
+    }
+    if (meses < 0) {
+        anios -= 1;
+        meses += 12;
+    }
+    const partes = [];
+    if (anios > 0) partes.push(`${anios} año${anios !== 1 ? 's' : ''}`);
+    if (meses > 0) partes.push(`${meses} mes${meses !== 1 ? 'es' : ''}`);
+    if (dias > 0 || partes.length === 0) partes.push(`${dias} día${dias !== 1 ? 's' : ''}`);
+    return partes.join(', ');
+};
 
 // Formatea fecha de hoy en español largo: "Managua, lunes uno de enero del dos mil veintiséis"
 export const formatearFechaFirma = (ciudad) => {

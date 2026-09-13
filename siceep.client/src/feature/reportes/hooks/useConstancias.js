@@ -6,6 +6,7 @@ import {
     generarConstanciaGeneralPDF,
     generarConstanciaSalarialPDF,
     generarConstanciaBajaPDF,
+    generarConstanciaFamiliarPDF,
     generarConstanciaRecorridoPDF,
 } from './../pdf/constanciasPdfService';
 
@@ -88,6 +89,7 @@ export const useConstancias = () => {
             firmanteTitulo: 'Ingeniero',
             ciudad: 'Managua',
         };
+        const familiaresActivos = datosExpediente?.familiares?.filter((f) => f.activo !== false) || [];
         setGenerando(true);
         setError(null);
         try {
@@ -95,6 +97,9 @@ export const useConstancias = () => {
                 await generarConstanciaGeneralPDF(datosExpediente, config);
             } else if (tipo === 'salarial') {
                 await generarConstanciaSalarialPDF(datosExpediente, config);
+            } else if (tipo === 'familiar') {
+                if (!familiaresActivos.length) throw new Error('El empleado no cuenta con familiares registrados en su expediente.');
+                await generarConstanciaFamiliarPDF(datosExpediente, config);
             } else if (tipo === 'baja') {
                 if (!datosBaja) throw new Error('El empleado no cuenta con un registro de baja.');
                 await generarConstanciaBajaPDF(datosBaja, config);
@@ -115,6 +120,7 @@ export const useConstancias = () => {
         datosExpediente, datosBaja, historial,
         cargandoDatos, generando, error,
         descripcionEstado: emp => DESCRIPCION_ESTADO[emp?.estado] || 'S/D',
+        tieneFamiliares: Boolean(datosExpediente?.familiares?.some((f) => f.activo !== false)),
         generar,
     };
 };

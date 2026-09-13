@@ -7,6 +7,7 @@ import {
 import {
     estilos,
     formatearFecha,
+    calculoTiempoLaborado,
 } from './constanciaBase';
 import {
     EncabezadoConstancia,
@@ -17,6 +18,7 @@ import {
 export default function ConstanciaBajaPDF({ datos, config }) {
     const d = datos || {};
     const nombre = d.nombreCompleto || 'NOMBRE NO DISPONIBLE';
+    const salario = Number(d.salarioMensual || 0);
 
     return (
         <Document title={`Constancia de Baja ${nombre}`}>
@@ -28,11 +30,14 @@ export default function ConstanciaBajaPDF({ datos, config }) {
                 </Text>
                 <Text style={estilos.nombreNegrita}>{nombre}</Text>
                 <Text style={estilos.cuerpo}>
-                    Laboró en esta institución desde el {formatearFecha(d.fechaIngreso)} hasta el{' '}
-                    {formatearFecha(d.fechaBaja)}, desempeñándose como {d.cargo || 'S/D'} en la estructura{' '}
-                    {d.estructura || 'S/D'}. Su baja se registró según el siguiente detalle:
+                    consta en nuestro registro con los datos siguientes y causó baja de esta institución
+                    según el detalle que se muestra a continuación:
                 </Text>
 
+                {/* Sección 1: Datos del funcionario */}
+                <Text style={estilos.cuerpo}>
+                    <Text style={{ fontFamily: 'Times-Bold' }}>Datos del Funcionario:</Text>
+                </Text>
                 <View style={estilos.tabla}>
                     <View style={estilos.fila}>
                         <View style={estilos.celdaLabel}><Text>No. Cédula:</Text></View>
@@ -52,14 +57,25 @@ export default function ConstanciaBajaPDF({ datos, config }) {
                     </View>
                     <View style={estilos.fila}>
                         <View style={estilos.celdaLabel}><Text>Ubicación:</Text></View>
-                        <View style={estilos.celdaValor}>
-                            <Text>{d.estructura || 'NO DISPONIBLE'}</Text>
-                        </View>
+                        <View style={estilos.celdaValor}><Text>{d.estructura || 'NO DISPONIBLE'}</Text></View>
                     </View>
                     <View style={estilos.fila}>
                         <View style={estilos.celdaLabel}><Text>Unidad Administrativa:</Text></View>
                         <View style={estilos.celdaValor}><Text>{d.unidad || 'NO DISPONIBLE'}</Text></View>
                     </View>
+                    <View style={estilos.fila}>
+                        <View style={estilos.celdaLabel}><Text>Salario Mensual:</Text></View>
+                        <View style={estilos.celdaValor}>
+                            <Text>C$ {salario.toLocaleString('es-NI', { maximumFractionDigits: 2 })}</Text>
+                        </View>
+                    </View>
+                </View>
+
+                {/* Sección 2: Datos de la baja */}
+                <Text style={[estilos.cuerpo, { marginTop: 10 }]}>
+                    <Text style={{ fontFamily: 'Times-Bold' }}>Datos de la Baja:</Text>
+                </Text>
+                <View style={estilos.tabla}>
                     <View style={estilos.fila}>
                         <View style={estilos.celdaLabel}><Text>Fecha de Ingreso:</Text></View>
                         <View style={estilos.celdaValor}><Text>{formatearFecha(d.fechaIngreso)}</Text></View>
@@ -69,7 +85,13 @@ export default function ConstanciaBajaPDF({ datos, config }) {
                         <View style={estilos.celdaValor}><Text>{formatearFecha(d.fechaBaja)}</Text></View>
                     </View>
                     <View style={estilos.fila}>
-                        <View style={estilos.celdaLabel}><Text>Motivo de Baja:</Text></View>
+                        <View style={estilos.celdaLabel}><Text>Tiempo Laborado:</Text></View>
+                        <View style={estilos.celdaValor}>
+                            <Text>{calculoTiempoLaborado(d.fechaIngreso, d.fechaBaja)}</Text>
+                        </View>
+                    </View>
+                    <View style={estilos.fila}>
+                        <View style={estilos.celdaLabel}><Text>Tipo de Baja:</Text></View>
                         <View style={estilos.celdaValor}><Text>{d.motivo || 'NO DISPONIBLE'}</Text></View>
                     </View>
                     {d.observacion && (
