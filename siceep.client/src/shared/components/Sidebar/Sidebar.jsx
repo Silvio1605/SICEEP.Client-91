@@ -20,6 +20,7 @@ import WorkIcon from '@mui/icons-material/Work';
 import SwapHorizIcon from '@mui/icons-material/SwapHoriz';
 import ReceiptLongIcon from '@mui/icons-material/ReceiptLong';
 import SchoolIcon from '@mui/icons-material/School';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 import logo from "../../../assets/Logo_p.png";
@@ -60,6 +61,7 @@ const menuSections = [
             { text: "Plazas", icon: <WorkIcon />, path: "/index/plazas", idPermiso: 3 },
             { text: "Movimientos", icon: <SwapHorizIcon />, path: "/index/movimientos", idPermiso: 3 },
             { text: "Deducciones", icon: <ReceiptLongIcon />, path: "/index/deducciones", idPermiso: 3 },
+            { text: "Ubicaciones", icon: <LocationOnIcon />, path: "/index/catalogos-ubicaciones", idPermiso: 3 },
         ]
     },
     {
@@ -71,10 +73,10 @@ const menuSections = [
         ]
     },
     {
-        titulo: "Catálogos",
+        titulo: "Formación académica",
         items: [
+            { text: "Consulta Académica", icon: <MenuBookIcon />, path: "/index/consulta-academica", idPermiso: 3 },
             { text: "Instituciones Académicas", icon: <SchoolIcon />, path: Rutas.INSTITUCIONES, idPermiso: 3 },
-            { text: "Ubicaciones", icon: <LocationOnIcon />, path: Rutas.CATALOGO_UBICACIONES, idPermiso: 3 },
         ]
     },
     {
@@ -134,7 +136,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
             <div className="MenuScroll">
                 {menuSections.map((section) => {
-                    const hasVisibleItems = section.items.some(item => tienePermiso(item.idPermiso));
+                    const hasVisibleItems = section.items.some(item => item.isLogout || tienePermiso(item.idPermiso));
                     if (!hasVisibleItems) return null;
 
                     return (
@@ -157,7 +159,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                             ? item.path
                                             : `/index${item.path.startsWith("/") ? "" : "/"}${item.path}`;
 
-                                        return tienePermiso(item.idPermiso) && (
+                                        return (item.isLogout || tienePermiso(item.idPermiso)) && (
                                             <div className="LinkContainer" key={item.text}>
                                                 <NavLink
                                                     to={rutaCorrecta}

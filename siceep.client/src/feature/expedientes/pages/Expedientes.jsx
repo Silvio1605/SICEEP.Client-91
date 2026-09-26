@@ -99,9 +99,29 @@ export default function Expedientes() {
                     Registros de expedientes
                 </Typography>
 
+                <Box sx={{ display: 'flex', gap: 2, mb: 1.5, flexWrap: 'wrap' }}>
+                    <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+                        <Box sx={{ width: 12, height: 12, borderRadius: '2px', bgcolor: '#ffffff', border: '1px solid #e0e0e0' }} />
+                        Activo
+                    </Typography>
+                    <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+                        <Box sx={{ width: 12, height: 12, borderRadius: '2px', bgcolor: '#ffebe9', border: '1px solid #ffccc7' }} />
+                        De baja
+                    </Typography>
+                    <Typography variant="caption" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: 'text.secondary' }}>
+                        <Box sx={{ width: 12, height: 12, borderRadius: '2px', bgcolor: '#fff7e6', border: '1px solid #ffd591' }} />
+                        Com/Servicio
+                    </Typography>
+                </Box>
+
                 {expedientes ? (
                     <DataGrid
                         rows={expedientes}
+                        getRowClassName={(params) => {
+                            if (params.row.estado === 1) return 'row-baja';
+                            if (params.row.estado === 3) return 'row-comision';
+                            return 'row-activo';
+                        }}
                         columns={registros}
                         autoHeight
                         disableColumnMenu
@@ -140,6 +160,10 @@ export default function Expedientes() {
                             backgroundColor: '#ffffff',
                             '& .MuiDataGrid-columnHeaders': { borderBottom: 'none', backgroundColor: '#f8f9fa' },
                             '& .MuiDataGrid-cell': { borderBottom: '1px solid #f0f0f0' },
+                            '& .MuiDataGrid-row.row-baja': { backgroundColor: '#ffebe9' },
+                            '& .MuiDataGrid-row.row-baja:hover': { backgroundColor: '#ffdcd9' },
+                            '& .MuiDataGrid-row.row-comision': { backgroundColor: '#fff7e6' },
+                            '& .MuiDataGrid-row.row-comision:hover': { backgroundColor: '#ffe9c7' },
                             '& .header-negrita': { fontWeight: 'bold' },
                         }}
                     />

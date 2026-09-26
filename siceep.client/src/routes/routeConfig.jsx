@@ -13,6 +13,7 @@ import Plazas from "../feature/laboral/pages/Plazas";
 import Movimientos from "../feature/laboral/pages/Movimientos";
 import Deducciones from "../feature/laboral/pages/Deducciones";
 import InstitucionesAcademicas from "../feature/catalogos/pages/InstitucionesAcademicas";
+import ConsultaAcademica from "../feature/catalogos/pages/ConsultaAcademica";
 import Dashboard from "../feature/estadisticas/pages/Dashboard";
 import HerramientasAyuda from "../feature/ayuda/pages/HerramientasAyuda";
 import Reportes from "../feature/reportes/pages/Reportes";
@@ -71,6 +72,7 @@ export const privateRoutes = [
     { path: "movimientos", element: <Movimientos /> },
     { path: "deducciones", element: <Deducciones /> },
     { path: "instituciones", element: <InstitucionesAcademicas /> },
+    { path: "consulta-academica", element: <ConsultaAcademica /> },
     { path: "estadisticas", element: <Dashboard /> },
     { path: "reportes", element: <Reportes /> },
     { path: "herramientas-ayuda", element: <HerramientasAyuda /> },

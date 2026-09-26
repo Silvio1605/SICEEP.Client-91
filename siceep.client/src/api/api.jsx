@@ -13,19 +13,8 @@ const api = axios.create({
     }
 });
 
-// Agregar el token dinámicamente antes de cada solicitud
-api.interceptors.request.use(
-    (config) => {
-        const token = localStorage.getItem('token');
-        if (token) {
-            config.headers['Authorization'] = `Bearer ${token}`;
-        }
-        return config;
-    },
-    (error) => {
-        return Promise.reject(error);
-    }
-);
+// La autenticación se resuelve mediante la cookie HttpOnly (token JWT)
+// emitida por el backend en el inicio de sesión (Auth/Login).
 
 // Interceptor de respuesta (atrapa TODOS los errores HTTP)
 api.interceptors.response.use(

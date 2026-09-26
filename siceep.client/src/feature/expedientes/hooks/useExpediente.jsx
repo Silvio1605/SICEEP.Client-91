@@ -20,6 +20,7 @@ export const useExpediente = () => {
 
         setExpedinetes((res.data.data || []).map((item, index) => ({
             ...item,
+            id: item.id,
             index: (paginaActual - 1) * pageSize + index + 1,
         })));
         setPage(pagina);

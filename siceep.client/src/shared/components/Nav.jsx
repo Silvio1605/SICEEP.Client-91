@@ -124,7 +124,7 @@ export default function Nav({ open, toggleNav }) {
                         <List component="div" disablePadding>
                             {section.items.map(
                                 (item) =>
-                                    tienePermiso(item.idPermiso) && (
+                                    (item.isLogout || tienePermiso(item.idPermiso)) && (
                                         <ListItem
                                             key={item.text}
                                             disablePadding

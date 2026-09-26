@@ -263,8 +263,13 @@ export default function TabDocumentos({ expediente }) {
                                                     fullWidth
                                                     disabled={subiendo !== null}
                                                     startIcon={<FileUploadOutlinedIcon />}
+                                                    sx={{ justifyContent: 'flex-start', overflow: 'hidden', minHeight: 36.5 }}
                                                 >
-                                                    {frenteFile ? `Frente: ${frenteFile.name}` : 'SELECCIONAR FRENTE'}
+                                                    {frenteFile ? (
+                                                        <Typography component="span" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                            {`Frente: ${frenteFile.name}`}
+                                                        </Typography>
+                                                    ) : 'SELECCIONAR FRENTE'}
                                                     <input
                                                         ref={inputRef}
                                                         type="file"
@@ -281,8 +286,13 @@ export default function TabDocumentos({ expediente }) {
                                                     fullWidth
                                                     disabled={subiendo !== null}
                                                     startIcon={<FileUploadOutlinedIcon />}
+                                                    sx={{ justifyContent: 'flex-start', overflow: 'hidden', minHeight: 36.5 }}
                                                 >
-                                                    {reversoFile ? `Reverso: ${reversoFile.name}` : 'SELECCIONAR REVERSO'}
+                                                    {reversoFile ? (
+                                                        <Typography component="span" noWrap sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                                            {`Reverso: ${reversoFile.name}`}
+                                                        </Typography>
+                                                    ) : 'SELECCIONAR REVERSO'}
                                                     <input
                                                         ref={inputRef}
                                                         type="file"
@@ -296,7 +306,7 @@ export default function TabDocumentos({ expediente }) {
 
                                         <Button
                                             variant="contained"
-                                            sx={{ mt: 2 }}
+                                            sx={{ mt: 2, width: { xs: '100%', sm: 'auto' } }}
                                             startIcon={subiendo?.tipoId === 2 ? (<CircularProgress size={18} />) : (<FileUploadOutlinedIcon />)}
                                             disabled={!frenteFile || !reversoFile || !vencimiento || subiendo !== null}
                                             onClick={handleSubirCedula}
@@ -352,8 +362,8 @@ export default function TabDocumentos({ expediente }) {
                                 )}
 
                                 {yaSubidos.length > 0 && (
-                                    <Box sx={{ mt: 2 }}>
-                                        <Table size="small">
+                                    <Box sx={{ mt: 2, overflowX: 'auto' }}>
+                                        <Table size="small" sx={{ minWidth: { xs: 560, sm: 0 } }}>
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell sx={{ fontWeight: 'bold' }}>Archivo</TableCell>

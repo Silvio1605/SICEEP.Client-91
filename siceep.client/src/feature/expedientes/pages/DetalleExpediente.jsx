@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Box, Typography, Paper, Button, Tabs, Tab, CircularProgress, Alert } from '@mui/material';
+import { Box, Typography, Paper, Button, Tabs, Tab, CircularProgress, Alert, Chip } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
@@ -20,6 +20,17 @@ import { generarFichaExpedienteURL, obtenerFotoPerfilURL } from '../services/pdf
 
 // Mapa local por si el catálogo no responde
 const ESTADOS_CIVIL_FALLBACK = { 1: 'SOLTERO', 2: 'CASADO', 1002: 'UNION DE HECHO' };
+
+// Estado funcional del empleado (1 Baja, 2 Activo, 3 Com/Servicio)
+const ESTADO_FUNCIONARIO = {
+    1: { label: 'De baja', color: 'error' },
+    2: { label: 'Activo', color: 'success' },
+    3: { label: 'Com/Servicio', color: 'warning' },
+};
+const FONDO_ESTADO = {
+    1: '#ffebe9',
+    3: '#fff7e6',
+};
 
 export default function DetalleExpediente() {
     const navigate = useNavigate();
@@ -182,11 +193,28 @@ export default function DetalleExpediente() {
             </Box>
 
             {/* Cabecera del Expediente */}
-            <Paper elevation={3} sx={{ p: 3, mb: 3, borderRadius: 2 }}>
-                <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{datosEmpleado.nombreCompleto}</Typography>
-                <Typography variant="subtitle1" color="text.secondary">
-                    Número de Expediente: {datosExpediente.numeroExpediente || datosExpediente.codigo || `EXP-${String(id).padStart(6, '0')}`}
-                </Typography>
+            <Paper
+                elevation={3}
+                sx={{
+                    p: 3,
+                    mb: 3,
+                    borderRadius: 2,
+                    ...(FONDO_ESTADO[datosExpediente.idEstado] ? { backgroundColor: FONDO_ESTADO[datosExpediente.idEstado] } : {}),
+                }}
+            >
+                <Box display="flex" justifyContent="space-between" alignItems="center" flexWrap="wrap" gap={1}>
+                    <Box>
+                        <Typography variant="h4" sx={{ fontWeight: 'bold' }}>{datosEmpleado.nombreCompleto}</Typography>
+                        <Typography variant="subtitle1" color="text.secondary">
+                            Número de Expediente: {datosExpediente.numeroExpediente || datosExpediente.codigo || `EXP-${String(id).padStart(6, '0')}`}
+                        </Typography>
+                    </Box>
+                    <Chip
+                        label={ESTADO_FUNCIONARIO[datosExpediente.idEstado]?.label || datosExpediente.desEstado || 'Sin estado'}
+                        color={ESTADO_FUNCIONARIO[datosExpediente.idEstado]?.color || 'default'}
+                        sx={{ fontWeight: 'bold' }}
+                    />
+                </Box>
             </Paper>
 
             {/* Pestañas */}
