@@ -8,6 +8,7 @@ import ExpandMore from "@mui/icons-material/ExpandMore";
 import PersonIcon from '@mui/icons-material/Person';
 import KeyIcon from '@mui/icons-material/Key';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HistoryEduIcon from '@mui/icons-material/HistoryEdu';
 import BadgeIcon from '@mui/icons-material/Badge';
 import AddBoxIcon from '@mui/icons-material/AddBox';
@@ -32,60 +33,71 @@ import { Link } from "react-router-dom";
 import { useAuth } from "../../../providers/Authenticacion/useAuth";
 import { Rutas } from "./../../../routes/routes";
 
+// Los idPermiso son los Id_Recurso de dbo.Recurso. El servidor resuelve cada
+// endpoint por el nombre del recurso (PermisoRequirement), asi que el menu debe
+// usar el mismo recurso para que lo que se ve coincida con lo que la API permite.
 const menuSections = [
     {
         titulo: "Seguridad",
         items: [
-            { text: "Usuarios", icon: <PersonIcon />, path: Rutas.USUARIOS, idPermiso: 1 },
-            { text: "Permisos", icon: <KeyIcon />, path: Rutas.PERMISOS, idPermiso: 1 },
-            { text: "Historial", icon: <HistoryEduIcon />, path: Rutas.HISTORIAL, idPermiso: 1 },
+            { text: "Usuarios", icon: <PersonIcon />, path: Rutas.USUARIOS, idPermiso: 2 },
+            { text: "Permisos", icon: <KeyIcon />, path: Rutas.PERMISOS, idPermiso: 1002 },
+            { text: "Historial", icon: <HistoryEduIcon />, path: Rutas.HISTORIAL, idPermiso: 1004 },
         ]
     },
     {
         titulo: "Expediente",
         items: [
-            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: 3 },
-            { text: "Nuevo Expediente", icon: <AddBoxIcon />, path: Rutas.CREAR_EXPEDIENTE, idPermiso: 3 }
+            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: 6 },
+            { text: "Nuevo Expediente", icon: <AddBoxIcon />, path: Rutas.CREAR_EXPEDIENTE, idPermiso: 5 }
         ]
     },
     {
         titulo: "Tramites y Atención",
         items: [
-            { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: 3 },
-            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 3 }
+            { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: 11 },
+            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 9 }
         ]
     },
     {
         titulo: "Gestión Laboral",
         items: [
-            { text: "Plazas", icon: <WorkIcon />, path: "/index/plazas", idPermiso: 3 },
-            { text: "Movimientos", icon: <SwapHorizIcon />, path: "/index/movimientos", idPermiso: 3 },
-            { text: "Deducciones", icon: <ReceiptLongIcon />, path: "/index/deducciones", idPermiso: 3 },
-            { text: "Ubicaciones", icon: <LocationOnIcon />, path: "/index/catalogos-ubicaciones", idPermiso: 3 },
+            { text: "Plazas", icon: <WorkIcon />, path: "/index/plazas", idPermiso: 13 },
+            { text: "Movimientos", icon: <SwapHorizIcon />, path: "/index/movimientos", idPermiso: 14 },
+            { text: "Deducciones", icon: <ReceiptLongIcon />, path: "/index/deducciones", idPermiso: 15 },
+            { text: "Ubicaciones", icon: <LocationOnIcon />, path: "/index/catalogos-ubicaciones", idPermiso: 21 },
         ]
     },
     {
         titulo: "Reportes y estadisticas",
         items: [
-            { text: "Reportes", icon: <AssessmentIcon />, path: "/index/reportes", idPermiso: 3 },
-            { text: "Estadisticas", icon: <BarChartIcon />, path: "/index/estadisticas", idPermiso: 3 },
-            { text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: "/index/herramientas-ayuda", idPermiso: 3 },
+            // Reportes muestra tres recursos distintos (fuerza laboral, altas y
+            // bajas y panel); basta con tener alguno de los tres.
+            { text: "Reportes", icon: <AssessmentIcon />, path: "/index/reportes", idPermiso: [16, 17, 18] },
+            { text: "Estadisticas", icon: <BarChartIcon />, path: "/index/estadisticas", idPermiso: 18 },
+            { text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: "/index/herramientas-ayuda", soloAutenticado: true },
         ]
     },
     {
         titulo: "Formación académica",
         items: [
-            { text: "Consulta Académica", icon: <MenuBookIcon />, path: "/index/consulta-academica", idPermiso: 3 },
-            { text: "Instituciones Académicas", icon: <SchoolIcon />, path: Rutas.INSTITUCIONES, idPermiso: 3 },
+            { text: "Consulta Académica", icon: <MenuBookIcon />, path: "/index/consulta-academica", idPermiso: 8 },
+            { text: "Instituciones Académicas", icon: <SchoolIcon />, path: Rutas.INSTITUCIONES, idPermiso: 19 },
         ]
     },
     {
         titulo: "Sesión",
         items: [
+            { text: "Mi Cuenta", icon: <AccountCircleIcon />, path: Rutas.CONFIGURACION, soloAutenticado: true },
             { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true, idPermiso: 4 },
         ]
     }
 ];
+
+// Un ítem es visible si no exige permiso (logout, o cualquier opción propia de la
+// sesión como Mi Cuenta) o si el usuario tiene el permiso asignado.
+const esVisible = (item, tienePermiso) =>
+    item.isLogout || item.soloAutenticado || tienePermiso(item.idPermiso);
 
 export function Sidebar({ sidebarOpen, setSidebarOpen }) {
     const [openSections, setOpenSections] = useState({});
@@ -136,7 +148,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
 
             <div className="MenuScroll">
                 {menuSections.map((section) => {
-                    const hasVisibleItems = section.items.some(item => item.isLogout || tienePermiso(item.idPermiso));
+                    const hasVisibleItems = section.items.some(item => esVisible(item, tienePermiso));
                     if (!hasVisibleItems) return null;
 
                     return (
@@ -151,7 +163,6 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                     <div className="ClosedIndicator" />
                                 )}
                             </div>
-
                             <Collapse in={openSections[section.titulo]} timeout="auto" unmountOnExit>
                                 <div className="ItemsContainer">
                                     {section.items.map((item) => {
@@ -159,7 +170,7 @@ export function Sidebar({ sidebarOpen, setSidebarOpen }) {
                                             ? item.path
                                             : `/index${item.path.startsWith("/") ? "" : "/"}${item.path}`;
 
-                                        return (item.isLogout || tienePermiso(item.idPermiso)) && (
+                                        return esVisible(item, tienePermiso) && (
                                             <div className="LinkContainer" key={item.text}>
                                                 <NavLink
                                                     to={rutaCorrecta}

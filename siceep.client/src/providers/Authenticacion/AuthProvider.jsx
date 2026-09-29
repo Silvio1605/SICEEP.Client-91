@@ -74,7 +74,7 @@ export const AuthProvider = ({ children }) => {
     useEffect(() => {
         if (!autenticado) return;
 
-        const LIMITE_INACTIVIDAD = 1 * 60 * 1000;
+        const LIMITE_INACTIVIDAD = 5 * 60 * 1000;
         let ultimaActividad = Date.now();
         let temporizador = null;
 
@@ -152,10 +152,17 @@ export const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    // Acepta un id de recurso o una lista de ellos: basta con tener alguno.
+    // Los permisos llegan como Id_Recurso en texto dentro del claim "Permisos".
     const tienePermiso = useCallback((permiso) => {
-
         if (!usuario?.permisos)
             return false;
+
+        if (Array.isArray(permiso))
+            return permiso.some(p => usuario.permisos.includes(p.toString()));
+
+        if (permiso === undefined || permiso === null)
+            return true;
 
         return usuario.permisos.includes(permiso.toString());
     }, [usuario]);

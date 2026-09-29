@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { Box, TextField, Typography, Paper, Alert, InputAdornment, IconButton, Tooltip, CircularProgress } from '@mui/material';
+import {
+    Box, TextField, Typography, Paper, Alert, InputAdornment, IconButton, Tooltip, CircularProgress,
+    Dialog, DialogTitle, DialogContent, useMediaQuery
+} from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { DataGrid } from '@mui/x-data-grid';
 import SearchIcon from '@mui/icons-material/Search';
 import SchoolIcon from '@mui/icons-material/School';
+import CloseIcon from '@mui/icons-material/Close';
 import useExpedientes from '../../tramites/hooks/useExpedientes';
 import { getExpedienteCompleto, getEstudios } from '../../expedientes/services/expedienteService';
 import InfoAcademica from '../../expedientes/components/ver/InfoAcademica';
@@ -55,11 +60,22 @@ const construirColumnas = (onVer) => [
 
 export default function ConsultaAcademica() {
     const { expedientes, total, cargando, error, busqueda, page, manejarBusqueda, cambiarPagina } = useExpedientes();
+    const theme = useTheme();
+    const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
+    const [dialogoAbierto, setDialogoAbierto] = useState(false);
     const [cargandoPerfil, setCargandoPerfil] = useState(false);
     const [perfil, setPerfil] = useState(null);
     const [errorPerfil, setErrorPerfil] = useState(null);
 
+    const cerrarDialogo = () => {
+        setDialogoAbierto(false);
+        setPerfil(null);
+        setErrorPerfil(null);
+        setCargandoPerfil(false);
+    };
+
     const verFormacion = async (empleado) => {
+        setDialogoAbierto(true);
         setCargandoPerfil(true);
         setErrorPerfil(null);
         setPerfil(null);
@@ -143,21 +159,38 @@ export default function ConsultaAcademica() {
                 />
             </Paper>
 
-            <Box sx={{ mt: 3 }}>
-                {cargandoPerfil && (
-                    <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
-                        <CircularProgress />
-                    </Box>
-                )}
-                {!cargandoPerfil && errorPerfil && (
-                    <Alert severity="error" variant="filled">
-                        {errorPerfil}
-                    </Alert>
-                )}
-                {!cargandoPerfil && perfil && (
-                    <InfoAcademica data={{ nombreCompleto: perfil.nombreCompleto }} estudios={perfil.estudios} />
-                )}
-            </Box>
+            <Dialog
+                fullScreen={fullScreen}
+                open={dialogoAbierto}
+                onClose={cerrarDialogo}
+                fullWidth
+                maxWidth="lg"
+                aria-labelledby="titulo-formacion-academica"
+            >
+                <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography id="titulo-formacion-academica" variant="h6" component="span" fontWeight={700}>
+                        Formación Académica
+                    </Typography>
+                    <IconButton onClick={cerrarDialogo} aria-label="Cerrar">
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
+                <DialogContent dividers sx={{ maxHeight: '75vh' }}>
+                    {cargandoPerfil && (
+                        <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+                            <CircularProgress />
+                        </Box>
+                    )}
+                    {!cargandoPerfil && errorPerfil && (
+                        <Alert severity="error" variant="filled">
+                            {errorPerfil}
+                        </Alert>
+                    )}
+                    {!cargandoPerfil && perfil && (
+                        <InfoAcademica data={{ nombreCompleto: perfil.nombreCompleto }} estudios={perfil.estudios} />
+                    )}
+                </DialogContent>
+            </Dialog>
         </Box>
     );
 }

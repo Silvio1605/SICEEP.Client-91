@@ -6,17 +6,17 @@ import Expedientes from "../feature/expedientes/pages/Expedientes";
 import DetalleExpediente from "../feature/expedientes/pages/DetalleExpediente";
 import CrearExpediente from "../feature/expedientes/pages/CrearExpediente";
 import EditarExpediente from "../feature/expedientes/pages/EditarExpediente";
-import GestionDeducciones from "../feature/tramites/pages/GestionDeducciones";
 import BusquedaRapida from "../feature/tramites/pages/BusquedaRapida";
 import GestionDocumentos from "../feature/documentos/pages/GestionDocumentos";
 import Plazas from "../feature/laboral/pages/Plazas";
 import Movimientos from "../feature/laboral/pages/Movimientos";
 import Deducciones from "../feature/laboral/pages/Deducciones";
-import InstitucionesAcademicas from "../feature/catalogos/pages/InstitucionesAcademicas";
-import ConsultaAcademica from "../feature/catalogos/pages/ConsultaAcademica";
+import InstitucionesAcademicas from "../feature/academico/pages/InstitucionesAcademicas";
+import ConsultaAcademica from "../feature/academico/pages/ConsultaAcademica";
 import Dashboard from "../feature/estadisticas/pages/Dashboard";
 import HerramientasAyuda from "../feature/ayuda/pages/HerramientasAyuda";
 import Reportes from "../feature/reportes/pages/Reportes";
+import Configuracion from "../feature/configuracion/pages/Configuracion";
 import { Navigate } from "react-router-dom";
 
 // Context Providers
@@ -64,7 +64,6 @@ export const privateRoutes = [
     { path: "info-laboral/:id", element: <DetalleExpediente /> },
     { path: "info-academica/:id", element: <DetalleExpediente /> },
     { path: "documentos/:id", element: <DetalleExpediente /> },
-    { path: "deducciones", element: <GestionDeducciones /> },
     { path: "busqueda-rapida", element: <BusquedaRapida /> },
     { path: "gestion-documentos", element: <GestionDocumentos /> },
     { path: "gestion-laboral", element: <Navigate to="plazas" replace /> },
@@ -77,5 +76,6 @@ export const privateRoutes = [
     { path: "reportes", element: <Reportes /> },
     { path: "herramientas-ayuda", element: <HerramientasAyuda /> },
     { path: "catalogos-ubicaciones", element: <Ubicacion /> },
+    { path: "configuracion", element: <Configuracion /> },
     { path: "*", element: <Navigate to="/index" replace /> }
 ];

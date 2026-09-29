@@ -39,32 +39,45 @@ export default function TabDeducciones() {
         );
     };
 
+    const dialogoBusqueda = (
+        <BusquedaPropietario
+            open={openBusqueda}
+            onClose={() => setOpenBusqueda(false)}
+            onSeleccionar={seleccionarEmpleado}
+            OriginRegistro
+        />
+    );
+
     if (!empleado) {
         return (
-            <Paper
-                variant="outlined"
-                sx={{ p: 5, borderRadius: 3, borderColor: 'divider', textAlign: 'center' }}
-            >
-                <Stack spacing={2} alignItems="center">
-                    <Avatar sx={{ width: 72, height: 72, bgcolor: (theme) => theme.palette.primary.main }}>
-                        <ReceiptLongIcon sx={{ fontSize: 40 }} />
-                    </Avatar>
-                    <Box>
-                        <Typography variant="h6" fontWeight={700}>Selecciona un empleado</Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 520, mx: 'auto' }}>
-                            Busque al empleado para registrar las deducciones que reportan las instituciones
-                            externas cada mes (préstamos, pensión alimenticia, planes telefónicos, casas comerciales, etc.).
-                        </Typography>
-                    </Box>
-                    <Button
-                        variant="contained"
-                        startIcon={<PersonSearchIcon />}
-                        onClick={() => setOpenBusqueda(true)}
-                    >
-                        Buscar Empleado
-                    </Button>
-                </Stack>
-            </Paper>
+            <>
+                <Paper
+                    variant="outlined"
+                    sx={{ p: 5, borderRadius: 3, borderColor: 'divider', textAlign: 'center' }}
+                >
+                    <Stack spacing={2} alignItems="center">
+                        <Avatar sx={{ width: 72, height: 72, bgcolor: (theme) => theme.palette.primary.main }}>
+                            <ReceiptLongIcon sx={{ fontSize: 40 }} />
+                        </Avatar>
+                        <Box>
+                            <Typography variant="h6" fontWeight={700}>Selecciona un empleado</Typography>
+                            <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 520, mx: 'auto' }}>
+                                Busque al empleado para registrar las deducciones que reportan las instituciones
+                                externas cada mes (préstamos, pensión alimenticia, planes telefónicos, casas comerciales, etc.).
+                            </Typography>
+                        </Box>
+                        <Button
+                            variant="contained"
+                            startIcon={<PersonSearchIcon />}
+                            onClick={() => setOpenBusqueda(true)}
+                        >
+                            Buscar Empleado
+                        </Button>
+                    </Stack>
+                </Paper>
+
+                {dialogoBusqueda}
+            </>
         );
     }
 
@@ -163,12 +176,7 @@ export default function TabDeducciones() {
                 </Grid>
             </Grid>
 
-            <BusquedaPropietario
-                open={openBusqueda}
-                onClose={() => setOpenBusqueda(false)}
-                onSeleccionar={seleccionarEmpleado}
-                OriginRegistro
-            />
+            {dialogoBusqueda}
         </Box>
     );
 }

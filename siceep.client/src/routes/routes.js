@@ -14,4 +14,5 @@ export const Rutas = {
     CERRAR_SESION: HOME + "/cerrar-sesion",
     DEDUCCIONES: HOME + "/deducciones",
     BUSQUEDA_RAPIDA: HOME + "/busqueda-rapida",
+    CONFIGURACION: HOME + "/configuracion",
 };

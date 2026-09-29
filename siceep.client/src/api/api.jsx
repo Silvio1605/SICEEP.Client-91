@@ -1,8 +1,6 @@
 ﻿import axios from 'axios';
 import { cerrarSesionPorTokenExpirado } from './../utils/sesion';
 
-// Las peticiones de auth (Login, Me, etc.) se manejan sin redirigir:
-// el login fallido no debe expulsar al usuario de la página de acceso.
 const esRutaAuth = (url) => /Auth\//.test(url || '');
 
 const api = axios.create({
@@ -13,10 +11,7 @@ const api = axios.create({
     }
 });
 
-// La autenticación se resuelve mediante la cookie HttpOnly (token JWT)
-// emitida por el backend en el inicio de sesión (Auth/Login).
-
-// Interceptor de respuesta (atrapa TODOS los errores HTTP)
+// Interceptor de respuesta (errores HTTP)
 api.interceptors.response.use(
     (response) => response,
     (error) => {
@@ -33,7 +28,6 @@ api.interceptors.response.use(
                     break;
                 case 400:
                     console.warn('Error de validación:', message);
-                    // Podrías mostrar un toast si quieres, o dejarlo para que el componente lo maneje
                     break;
                 case 404:
                     console.warn('Recurso no encontrado:', error.config.url);

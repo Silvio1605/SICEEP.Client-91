@@ -24,7 +24,7 @@ export default function InstitucionesAcademicas() {
     const [seleccionada, setSeleccionada] = useState(null);
     const [aEliminar, setAEliminar] = useState(null);
 
-    const cargar = useCallback(async () => {
+    const recargar = useCallback(async () => {
         setCargando(true);
         try {
             const data = await listarInstituciones();
@@ -41,8 +41,22 @@ export default function InstitucionesAcademicas() {
     }, [mostrarNotificacion]);
 
     useEffect(() => {
-        cargar();
-    }, [cargar]);
+        let cancelado = false;
+
+        listarInstituciones()
+            .then((data) => { if (!cancelado) setRegistros(data ?? []); })
+            .catch(() => {
+                if (cancelado) return;
+                setRegistros([]);
+                mostrarNotificacion({
+                    message: "No se pudieron cargar las instituciones",
+                    severity: "error",
+                });
+            })
+            .finally(() => { if (!cancelado) setCargando(false); });
+
+        return () => { cancelado = true; };
+    }, [mostrarNotificacion]);
 
     const abrirNueva = () => {
         setSeleccionada(null);
@@ -64,7 +78,7 @@ export default function InstitucionesAcademicas() {
             await eliminarInstitucion(aEliminar.idInstitucion);
             mostrarNotificacion({ message: "Institución eliminada correctamente", severity: "success" });
             setAEliminar(null);
-            await cargar();
+            await recargar();
         } catch (error) {
             mostrarNotificacion({
                 message: typeof error === "string" ? error : "Error al eliminar la institución",
@@ -205,7 +219,7 @@ export default function InstitucionesAcademicas() {
                 open={openFormulario}
                 onClose={cerrarFormulario}
                 institucion={seleccionada}
-                onCambios={cargar}
+                onCambios={recargar}
             />
 
             <Confirm

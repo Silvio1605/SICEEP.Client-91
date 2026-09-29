@@ -24,37 +24,24 @@ const vacio = {
     municipio: "",
 };
 
-export default function FormularioInstitucion({ open, onClose, institucion, onCambios }) {
+const construirFormulario = (institucion) => {
+    if (!institucion) return vacio;
+
+    return {
+        idInstitucion: institucion.idInstitucion,
+        nombre: institucion.nombre ?? "",
+        siglas: institucion.siglas ?? "",
+        idTipoInstitucion: institucion.idTipoInstitucion ?? "",
+        idPais: institucion.idPais ?? "",
+        departamento: institucion.departamento ?? "",
+        municipio: institucion.municipio ?? "",
+    };
+};
+
+function CamposInstitucion({ institucion, paises, tipos, onClose, onCambios }) {
     const { mostrarNotificacion } = useNotificacionContext();
     const [guardando, setGuardando] = useState(false);
-    const [paises, setPaises] = useState([]);
-    const [tipos, setTipos] = useState([]);
-    const [form, setForm] = useState(vacio);
-
-    useEffect(() => {
-        if (!open) return;
-
-        if (institucion) {
-            setForm({
-                idInstitucion: institucion.idInstitucion,
-                nombre: institucion.nombre ?? "",
-                siglas: institucion.siglas ?? "",
-                idTipoInstitucion: institucion.idTipoInstitucion ?? "",
-                idPais: institucion.idPais ?? "",
-                departamento: institucion.departamento ?? "",
-                municipio: institucion.municipio ?? "",
-            });
-        } else {
-            setForm(vacio);
-        }
-
-        listarPaises()
-            .then(setPaises)
-            .catch(() => setPaises([]));
-        listarTiposInstitucion()
-            .then(setTipos)
-            .catch(() => setTipos([]));
-    }, [open, institucion]);
+    const [form, setForm] = useState(() => construirFormulario(institucion));
 
     const cambiar = (campo, valor) => setForm((prev) => ({ ...prev, [campo]: valor }));
 
@@ -100,7 +87,7 @@ export default function FormularioInstitucion({ open, onClose, institucion, onCa
     };
 
     return (
-        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" disableAutoFocus>
+        <>
             <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1, borderBottom: 1, borderColor: 'divider' }}>
                 <SchoolIcon color="primary" />
                 {form.idInstitucion > 0 ? "Editar Institución Académica" : "Agregar Institución Académica"}
@@ -205,6 +192,40 @@ export default function FormularioInstitucion({ open, onClose, institucion, onCa
                     <LinearProgress />
                 </Box>
             )}
+        </>
+    );
+}
+
+export default function FormularioInstitucion({ open, onClose, institucion, onCambios }) {
+    const [paises, setPaises] = useState([]);
+    const [tipos, setTipos] = useState([]);
+
+    useEffect(() => {
+        if (!open) return;
+
+        let cancelado = false;
+
+        listarPaises()
+            .then((data) => { if (!cancelado) setPaises(data ?? []); })
+            .catch(() => { if (!cancelado) setPaises([]); });
+
+        listarTiposInstitucion()
+            .then((data) => { if (!cancelado) setTipos(data ?? []); })
+            .catch(() => { if (!cancelado) setTipos([]); });
+
+        return () => { cancelado = true; };
+    }, [open]);
+
+    return (
+        <Dialog open={open} onClose={onClose} fullWidth maxWidth="md" disableAutoFocus>
+            <CamposInstitucion
+                key={institucion?.idInstitucion ?? 'nueva'}
+                institucion={institucion}
+                paises={paises}
+                tipos={tipos}
+                onClose={onClose}
+                onCambios={onCambios}
+            />
         </Dialog>
     );
 }

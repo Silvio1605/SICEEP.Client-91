@@ -140,7 +140,7 @@ export default function Expedientes() {
                         onPaginationModelChange={(model) => {
                             const nuevoFiltro = {
                                 ...filtro,
-                                page: model + 1
+                                pagina: model.page + 1
                             };
                             buscar(nuevoFiltro);
                         }}
