@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Box, Typography, Paper, Button, Tabs, Tab, CircularProgress, Alert, Chip } from '@mui/material';
 import PrintIcon from '@mui/icons-material/Print';
 import EditIcon from '@mui/icons-material/Edit';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate, useLocation, useParams } from 'react-router-dom';
+import { useAuth } from '../../../providers/Authenticacion/useAuth';
+import { RECURSO } from '../../../shared/constants/recursos';
 
 // Importación de Componentes Hijos
 import InfoPersonal from '../components/ver/InfoPersonal';
@@ -32,10 +34,47 @@ const FONDO_ESTADO = {
     3: '#fff7e6',
 };
 
+// Cada pestaña declara el recurso que la API exige para su contenido. El menu,
+// la ruta y el componente salen de la misma entrada, de modo que ocultar una
+// pestaña nunca puede desalinear el indice con la URL o con el contenido.
+const TABS = [
+    {
+        label: 'Info. Personal',
+        ruta: 'info-personal',
+        idPermiso: RECURSO.CONSULTAR_EXPEDIENTES,
+        render: ({ datosExpediente }) => <InfoPersonal data={datosExpediente} />,
+    },
+    {
+        label: 'Info. Familiar',
+        ruta: 'info-familiar',
+        idPermiso: RECURSO.CONSULTAR_EXPEDIENTES,
+        render: ({ datosExpediente }) => <InfoFamiliar data={datosExpediente} />,
+    },
+    {
+        label: 'Info. Laboral',
+        ruta: 'info-laboral',
+        idPermiso: RECURSO.CONSULTAR_EXPEDIENTES,
+        render: ({ datosExpediente }) => <InfoLaboral data={datosExpediente} />,
+    },
+    {
+        label: 'Info. Académica',
+        ruta: 'info-academica',
+        idPermiso: RECURSO.FORMACION_ACADEMICA,
+        render: ({ datosEmpleado, estudios }) => <InfoAcademica data={datosEmpleado} estudios={estudios} />,
+    },
+    {
+        label: 'Documentos',
+        ruta: 'documentos',
+        idPermiso: RECURSO.DOCUMENTOS_EXPEDIENTE,
+        render: ({ datosExpediente }) => <TabDocumentos expediente={datosExpediente} />,
+    },
+];
+
 export default function DetalleExpediente() {
     const navigate = useNavigate();
     const location = useLocation();
     const { id } = useParams();
+    const { tienePermiso } = useAuth();
 
     // Estados principales
     const [tabValue, setTabValue] = useState(0);
@@ -45,6 +84,14 @@ export default function DetalleExpediente() {
     const [cargando, setCargando] = useState(true);
     const [error, setError] = useState(null);
     const [modalAbierto, setModalAbierto] = useState(false);
+
+    // Solo se ofrecen las pestañas cuyo recurso el usuario tiene asignado.
+    const tabsVisibles = useMemo(
+        () => TABS.filter((t) => tienePermiso(t.idPermiso)),
+        [tienePermiso]
+    );
+    const activa = tabsVisibles[tabValue] ?? tabsVisibles[0] ?? null;
+    const puedeEditar = tienePermiso(RECURSO.ACTUALIZAR_EXPEDIENTE);
 
     // OBTENCIÓN DE DATOS REALES: GET /api/Expediente/{idEmpleado}
     useEffect(() => {
@@ -76,7 +123,9 @@ export default function DetalleExpediente() {
                 const detalle = mapearCompletoADetalle(dto);
                 detalle.estadoCivil = dto?.persona?.idEstadoCivil ? (civilMap[dto.persona.idEstadoCivil] || 'NO DISPONIBLE') : 'NO DISPONIBLE';
 
-                const estudiosResponse = dto?.persona?.idPersona
+                // getEstudios vive bajo el recurso Formacion Academica: pedirlo sin
+                // ese permiso solo produce un 403 garantizado.
+                const estudiosResponse = (dto?.persona?.idPersona && tienePermiso(RECURSO.FORMACION_ACADEMICA))
                     ? await getEstudios(dto.persona.idPersona).catch(() => ({ data: [] }))
                     : null;
 
@@ -93,25 +142,31 @@ export default function DetalleExpediente() {
 
         cargar();
         return () => { activo = false; };
-    }, [id]);
+    }, [id, tienePermiso]);
 
     // MANEJO DE NAVEGACIÓN Y PESTAÑAS
     useEffect(() => {
         queueMicrotask(() => {
-            const path = location.pathname;
-            if (path.includes('info-personal')) setTabValue(0);
-            else if (path.includes('info-familiar')) setTabValue(1);
-            else if (path.includes('info-laboral')) setTabValue(2);
-            else if (path.includes('info-academica')) setTabValue(3);
-            else if (path.includes('documentos')) setTabValue(4);
+            if (tabsVisibles.length === 0) return;
+
+            const indice = tabsVisibles.findIndex((t) => location.pathname.includes(t.ruta));
+            if (indice >= 0) {
+                setTabValue(indice);
+                return;
+            }
+
+            // La URL apunta a una pestaña que el usuario no tiene asignada:
+            // se redirige a la primera disponible en vez de dejarla vacia.
+            setTabValue(0);
+            navigate(`/index/${tabsVisibles[0].ruta}/${id || "1"}`, { replace: true });
         });
-    }, [location.pathname]);
+    }, [location.pathname, tabsVisibles, navigate, id]);
 
     const handleTabChange = (event, newValue) => {
+        const destino = tabsVisibles[newValue];
+        if (!destino) return;
         setTabValue(newValue);
-        const expedienteId = id || "1";
-        const rutas = ['info-personal', 'info-familiar', 'info-laboral', 'info-academica', 'documentos'];
-        navigate(`/index/${rutas[newValue]}/${expedienteId}`);
+        navigate(`/index/${destino.ruta}/${id || "1"}`);
     };
     // ACCIONES
     const [generandoPDF, setGenerandoPDF] = useState(false);
@@ -186,9 +241,12 @@ export default function DetalleExpediente() {
                     <Button variant="outlined" startIcon={<PrintIcon />} onClick={() => setModalAbierto(true)} disabled={generandoPDF}>
                         Imprimir
                     </Button>
-                    <Button variant="contained" startIcon={<EditIcon />} onClick={irAEditar}>
-                        Editar
-                    </Button>
+                        {puedeEditar && (
+                            <Button variant="contained" startIcon={<EditIcon />} onClick={irAEditar}>
+                                Editar
+                            </Button>
+                        )}
+
                 </Box>
             </Box>
 
@@ -220,21 +278,15 @@ export default function DetalleExpediente() {
             {/* Pestañas */}
             <Paper elevation={2} sx={{ mb: 3, borderRadius: 2 }}>
                 <Tabs value={tabValue} onChange={handleTabChange} variant="scrollable" scrollButtons="auto">
-                    <Tab label="Info. Personal" />
-                    <Tab label="Info. Familiar" />
-                    <Tab label="Info. Laboral" />
-                    <Tab label="Info. Académica" />
-                    <Tab label="Documentos" />
+                    {tabsVisibles.map((tab) => (
+                        <Tab key={tab.ruta} label={tab.label} />
+                    ))}
                 </Tabs>
             </Paper>
 
             {/* Contenido Dinámico */}
             <Box>
-                {tabValue === 0 && <InfoPersonal data={datosExpediente} />}
-                {tabValue === 1 && <InfoFamiliar data={datosExpediente} />}
-                {tabValue === 2 && <InfoLaboral data={datosExpediente} />}
-                {tabValue === 3 && <InfoAcademica data={datosEmpleado} estudios={estudios} />}
-                {tabValue === 4 && <TabDocumentos expediente={datosExpediente} />}
+                {activa && activa.render({ datosExpediente, datosEmpleado, estudios })}
             </Box>
 
             {/* Componente Modular del Modal */}

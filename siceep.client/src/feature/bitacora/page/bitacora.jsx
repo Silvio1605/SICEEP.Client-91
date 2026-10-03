@@ -82,7 +82,6 @@ export default function Bitacora() {
                 },
             }}
         >
-            {/* componente para el filtro de busqueda */}
             <BitacoraFiltro 
                 filtro={filtro}
                 actualizarFiltro={actualizarFiltro}
@@ -96,8 +95,7 @@ export default function Bitacora() {
             {historial ? (
                 <DataGrid
                     rows={historial}
-                    columns={registros} // Columnas con flex: 1 aplicado
-                    // Configuramos el GridToolbar
+                    columns={registros}
                     slots={slots}
                     initialState={{
                         pagination: { paginationModel: { pageSize: 10 } },
@@ -113,7 +111,6 @@ export default function Bitacora() {
                 />
             ) : (
                 <Stack spacing={1}>
-                    {/* For variant="text", adjust the height via font-size */}
                     <Skeleton variant="rectangular" width={'100%'} height={20} />
                     <Skeleton variant="rounded" width={'100%'} height={60} />
                 </Stack>

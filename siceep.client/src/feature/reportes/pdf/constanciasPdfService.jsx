@@ -4,6 +4,13 @@ import ConstanciaBajaPDF from './ConstanciaBajaPDF';
 import ConstanciaFamiliarPDF from './ConstanciaFamiliarPDF';
 import ConstanciaRecorridoPDF from './ConstanciaRecorridoPDF';
 
+const formatearFechaNombre = (valor) => {
+    if (!valor) return 'S-F';
+    const match = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (!match) return valor;
+    return `${match[3]}-${match[2]}-${match[1]}`;
+};
+
 const descargarBlob = (blob, nombreArchivo) => {
     const url = URL.createObjectURL(blob);
     const enlace = document.createElement('a');
@@ -13,13 +20,6 @@ const descargarBlob = (blob, nombreArchivo) => {
     enlace.click();
     document.body.removeChild(enlace);
     URL.revokeObjectURL(url);
-};
-
-const formatearFechaNombre = (valor) => {
-    if (!valor) return 'S-F';
-    const match = String(valor).match(/^(\d{4})-(\d{2})-(\d{2})/);
-    if (!match) return valor;
-    return `${match[3]}-${match[2]}-${match[1]}`;
 };
 
 const nombreArchivo = (tipo, codigo) =>

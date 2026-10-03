@@ -31,6 +31,7 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../../providers/Authenticacion/useAuth";
+import { RECURSO } from "../../constants/recursos";
 import { Rutas } from "./../../../routes/routes";
 
 // Los idPermiso son los Id_Recurso de dbo.Recurso. El servidor resuelve cada
@@ -40,32 +41,32 @@ const menuSections = [
     {
         titulo: "Seguridad",
         items: [
-            { text: "Usuarios", icon: <PersonIcon />, path: Rutas.USUARIOS, idPermiso: 2 },
-            { text: "Permisos", icon: <KeyIcon />, path: Rutas.PERMISOS, idPermiso: 1002 },
-            { text: "Historial", icon: <HistoryEduIcon />, path: Rutas.HISTORIAL, idPermiso: 1004 },
+            { text: "Usuarios", icon: <PersonIcon />, path: Rutas.USUARIOS, idPermiso: RECURSO.REGISTRAR_USUARIO },
+            { text: "Permisos", icon: <KeyIcon />, path: Rutas.PERMISOS, idPermiso: RECURSO.ASIGNAR_PERMISOS },
+            { text: "Historial", icon: <HistoryEduIcon />, path: Rutas.HISTORIAL, idPermiso: RECURSO.HISTORIAL_ACTIVIDAD },
         ]
     },
     {
         titulo: "Expediente",
         items: [
-            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: 6 },
-            { text: "Nuevo Expediente", icon: <AddBoxIcon />, path: Rutas.CREAR_EXPEDIENTE, idPermiso: 5 }
+            { text: "Buscar Expediente", icon: <BadgeIcon />, path: Rutas.EXPEDIENTES, idPermiso: RECURSO.CONSULTAR_EXPEDIENTES },
+            { text: "Nuevo Expediente", icon: <AddBoxIcon />, path: Rutas.CREAR_EXPEDIENTE, idPermiso: RECURSO.REGISTRAR_EXPEDIENTE }
         ]
     },
     {
         titulo: "Tramites y Atención",
         items: [
-            { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: 11 },
-            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: 9 }
+            { text: "Busqueda Rapida", icon: <ManageSearchIcon />, path: "/index/busqueda-rapida", idPermiso: RECURSO.BUSQUEDA_RAPIDA },
+            { text: "Gestion Documentos", icon: <DescriptionIcon />, path: "/index/gestion-documentos", idPermiso: RECURSO.DOCUMENTOS_EXPEDIENTE }
         ]
     },
     {
         titulo: "Gestión Laboral",
         items: [
-            { text: "Plazas", icon: <WorkIcon />, path: "/index/plazas", idPermiso: 13 },
-            { text: "Movimientos", icon: <SwapHorizIcon />, path: "/index/movimientos", idPermiso: 14 },
-            { text: "Deducciones", icon: <ReceiptLongIcon />, path: "/index/deducciones", idPermiso: 15 },
-            { text: "Ubicaciones", icon: <LocationOnIcon />, path: "/index/catalogos-ubicaciones", idPermiso: 21 },
+            { text: "Plazas", icon: <WorkIcon />, path: "/index/plazas", idPermiso: RECURSO.PLAZAS_Y_CARGOS },
+            { text: "Movimientos", icon: <SwapHorizIcon />, path: "/index/movimientos", idPermiso: RECURSO.MOVIMIENTOS_Y_RECORRIDO },
+            { text: "Deducciones", icon: <ReceiptLongIcon />, path: "/index/deducciones", idPermiso: RECURSO.DEDUCCIONES },
+            { text: "Ubicaciones", icon: <LocationOnIcon />, path: "/index/catalogos-ubicaciones", idPermiso: RECURSO.UBICACIONES_Y_UNIDADES },
         ]
     },
     {
@@ -73,23 +74,23 @@ const menuSections = [
         items: [
             // Reportes muestra tres recursos distintos (fuerza laboral, altas y
             // bajas y panel); basta con tener alguno de los tres.
-            { text: "Reportes", icon: <AssessmentIcon />, path: "/index/reportes", idPermiso: [16, 17, 18] },
-            { text: "Estadisticas", icon: <BarChartIcon />, path: "/index/estadisticas", idPermiso: 18 },
+            { text: "Reportes", icon: <AssessmentIcon />, path: "/index/reportes", idPermiso: [RECURSO.FUERZA_LABORAL, RECURSO.ALTAS_Y_BAJAS, RECURSO.PANEL_INDICADORES] },
+            { text: "Estadisticas", icon: <BarChartIcon />, path: "/index/estadisticas", idPermiso: RECURSO.PANEL_INDICADORES },
             { text: "Herramientas de Ayuda", icon: <HelpCenterIcon />, path: "/index/herramientas-ayuda", soloAutenticado: true },
         ]
     },
     {
         titulo: "Formación académica",
         items: [
-            { text: "Consulta Académica", icon: <MenuBookIcon />, path: "/index/consulta-academica", idPermiso: 8 },
-            { text: "Instituciones Académicas", icon: <SchoolIcon />, path: Rutas.INSTITUCIONES, idPermiso: 19 },
+            { text: "Consulta Académica", icon: <MenuBookIcon />, path: "/index/consulta-academica", idPermiso: RECURSO.FORMACION_ACADEMICA },
+            { text: "Instituciones Académicas", icon: <SchoolIcon />, path: Rutas.INSTITUCIONES, idPermiso: RECURSO.INSTITUCIONES_ACADEMICAS },
         ]
     },
     {
         titulo: "Sesión",
         items: [
             { text: "Mi Cuenta", icon: <AccountCircleIcon />, path: Rutas.CONFIGURACION, soloAutenticado: true },
-            { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true, idPermiso: 4 },
+            { text: "Cerrar Sesión", icon: <ExitToAppIcon />, path: "/", isLogout: true, idPermiso: RECURSO.ACTUALIZAR_EXPIRACION_CUENTA },
         ]
     }
 ];

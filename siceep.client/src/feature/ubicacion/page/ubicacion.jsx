@@ -13,14 +13,26 @@ import {
     createTheme
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ModalManager from '../../../shared/components/Modal/ModalManager';
 import useModalManager from '../../../shared/hooks/useModalManager';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
+import { useAuth } from '../../../providers/Authenticacion/useAuth';
+import { RECURSO } from '../../../shared/constants/recursos';
 import { getColumns } from './../components/getColumns';
 import { useEstructuras } from './../hooks/useEstructuras';
 import { useUbicaciones } from './../hooks/useUbicaciones';
 import { useUnidades } from './../hooks/useUnidades';
+
+// `dominio` es el valor que el resto de la pagina (los switch y el `tipo` que
+// reciben los modales) ya usan, y no cambia aunque la pestaña se oculte. El
+// indice de las Tabs de MUI es aparte: se recalcula sobre las visibles para que
+// ocultar una pestaña no corra la correspondencia entre indice y recurso.
+const TABS_CATALOGO = [
+    { dominio: 0, label: 'Unidades', idPermiso: RECURSO.UBICACIONES_Y_UNIDADES },
+    { dominio: 1, label: 'Estructuras', idPermiso: RECURSO.ESTRUCTURAS },
+    { dominio: 2, label: 'Ubicaciones', idPermiso: RECURSO.UBICACIONES_Y_UNIDADES },
+];
 
 const theme = createTheme({
     palette: {
@@ -56,6 +68,7 @@ const theme = createTheme({
 export default function Ubicacion() {
 
     const modal = useModalManager();
+    const { tienePermiso } = useAuth();
 
     // Notificaciones
     const { mostrarNotificacion } = useNotificacionContext();
@@ -68,8 +81,30 @@ export default function Ubicacion() {
         totalRegistros: totalU, registrar, actualizar,
         loading: loadingUbicaciones } = useUbicaciones();
 
+    // Solo se ofrecen las pestañas cuyo recurso el usuario tiene asignado.
+    const tabsVisibles = useMemo(
+        () => TABS_CATALOGO.filter((t) => tienePermiso(t.idPermiso)),
+        [tienePermiso]
+    );
+
     // Estados
-    const [selectedTab, setSelectedTab] = useState(0); // 0: Unidades, 1: Estructuras, 2: Ubicaciones
+    // `selectedTab` guarda el dominio (0 Unidades, 1 Estructuras, 2 Ubicaciones)
+    // y no el indice visible: los switch y el `tipo` de los modales dependen de
+    // esos valores. `dominioActivo` es el dominio real ya validado contra los
+    // permisos, derivado en render para no sincronizar estado en un efecto.
+    const [dominioPedido, setDominioPedido] = useState(0);
+    const selectedTab = tabsVisibles.some((t) => t.dominio === dominioPedido)
+        ? dominioPedido
+        : (tabsVisibles[0]?.dominio ?? 0);
+    const setSelectedTab = setDominioPedido;
+    const indiceActual = Math.max(
+        tabsVisibles.findIndex((t) => t.dominio === selectedTab),
+        0
+    );
+    // El catálogo usa un único recurso por tipo (20 para estructuras, 21 para
+    // unidades y ubicaciones) tanto para leer como para escribir, asi que estar
+    // en la pestaña es lo que habilita las acciones de edicion.
+    const puedeEscribir = tabsVisibles.some((t) => t.dominio === selectedTab);
 
     // Filtro de búsqueda (texto)
     const [searchText, setSearchText] = useState('');
@@ -152,11 +187,14 @@ export default function Ubicacion() {
 
     // Manejadores de eventos
     const handleTabChange = (event, newValue) => {
-        setSelectedTab(newValue);
+        const destino = tabsVisibles[newValue];
+        if (!destino) return;
+
+        setSelectedTab(destino.dominio);
 
         setSearchText('');
         // Refrescar los datos de la nueva pestaña
-        switch (newValue) {
+        switch (destino.dominio) {
             case 0: searchUnidades("", 1); break;
             case 1: searchEstructuras("", 1); break;
             case 2: searchUbicaciones("", 1); break;
@@ -275,25 +313,27 @@ export default function Ubicacion() {
                     <Paper elevation={0}
                         sx={{ p: 2, mb: 3, display: 'flex', flexWrap: 'wrap', alignItems: 'center', justifyContent: 'space-between' }}>
                         <Tabs
-                            value={selectedTab}
+                            value={indiceActual}
                             onChange={handleTabChange}
                             indicatorColor="primary"
                             textColor="primary"
                             sx={{ '& .MuiTab-root': { fontWeight: 500, fontSize: '0.9rem' } }}
                         >
-                            <Tab label="Unidades" />
-                            <Tab label="Estructuras" />
-                            <Tab label="Ubicaciones" />
+                            {tabsVisibles.map((tab) => (
+                                <Tab key={tab.dominio} label={tab.label} />
+                            ))}
                         </Tabs>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            startIcon={<AddIcon />}
-                            onClick={handleOpenCreate}
-                            sx={{ borderRadius: 2, boxShadow: 'none', mt: { xs: 1, sm: 0 } }}
-                        >
-                            Agregar Nuevo
-                        </Button>
+                        {puedeEscribir && (
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                startIcon={<AddIcon />}
+                                onClick={handleOpenCreate}
+                                sx={{ borderRadius: 2, boxShadow: 'none', mt: { xs: 1, sm: 0 } }}
+                            >
+                                Agregar Nuevo
+                            </Button>
+                        )}
                     </Paper>
 
                     {/* Filtro de búsqueda */}
@@ -333,7 +373,7 @@ export default function Ubicacion() {
                     <Paper sx={{ height: 'calc(100% - 180px)', width: '100%', p: 1 }}>
                         <DataGrid
                             rows={getFilteredData()}
-                            columns={getColumns({ handleDelete, handleEdit,selectedTab })}
+                            columns={getColumns({ handleDelete, handleEdit, selectedTab, puedeEscribir })}
                             loading={getCurrentLoading()}
                             pagination
                             paginationMode="server"

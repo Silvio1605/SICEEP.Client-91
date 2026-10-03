@@ -20,6 +20,8 @@ import TabInfoAcademica from '../components/crear/TabInfoAcademica';
 
 import { ExpedienteContext } from './../context/ExpedienteContext';
 import { useProgresoExpediente } from './../hooks/useProgresoExpediente';
+import { useAuth } from '../../../providers/Authenticacion/useAuth';
+import { RECURSO, requiereTodos } from '../../../shared/constants/recursos';
 import { getExpedienteCompleto, actualizarExpediente } from '../services/expedienteService';
 import { mapearCompletoAFormulario, construirPayloadActualizar } from '../utils/expedienteMappers';
 
@@ -45,6 +47,14 @@ export default function EditarExpediente() {
     } = useContext(ExpedienteContext);
 
     const progreso = useProgresoExpediente(expediente);
+    const { tienePermiso } = useAuth();
+
+    // La seccion academica se guarda por separado y la protege Formacion
+    // Academica, asi que exige Actualizar Expediente y Formacion Academica a la vez.
+    const puedeAcademico = requiereTodos(tienePermiso, [
+        RECURSO.ACTUALIZAR_EXPEDIENTE,
+        RECURSO.FORMACION_ACADEMICA,
+    ]);
 
     const [cargando, setCargando] = useState(true);
     const [guardando, setGuardando] = useState(false);
@@ -218,7 +228,9 @@ export default function EditarExpediente() {
                         <Tab label="2 - Info. Laboral *" />
                         <Tab label="3 - Características" />
                         <Tab label="4 - Núcleo Familiar" />
-                        <Tab label="5 - Info. Académica (guardado propio)" />
+                        {puedeAcademico && (
+                            <Tab label="5 - Info. Académica (guardado propio)" />
+                        )}
                     </Tabs>
                 </Box>
 
@@ -226,7 +238,9 @@ export default function EditarExpediente() {
                 <CustomTabPanel value={tabActiva} index={1}><TabInfoLaboral /></CustomTabPanel>
                 <CustomTabPanel value={tabActiva} index={2}><TabCaracteristicas /></CustomTabPanel>
                 <CustomTabPanel value={tabActiva} index={3}><TabNucleofamiliar /></CustomTabPanel>
-                <CustomTabPanel value={tabActiva} index={4}><TabInfoAcademica idPersona={expediente?.persona?.idPersona} /></CustomTabPanel>
+                {puedeAcademico && (
+                    <CustomTabPanel value={tabActiva} index={4}><TabInfoAcademica idPersona={expediente?.persona?.idPersona} /></CustomTabPanel>
+                )}
             </Paper>
 
             {/* MODAL DE CHEQUEO */}

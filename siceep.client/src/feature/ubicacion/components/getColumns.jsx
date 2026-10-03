@@ -59,14 +59,18 @@ const locationColumns = [
 ];
 
 // Función principal
-export const getColumns = ({ handleDelete, handleEdit, selectedTab }) => {
+export const getColumns = ({ handleDelete, handleEdit, selectedTab, puedeEscribir = true }) => {
+
+    // Sin permiso de escritura sobre el recurso no se pintan las columnas de
+    // alta, edicion ni activate/desactivate: solo la consulta.
+    const columnasEscritura = puedeEscribir;
 
     // Si es ubicaciones, construimos el array específico
     if (selectedTab === 2) {
         return [
             { field: 'index', headerName: 'No.', width: 60 },
             ...locationColumns,
-            actionsColumn(handleDelete),
+            ...(columnasEscritura ? [actionsColumn(handleDelete)] : []),
         ];
     }
 
@@ -78,7 +82,7 @@ export const getColumns = ({ handleDelete, handleEdit, selectedTab }) => {
             ? [{ field: 'orden', headerName: 'Orden', flex: 1, minWidth: 60 }]
             : []),
         { field: 'descripcion', headerName: 'Descripción', flex: 1, minWidth: 150 },
-        editColumn(handleEdit)
+        ...(columnasEscritura ? [editColumn(handleEdit)] : []),
     ];
 
     return baseColumns;
