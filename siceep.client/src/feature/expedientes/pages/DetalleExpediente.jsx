@@ -11,6 +11,7 @@ import { RECURSO } from '../../../shared/constants/recursos';
 import InfoPersonal from '../components/ver/InfoPersonal';
 import InfoFamiliar from '../components/ver/InfoFamiliar';
 import InfoLaboral from '../components/ver/InfoLaboral';
+import InfoNomina from '../components/ver/InfoNomina';
 import InfoAcademica from '../components/ver/InfoAcademica';
 import TabDocumentos from '../components/crear/TabDocumentos';
 import ModalImpresion from '../components/ModalImpresion';
@@ -55,6 +56,12 @@ const TABS = [
         ruta: 'info-laboral',
         idPermiso: RECURSO.CONSULTAR_EXPEDIENTES,
         render: ({ datosExpediente }) => <InfoLaboral data={datosExpediente} />,
+    },
+    {
+        label: 'Info. Nomina',
+        ruta: 'info-nomina',
+        idPermiso: RECURSO.DEDUCCIONES,
+        render: ({ datosExpediente }) => <InfoNomina idEmpleado={datosExpediente?.idEmpleado} />,
     },
     {
         label: 'Info. Académica',

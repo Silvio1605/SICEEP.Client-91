@@ -97,6 +97,14 @@ export const eliminarDocumento = (idDocumento) => {
     return api.delete(`Documento/${idDocumento}`);
 };
 
+// ---------- Nomina (resumen salarial) ----------
+
+export const getNominaResumen = (idEmpleado, periodo) => {
+    return api.get(`Nomina/Resumen`, {
+        params: { idEmpleado, periodo: periodo || undefined }
+    });
+};
+
 // ---------- Estudios (información académica) ----------
 
 export const getEstudios = (idPersona) => {
