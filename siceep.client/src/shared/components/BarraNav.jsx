@@ -3,27 +3,35 @@ import Box from "@mui/material/Box";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
 
-// Ya no importamos IconButton ni MenuIcon porque tu Sidebar ya tiene su propio botón
-
-export default function BarraNav({ toggleNav }) {
+export default function BarraNav({ toggleNav, sidebarOpen }) {
     return (
-        // 1. Quitamos el width 96% para que abarque todo el espacio disponible que le da el Index
         <Box sx={{ flexGrow: 1, width: "100%" }}>
 
-            {/* 2. position="static" para que no flote, y el color azul oscuro premium */}
             <AppBar position="static" sx={{ backgroundColor: '#004080', boxShadow: 'none' }}>
                 <Toolbar>
 
-                    {/* 3. El botón de menú fue eliminado. Solo dejamos el texto. */}
+                    {/* Botón para ocultar o mostrar el menú lateral */}
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        aria-label={sidebarOpen ? "Ocultar menú lateral" : "Mostrar menú lateral"}
+                        onClick={toggleNav}
+                        sx={{ mr: 1 }}
+                    >
+                        {sidebarOpen ? <CloseIcon /> : <MenuIcon />}
+                    </IconButton>
 
                     <Typography
                         variant="h6"
                         sx={{
                             flexGrow: 1,
-                            fontWeight: 'bold', // Le damos un toque más grueso a la letra
+                            fontWeight: 'bold',
                             letterSpacing: '1px',
-                            ml: 2 // Un pequeño margen izquierdo para que no quede pegado a la orilla
+                            ml: 1
                         }}
                     >
                         SICEEP

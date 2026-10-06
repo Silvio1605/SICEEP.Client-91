@@ -7,9 +7,10 @@ export const SidebarContainer = styled('div')`
   top: 0; 
   padding-top: 20px;
   height: 100vh;
-  width: ${({ $isOpen }) => ($isOpen ? "280px" : "90px")}; 
+  width: ${({ $isOpen }) => ($isOpen ? "280px" : "0px")}; 
   display: flex;
   flex-direction: column;
+  overflow: hidden;
   transition: width 0.4s cubic-bezier(0.25, 1, 0.5, 1); 
   z-index: 100; 
   border-right: 1px solid #eaedf1; 
@@ -77,6 +78,7 @@ export const SidebarContainer = styled('div')`
     overflow-y: auto;
     overflow-x: hidden;
     padding-bottom: 20px;
+    min-width: 280px;
 
     &::-webkit-scrollbar { width: 4px; }
     &::-webkit-scrollbar-thumb {
