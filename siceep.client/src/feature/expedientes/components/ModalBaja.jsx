@@ -6,7 +6,6 @@ import {
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
 import { getTiposBaja, aplicarBaja } from './../services/bajaService';
-import { registrarBitacora } from './../../bitacora/service/bitacoraService';
 
 export default function ModalBaja({ open, onClose, empleado, onConfirmada }) {
 
@@ -76,7 +75,6 @@ export default function ModalBaja({ open, onClose, empleado, onConfirmada }) {
             });
 
             if (resultado.status === 200) {
-                await registrarBitacora(6, `Baja aplicada a ${empleado.nombreCompleto ?? 'empleado'}`);
                 onConfirmada?.();
                 onClose();
             }

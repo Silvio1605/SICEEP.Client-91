@@ -17,7 +17,6 @@ import WorkOutlineIcon from '@mui/icons-material/WorkOutline';
 // internos
 import { useCargos } from './../hooks/useCargos';
 import SelectUbicacion from './SelectUbicacion';
-import { registrarBitacora } from './../../bitacora/service/bitacoraService';
 
 function ContenidoModal({ onClose, onGuardado }) {
 
@@ -56,7 +55,6 @@ function ContenidoModal({ onClose, onGuardado }) {
             if (res?.message) {
                 alert(res.message);
             }
-            await registrarBitacora(2, `Plaza registrada: ${cargo?.nombre ?? ''} - ${ubicacion?.nombre ?? ''}`);
             onClose();
         } catch (e) {
             setError(e?.response?.data?.message || e?.message || "No se pudo registrar la plaza.");

@@ -59,15 +59,23 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
         try {
             const result = await guardarPermisos(dataEnvio);
 
+            const mensajeExito = typeof result === "string"
+                ? result
+                : (result?.mensaje || result?.message || "Permisos guardados correctamente");
+
             mostrarNotificacion({
-                message: result,
+                message: mensajeExito,
                 severity: "success",
             });
             await refetch?.();
             onClose();
         } catch (error) {
+            const mensajeError = typeof error === "string"
+                ? error
+                : (error?.mensaje || error?.message || "Error al guardar los permisos");
+
             mostrarNotificacion({
-                message: error.message || error || "Error",
+                message: mensajeError,
                 severity: "warning",
             });
         } finally {

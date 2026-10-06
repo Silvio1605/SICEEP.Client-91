@@ -4,8 +4,6 @@ import {
     registrarDeduccion, actualizarDeduccion, eliminarDeduccion as eliminarDeduccionService,
     registrarInstitucionDeduccion, actualizarInstitucionDeduccion, eliminarInstitucionDeduccion
 } from './../services/laboralServices';
-import { registrarBitacora } from './../../bitacora/service/bitacoraService';
-import { formatoMoneda } from './../utils/deduccionUtils';
 
 export const useDeducciones = () => {
     const [empleado, setEmpleado] = useState(null);
@@ -70,7 +68,7 @@ export const useDeducciones = () => {
 
     const cancelarEdicion = () => setEditando(null);
 
-    const guardarDeduccion = async (campos, nombreTipo) => {
+    const guardarDeduccion = async (campos) => {
         const payload = {
             idDeduccion: editando?.id || 0,
             idEmpleado: empleado.id,
@@ -83,9 +81,6 @@ export const useDeducciones = () => {
         const res = payload.idDeduccion
             ? await actualizarDeduccion(payload)
             : await registrarDeduccion(payload);
-        try {
-            await registrarBitacora(2, `Deducción ${payload.idDeduccion ? 'actualizada' : 'registrada'}: ${nombreTipo} (${formatoMoneda(payload.monto)}) - ${empleado.nombreCompleto}`);
-        } catch { }
         setEditando(null);
         await cargarDeducciones(empleado.id);
         return res?.data || {};
@@ -93,9 +88,6 @@ export const useDeducciones = () => {
 
     const eliminarDeduccion = async (fila) => {
         await eliminarDeduccionService(fila.idDeduccion);
-        try {
-            await registrarBitacora(2, `Deducción eliminada: ${fila.nombreTipoDeduccion} (${fila.periodo}) - ${empleado.nombreCompleto}`);
-        } catch { }
         await cargarDeducciones(empleado.id);
     };
 
@@ -112,9 +104,6 @@ export const useDeducciones = () => {
         const res = payload.idInstitucionExterna
             ? await actualizarInstitucionDeduccion(payload)
             : await registrarInstitucionDeduccion(payload);
-        try {
-            await registrarBitacora(2, `Institución ${payload.idInstitucionExterna ? 'actualizada' : 'registrada'}: ${nombre}`);
-        } catch { }
         setEditandoInst(null);
         await cargarCatalogos();
         return res?.data || {};
@@ -122,9 +111,6 @@ export const useDeducciones = () => {
 
     const eliminarInstitucion = async (i) => {
         await eliminarInstitucionDeduccion(i.idInstitucionExterna);
-        try {
-            await registrarBitacora(2, `Institución eliminada: ${i.nombre}`);
-        } catch { }
         await cargarCatalogos();
     };
 

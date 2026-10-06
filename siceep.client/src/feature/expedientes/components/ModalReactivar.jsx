@@ -7,7 +7,6 @@ import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
 import { reactivarEmpleado } from './../services/bajaService';
 import { getPlazas } from './../../laboral/services/laboralServices';
-import { registrarBitacora } from './../../bitacora/service/bitacoraService';
 import FormContratoPlaza from './FormContratoPlaza';
 
 export default function ModalReactivar({ open, onClose, empleado, onConfirmada }) {
@@ -78,7 +77,6 @@ export default function ModalReactivar({ open, onClose, empleado, onConfirmada }
             });
 
             if (resultado.status === 200) {
-                await registrarBitacora(7, `Reactivación de ${empleado.nombreCompleto ?? 'empleado'} en la plaza ${contrato.ordinal}`);
                 onConfirmada?.();
                 onClose();
             }

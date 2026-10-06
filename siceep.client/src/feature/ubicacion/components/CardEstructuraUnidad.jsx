@@ -20,7 +20,6 @@ import AppInput from "./../../../shared/components/AppInput";
 import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
 import { useEstructuras } from "./../hooks/useEstructuras";
 import { useUnidades } from "./../hooks/useUnidades";
-import { registrarBitacora } from "./../../bitacora/service/bitacoraService";
 //iconos
 import DescriptionIcon from '@mui/icons-material/Description';
 import LooksOneIcon from '@mui/icons-material/LooksOne';
@@ -74,10 +73,6 @@ export default function CardEstructuraUnidad({
                 severity: resultado.status === 200 ? "success" : "error",
             });
             if (resultado.status === 200) {
-                const esEdicion = Boolean(registro.id || editar?.id);
-                const descripcion = (tipo === 1 ? "Estructura" : "Unidad Administrativa")
-                    + (esEdicion ? " actualizada" : " registrada");
-                await registrarBitacora(esEdicion ? 3 : 2, descripcion);
                 onClose();
             }
 
