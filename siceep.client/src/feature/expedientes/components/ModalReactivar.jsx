@@ -118,7 +118,7 @@ export default function ModalReactivar({ open, onClose, empleado, onConfirmada }
                 {empleado && (
                     <>
                         <Grid container spacing={3} alignItems="center" sx={{ mb: 2 }}>
-                            <Grid item>
+                            <Grid>
                                 <Avatar
                                     sx={{ width: 88, height: 88, bgcolor: 'grey.300', color: 'grey.700', fontSize: '1.6rem', fontWeight: 'bold' }}
                                     variant="rounded"
@@ -126,7 +126,7 @@ export default function ModalReactivar({ open, onClose, empleado, onConfirmada }
                                     {iniciales(empleado.nombreCompleto)}
                                 </Avatar>
                             </Grid>
-                            <Grid item xs>
+                            <Grid size="grow">
                                 <Typography variant="subtitle2" color="text.secondary">Nombre Completo</Typography>
                                 <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
                                     {empleado.nombreCompleto || 'S/D'}

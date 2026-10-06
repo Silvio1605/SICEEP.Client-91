@@ -1,4 +1,4 @@
-// utils/validacionExpediente.js
+﻿// utils/validacionExpediente.js
 export const esquemaValidacion = {
     persona: {
         camposObligatorios: ['pnombre', 'papellido', 'fechaNacimiento', 'sexo'],
@@ -16,7 +16,7 @@ export const esquemaValidacion = {
         camposObligatorios: ['estatura','peso'], // Ningún campo obligatorio
         seccionObligatoria: false // Opcional
     },
-    familiares: {
+    nucleoFamiliar: {
         camposObligatorios: [], // Si no hay familiares, está "completo"
         seccionObligatoria: false // Opcional
     }
@@ -163,24 +163,35 @@ export const validarCalidadExpediente = (expediente = {}) => {
         }
     }
 
-    // Núcleo familiar
-    const etiquetasNucleo = { madre: 'la madre', padre: 'el padre', conyuge: 'el cónyuge' };
-    Object.entries(etiquetasNucleo).forEach(([clave, etiqueta]) => {
-        const f = nucleo?.[clave];
-        if (!f) return;
+    // Nucleo familiar: es una lista y cada fila trae su propio tipo de parentesco.
+    (nucleo?.familiares || []).forEach((familiar, indice) => {
+        const etiqueta = `el familiar #${indice + 1}`;
+        validarCedulaPersona(familiar.cedula, etiqueta);
 
-        validarCedulaPersona(f.cedula, etiqueta);
-        if (f.fechaNacimiento) {
-            const r = validarFechaNacimiento(f.fechaNacimiento);
-            if (!r.valida) errores.push({ seccion: 'nucleoFamiliar', campo: `${clave}.fechaNacimiento`, mensaje: `Fecha de nacimiento de ${etiqueta}: ${r.mensaje}.` });
+        // El backend da de baja las relaciones que no llegan en el payload, asi que
+        // una fila a medio llenar no se puede descartar en silencio: se avisa para
+        // que el usuario la complete o la quite con el botón de eliminar.
+        if (!familiar.idParentesco) {
+            errores.push({
+                seccion: 'nucleoFamiliar',
+                campo: `familiar.${indice}.idParentesco`,
+                mensaje: `Seleccione el tipo de parentesco de ${etiqueta}.`
+            });
         }
-    });
 
-    (nucleo?.hijos || []).forEach((hijo, indice) => {
-        validarCedulaPersona(hijo.cedula, `el hijo #${indice + 1}`);
-        if (hijo.fechaNacimiento) {
-            const r = validarFechaNacimiento(hijo.fechaNacimiento);
-            if (!r.valida) errores.push({ seccion: 'nucleoFamiliar', campo: 'hijo.fechaNacimiento', mensaje: `Fecha de nacimiento del hijo #${indice + 1}: ${r.mensaje}.` });
+        const tieneNombre = [familiar.pnombre, familiar.snombre, familiar.papellido, familiar.sapellido]
+            .some((n) => String(n ?? '').trim());
+        if (!tieneNombre) {
+            errores.push({
+                seccion: 'nucleoFamiliar',
+                campo: `familiar.${indice}.pnombre`,
+                mensaje: `Escriba al menos un nombre para ${etiqueta}, o quítelo de la lista.`
+            });
+        }
+
+        if (familiar.fechaNacimiento) {
+            const r = validarFechaNacimiento(familiar.fechaNacimiento);
+            if (!r.valida) errores.push({ seccion: 'nucleoFamiliar', campo: `familiar.${indice}.fechaNacimiento`, mensaje: `Fecha de nacimiento de ${etiqueta}: ${r.mensaje}.` });
         }
     });
 

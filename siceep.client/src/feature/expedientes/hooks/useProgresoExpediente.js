@@ -2,11 +2,21 @@ import { useState, useEffect, useRef } from 'react';
 import { validarSeccion, esquemaValidacion } from '../utils/validacionExpediente';
 import _ from 'lodash';
 
+// nucleoFamiliar envuelve la lista de familiares. Si la lista esta vacia se
+// entrega undefined para que validarSeccion lo reporte como "no aplica".
+const obtenerDatosSeccion = (exp, seccion) => {
+    if (seccion === 'nucleoFamiliar') {
+        const lista = exp?.nucleoFamiliar?.familiares || [];
+        return lista.length ? lista : undefined;
+    }
+    return exp?.[seccion];
+};
+
 export const useProgresoExpediente = (expediente) => {
     const prevExpedienteRef = useRef();
 
     const computeProgreso = (exp) => {
-        const secciones = ['persona', 'contrato', 'contactoEmergencia', 'caracteristicasFisicas', 'familiares'];
+        const secciones = ['persona', 'contrato', 'contactoEmergencia', 'caracteristicasFisicas', 'nucleoFamiliar'];
 
         const resultado = {};
         let completas = 0;
@@ -15,7 +25,7 @@ export const useProgresoExpediente = (expediente) => {
         let opcionalesResueltas = 0;
 
         secciones.forEach(seccion => {
-            const datos = exp[seccion];
+            const datos = obtenerDatosSeccion(exp, seccion);
             const validacion = validarSeccion(seccion, datos);
             resultado[seccion] = validacion;
 

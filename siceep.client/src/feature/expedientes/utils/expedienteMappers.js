@@ -55,19 +55,50 @@ export const nombreTipoContrato = (tipoContrato) => {
     return catalogo[tipoContrato] || tipoContrato || 'NO DISPONIBLE';
 };
 
-// Convierte la familia (con ids de BD) en los slots que espera TabNucleofamiliar.
-// Cada familiar conserva idRelacion/idPersonaDestino para reconciliar el PUT.
-const mapearFamiliaresANucleo = (familiares = []) => {
-    const vacio = () => ({ pnombre: '', snombre: '', papellido: '', sapellido: '', sexo: '', cedula: '', fechaNacimiento: '' });
+// Genera un identificador estable para la clave de React. No se usa el indice
+// porque al reordenar o eliminar un familiar los campos se cruzarian.
+export const generarClave = (prefijo = 'familiar') =>
+    (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : `${prefijo}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
 
-    const nucleo = { madre: vacio(), padre: vacio(), conyuge: { ...vacio(), tipoUnion: '', observaciones: '' }, hijos: [] };
+// Familiar vacio. tipoUnion/observaciones solo se usan cuando el parentesco es
+// conyuge; el resto de la lista los ignora.
+export const familiarVacio = (idParentesco = '', clave) => ({
+    id: clave || generarClave(),
+    idParentesco: idParentesco || '',
+    tipoUnion: '',
+    observaciones: '',
+    fechaInicio: '',
+    fechaFin: '',
+    idRelacion: null,
+    idPersonaDestino: null,
+    pnombre: '',
+    snombre: '',
+    papellido: '',
+    sapellido: '',
+    sexo: '',
+    cedula: '',
+    fechaNacimiento: ''
+});
 
-    familiares
+// Convierte la lista de familiares de la API (con idParentesco) al estado del
+// formulario. A diferencia del molde antiguo, aqui NO se deduce el parentesco
+// desde la posicion: se conserva el que ya tiene en la base de datos.
+const mapearFamiliaresANucleo = (familiares = []) => ({
+    familiares: (familiares || [])
         .filter((f) => f && f.activo !== false)
-        .forEach((f) => {
+        .map((f) => {
             const p = f.persona || {};
-            const datos = {
-                ...vacio(),
+            return {
+                id: f.idRelacion != null ? `rel-${f.idRelacion}` : generarClave(),
+                idParentesco: f.idParentesco ?? '',
+                tipoUnion: f.tipoUnion || '',
+                observaciones: f.observaciones || '',
+                fechaInicio: f.fechaInicio ? aISO(f.fechaInicio) : '',
+                fechaFin: f.fechaFin ? aISO(f.fechaFin) : '',
+                idRelacion: f.idRelacion ?? null,
+                idPersonaDestino: p.idPersona ?? null,
                 pnombre: p.pnombre || '',
                 snombre: p.snombre || '',
                 papellido: p.papellido || '',
@@ -75,23 +106,9 @@ const mapearFamiliaresANucleo = (familiares = []) => {
                 sexo: p.sexo || '',
                 cedula: p.cedula || '',
                 fechaNacimiento: aISO(p.fechaNacimiento),
-                idRelacion: f.idRelacion,
-                idPersonaDestino: f.idPersona,
             };
-
-            if (f.idParentesco === 4) {
-                nucleo.madre = { ...datos, sexo: 'F' };
-            } else if (f.idParentesco === 5) {
-                nucleo.padre = { ...datos, sexo: 'M' };
-            } else if (f.idParentesco === 1) {
-                nucleo.conyuge = { ...datos, tipoUnion: f.tipoUnion || '', observaciones: f.observaciones || '' };
-            } else {
-                nucleo.hijos.push({ ...datos, id: String(f.idRelacion) });
-            }
-        });
-
-    return nucleo;
-};
+        })
+});
 
 // Mapea ExpedienteCompletoDto (respuesta del GET) al objeto que consume el contexto (edición)
 export const mapearCompletoAFormulario = (dto) => {
@@ -197,9 +214,6 @@ export const construirPayloadActualizar = (expediente) => {
     const caracteristicas = expediente.caracteristicasFisicas || {};
     const nucleo = expediente.nucleoFamiliar || {};
 
-    const sexoEmpleado = persona.sexo;
-    const sexoConyuge = sexoEmpleado === 'M' ? 'F' : sexoEmpleado === 'F' ? 'M' : 'F';
-
     const construirPersona = (p, sexoPorDefecto) => ({
         cedula: (p.cedula ?? '').trim(),
         pnombre: (p.pnombre ?? '').trim(),
@@ -214,31 +228,30 @@ export const construirPayloadActualizar = (expediente) => {
         celular: (p.celular ?? '').trim(),
     });
 
-    const familiares = [];
+    // El idParentesco lo elige el usuario en el selector, no se deduce de la
+    // posicion. tipoUnion solo viaja para el conyuge, igual que en el backend.
+    //
+    // Solo se descartan las filas NUEVAS que estan totalmente vacias. Las que ya
+    // tienen IdRelacion deben viajar siempre: el backend da de baja toda relacion
+    // que no llegue en el DTO, asi que filtrar aqui borraria al familiar.
+    const filaVacia = (f) =>
+        ![f.pnombre, f.snombre, f.papellido, f.sapellido, f.cedula, f.fechaNacimiento]
+            .some((v) => String(v ?? '').trim());
 
-    const agregarFamiliar = (familiar, idParentesco, sexoPorDefecto) => {
-        if (!familiar || !familiar.fechaNacimiento) return;
-        familiares.push({
+    const familiares = (nucleo.familiares || [])
+        .filter((f) => f && (f.idRelacion > 0 || !filaVacia(f)))
+        .map((f) => ({
             idEmpleado: expediente.idEmpleado || 0,
-            idRelacion: familiar.idRelacion ?? null,
-            idPersonaDestino: familiar.idPersonaDestino ?? null,
-            idParentesco,
-            fechaInicio: familiar.fechaInicio || null,
-            fechaFin: familiar.fechaFin || null,
-            tipoUnion: familiar.tipoUnion || '',
-            observaciones: familiar.observaciones || '',
+            idRelacion: f.idRelacion ?? null,
+            idPersonaDestino: f.idPersonaDestino ?? null,
+            idParentesco: Number(f.idParentesco) || 0,
+            fechaInicio: f.fechaInicio || null,
+            fechaFin: f.fechaFin || null,
+            tipoUnion: f.tipoUnion || '',
+            observaciones: f.observaciones || '',
             fechaCreacion: new Date().toISOString(),
-            persona: construirPersona(familiar, sexoPorDefecto),
-        });
-    };
-
-    agregarFamiliar(nucleo.madre, 4, 'F');
-    agregarFamiliar(nucleo.padre, 5, 'M');
-    agregarFamiliar(nucleo.conyuge, 1, sexoConyuge);
-
-    (nucleo.hijos || []).forEach((hijo) => {
-        agregarFamiliar(hijo, hijo.sexo === 'F' ? 3 : 2, hijo.sexo === 'F' ? 'F' : 'M');
-    });
+            persona: construirPersona(f, f.sexo),
+        }));
 
     return {
         persona: {

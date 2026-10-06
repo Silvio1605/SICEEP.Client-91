@@ -105,6 +105,18 @@ export const getNominaResumen = (idEmpleado, periodo) => {
     });
 };
 
+// ---------- Nucleo familiar ----------
+
+// Catalogo completo: trae EsConyuge / EsDescendiente / GeneroAplicable, que son
+// los que deciden que campos se muestran para cada tipo de parentesco.
+export const getSelectParentescos = () => {
+    return api.get(`LookUp/Select_Parentescos`);
+};
+
+export const getSelectTipoUnion = () => {
+    return api.get(`LookUp/Select_TipoUnion`);
+};
+
 // ---------- Estudios (información académica) ----------
 
 export const getEstudios = (idPersona) => {

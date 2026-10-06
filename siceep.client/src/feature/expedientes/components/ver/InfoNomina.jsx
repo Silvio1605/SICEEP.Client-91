@@ -213,24 +213,24 @@ export default function InfoNomina({ idEmpleado }) {
                 </Stack>
 
                 <Grid container spacing={2}>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid size={{  xs: 12, sm: 6, md: 3  }}>
                         <Tarjeta etiqueta="Salario ordinario"
                             valor={formatoMoneda(nomina.salarioOrdinario)}
                             ayuda="Segun contrato" />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid size={{  xs: 12, sm: 6, md: 3  }}>
                         <Tarjeta etiqueta="Salario bruto"
                             valor={formatoMoneda(nomina.salarioBruto)}
                             ayuda="Suma de devengados"
                             color="#1b5e20" fondo="#e8f5e9" borde="#2e7d32" />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid size={{  xs: 12, sm: 6, md: 3  }}>
                         <Tarjeta etiqueta="Deducciones"
                             valor={formatoMoneda(nomina.totalDeducciones)}
                             ayuda="Total del periodo"
                             color="#b71c1c" fondo="#fdecea" borde="#c62828" />
                     </Grid>
-                    <Grid item xs={12} sm={6} md={3}>
+                    <Grid size={{  xs: 12, sm: 6, md: 3  }}>
                         <Tooltip title="Bruto menos deducciones">
                             <Tarjeta etiqueta="Salario neto"
                                 valor={formatoMoneda(nomina.salarioNeto)}

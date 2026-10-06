@@ -9,6 +9,13 @@ export default defineConfig({
             key: fs.readFileSync('./certs/localhost-key.pem'),
             cert: fs.readFileSync('./certs/localhost.pem'),
         },
-        port: 50412
+        port: 50412,
+        proxy: {
+            '/api': {
+                target: 'https://localhost:7109',
+                secure: false,
+                changeOrigin: true
+            }
+        }
     }
 });

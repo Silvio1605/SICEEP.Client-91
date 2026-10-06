@@ -103,6 +103,18 @@ export default function EditarExpediente() {
         if (!c.numInss?.toString().trim()) faltantes.push('Número INSS');
         if (!c.fechaInicio) faltantes.push('Fecha de ingreso');
         if (!(Number(c.salarioMensual) > 0)) faltantes.push('Salario mensual');
+
+        // Cada fila de la lista necesita parentesco y al menos un nombre. El backend
+        // da de baja las relaciones que no llegan en el payload, asi que una fila a
+        // medio llenar no se puede descartar en silencio al guardar.
+        (exp.nucleoFamiliar?.familiares || []).forEach((familiar, indice) => {
+            const etiqueta = `Familiar #${indice + 1}`;
+            if (!familiar.idParentesco) faltantes.push(`${etiqueta}: tipo de parentesco`);
+            const tieneNombre = [familiar.pnombre, familiar.snombre, familiar.papellido, familiar.sapellido]
+                .some((n) => String(n ?? '').trim());
+            if (!tieneNombre) faltantes.push(`${etiqueta}: al menos un nombre`);
+        });
+
         return faltantes;
     };
 

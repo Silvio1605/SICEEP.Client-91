@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+﻿import { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Box, Typography, Tabs, Tab, Button, Paper,
@@ -240,12 +240,12 @@ export default function CrearExpediente() {
                         Secciones opcionales ({progreso.resumen.opcionalesCompletas}/{progreso.resumen.totalOpcionales} completas):
                     </Typography>
                     <List dense>
-                        {['contactoEmergencia', 'caracteristicasFisicas', 'familiares'].map(seccion => {
+                        {['contactoEmergencia', 'caracteristicasFisicas', 'nucleoFamiliar'].map(seccion => {
                             const estado = progreso[seccion];
                             const nombreSeccion = {
                                 contactoEmergencia: 'Contacto Emergencia',
                                 caracteristicasFisicas: 'Características Físicas',
-                                familiares: 'Núcleo Familiar'
+                                nucleoFamiliar: 'Núcleo Familiar'
                             }[seccion];
                             return (
                                 <ListItem key={seccion}>

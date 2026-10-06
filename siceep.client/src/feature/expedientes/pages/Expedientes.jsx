@@ -76,7 +76,7 @@ export default function Expedientes() {
         <Box sx={{ width: '100%', pb: 5 }}>
             <Box sx={{ mb: 3 }}>
                 <Grid container spacing={2} alignItems="center">
-                    <Grid xs={12}>
+                    <Grid size={{  xs: 12  }}>
                         <Typography variant="h5" component="h1" color="text.primary">
                             Búsqueda de Expedientes
                         </Typography>

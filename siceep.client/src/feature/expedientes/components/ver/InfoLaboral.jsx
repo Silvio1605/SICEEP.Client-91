@@ -42,56 +42,56 @@ export default function InfoLaboral({ data }) {
                 </Typography>
 
                 <Grid container spacing={3}>
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{  xs: 12, md: 6  }}>
                         <Seccion titulo="Información del Contrato">
                             <Grid container spacing={2}>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="N° INSS" valor={data?.numInss || contrato?.numInss} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Tipo de Contrato" valor={nombreTipoContrato(contrato?.tipoContrato)} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Fecha de Ingreso" valor={formatearFechaLegible(data?.fechaIngreso || contrato?.fechaInicio)} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Fecha de Cese" valor={formatearFechaLegible(contrato?.fechaCese)} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Número de Expediente" valor={data?.numeroExpediente || data?.codigo} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Salario Mensual" valor={contrato?.salarioMensual ? `C$ ${Number(contrato.salarioMensual).toLocaleString()}` : null} destacado />
                                 </Grid>
                             </Grid>
                         </Seccion>
                     </Grid>
 
-                    <Grid item xs={12} md={6}>
+                    <Grid size={{  xs: 12, md: 6  }}>
                         <Seccion titulo="Información de la Plaza (se administra por separado)">
                             <Grid container spacing={2}>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Código de Plaza" valor={plaza?.ordinal} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Orden" valor={plaza?.orden} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Estructura" valor={plaza?.estructura} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Unidad Administrativa" valor={plaza?.unidad} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Cargo Asignado" valor={plaza?.cargo} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Nivel / Categoría" valor={plaza?.categoria} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Salario Presupuestado" valor={plaza?.salario ? `C$ ${Number(plaza.salario).toLocaleString()}` : null} />
                                 </Grid>
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Estado de la Plaza" valor={plaza?.estado} />
                                 </Grid>
                             </Grid>

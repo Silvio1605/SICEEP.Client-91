@@ -178,22 +178,22 @@ export default function InfoPersonal({ data }) {
                 <Seccion titulo="Identificación del Funcionario">
                     <SubSeccion titulo="Datos de Identidad">
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Cédula" valor={persona.cedula} destacado />
                             </Grid>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Nombre Completo" valor={nombreCompletoPersona(persona)} />
                             </Grid>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Sexo" valor={nombreSexo(persona.sexo)} />
                             </Grid>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Fecha de Nacimiento" valor={formatearFechaLegible(persona.fechaNacimiento)} />
                             </Grid>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Edad" valor={edad !== null ? `${edad} AÑOS` : null} />
                             </Grid>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Estado Civil" valor={nombreEstadoCivil(persona.idEstadoCivil)} />
                             </Grid>
                         </Grid>
@@ -201,13 +201,13 @@ export default function InfoPersonal({ data }) {
 
                     <SubSeccion titulo="Origen y Contacto">
                         <Grid container spacing={2}>
-                            <Grid item xs={12} sm={6}>
+                            <Grid size={{  xs: 12, sm: 6  }}>
                                 <CampoInfo etiqueta="Lugar de Nacimiento" valor={persona.lugarNacimiento} />
                             </Grid>
-                            <Grid item xs={12} sm={6}>
+                            <Grid size={{  xs: 12, sm: 6  }}>
                                 <CampoInfo etiqueta="Celular" valor={persona.celular} />
                             </Grid>
-                            <Grid item xs={12}>
+                            <Grid size={{  xs: 12  }}>
                                 <CampoInfo etiqueta="Dirección Domiciliar" valor={persona.direccion} />
                             </Grid>
                         </Grid>
@@ -219,26 +219,26 @@ export default function InfoPersonal({ data }) {
                     <Seccion titulo="Características Físicas">
                         <SubSeccion titulo="Medidas y Complexión">
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6} md={6}>
+                                <Grid size={{  xs: 12, sm: 6, md: 6  }}>
                                     <CampoInfo etiqueta="Estatura" valor={caracteristicas.estatura ? `${caracteristicas.estatura} m` : null} />
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={6}>
+                                <Grid size={{  xs: 12, sm: 6, md: 6  }}>
                                     <CampoInfo etiqueta="Peso" valor={caracteristicas.peso ? `${caracteristicas.peso} lbs` : null} />
                                 </Grid>
                             </Grid>
                         </SubSeccion>
                         <SubSeccion titulo="Rasgos">
                             <Grid container spacing={2}>
-                                <Grid item xs={12} sm={6} md={4}>
+                                <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                     <CampoInfo etiqueta="Tono de Piel" valor={caracteristicas.tonoPiel} />
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={4}>
+                                <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                     <CampoInfo etiqueta="Color de Ojos" valor={caracteristicas.colorOjos} />
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={4}>
+                                <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                     <CampoInfo etiqueta="Color de Cabello" valor={caracteristicas.colorCabello} />
                                 </Grid>
-                                <Grid item xs={12} sm={6} md={4}>
+                                <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                     <CampoInfo etiqueta="Tipo de Cabello" valor={caracteristicas.tipoCabello} />
                                 </Grid>
                             </Grid>
@@ -254,23 +254,23 @@ export default function InfoPersonal({ data }) {
                 <Seccion titulo="Contacto de Emergencia">
                     {data?.contactoEmergencia ? (
                         <Grid container spacing={3}>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Nombre" valor={contacto.nombreContacto} />
                             </Grid>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Parentesco" valor={contacto.parentesco} />
                             </Grid>
-                            <Grid item xs={12} sm={6} md={4}>
+                            <Grid size={{  xs: 12, sm: 6, md: 4  }}>
                                 <CampoInfo etiqueta="Teléfono / Celular" valor={contacto.telefono} />
                             </Grid>
                             {contacto.referencia && (
-                                <Grid item xs={12}>
+                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Referencia" valor={contacto.referencia} />
                                 </Grid>
                             )}
                         </Grid>
                     ) : (
-                        <Grid item xs={12}>
+                        <Grid size={{  xs: 12  }}>
                             <Typography variant="body2" color="text.secondary">No registrado.</Typography>
                         </Grid>
                     )}

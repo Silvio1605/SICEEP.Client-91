@@ -19,7 +19,7 @@ export default function GestionDeducciones() {
             </Box>
 
             <Grid container spacing={3}>
-                <Grid item xs={12} md={8}>
+                <Grid size={{  xs: 12, md: 8  }}>
                     <Paper elevation={2} sx={{ p: 3, borderRadius: 2, height: '100%', minHeight: '400px' }}>
                         <Typography variant="subtitle1" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
                             Deducciones Activas del Funcionario
@@ -41,28 +41,28 @@ export default function GestionDeducciones() {
                 </Grid>
 
               
-                <Grid item xs={12} md={4}>
+                <Grid size={{  xs: 12, md: 4  }}>
                     <Grid container spacing={3}>
 
-                        <Grid item xs={12}>
+                        <Grid size={{  xs: 12  }}>
                             <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
                                 <Typography variant="subtitle2" color="primary" fontWeight="bold" sx={{ mb: 2 }}>
                                     Agregar Deducción
                                 </Typography>
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12}>
+                                    <Grid size={{  xs: 12  }}>
                                         <TextField select fullWidth size="small" label="Institución (Inst)" defaultValue="">
                                             <MenuItem value="GALLO">El Gallo más Gallo</MenuItem>
                                             <MenuItem value="CONCEP">CONCEP</MenuItem>
                                         </TextField>
                                     </Grid>
-                                    <Grid item xs={12}>
+                                    <Grid size={{  xs: 12  }}>
                                         <TextField fullWidth size="small" label="Monto Mensual" type="number" InputProps={{ startAdornment: <InputAdornment position="start">C$</InputAdornment> }} />
                                     </Grid>
-                                    <Grid item xs={12}>
+                                    <Grid size={{  xs: 12  }}>
                                         <TextField fullWidth size="small" label="Total de la Deuda" type="number" InputProps={{ startAdornment: <InputAdornment position="start">C$</InputAdornment> }} />
                                     </Grid>
-                                    <Grid item xs={12}>
+                                    <Grid size={{  xs: 12  }}>
                                         <Button variant="contained" color="primary" fullWidth startIcon={<SaveIcon />}>
                                             Guardar Deducción
                                         </Button>
@@ -71,7 +71,7 @@ export default function GestionDeducciones() {
                             </Paper>
                         </Grid>
 
-                        <Grid item xs={12}>
+                        <Grid size={{  xs: 12  }}>
                             <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
                                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2, gap: 1 }}>
                                     <AccountBalanceIcon color="primary" fontSize="small" />
@@ -81,10 +81,10 @@ export default function GestionDeducciones() {
                                 </Box>
                                 <Divider sx={{ mb: 2 }} />
                                 <Grid container spacing={2}>
-                                    <Grid item xs={12}>
+                                    <Grid size={{  xs: 12  }}>
                                         <TextField fullWidth size="small" label="Nombre de la Institución" placeholder="Ej: El Gallo más Gallo" />
                                     </Grid>
-                                    <Grid item xs={12}>
+                                    <Grid size={{  xs: 12  }}>
                                         <Button variant="outlined" color="primary" fullWidth startIcon={<AddCircleOutlineIcon />}>
                                             Registrar Institución
                                         </Button>

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useEffect, useRef } from 'react';
 import { ExpedienteContext } from './ExpedienteContext';
+import { familiarVacio } from '../utils/expedienteMappers';
 
 // Clave del borrador en localStorage
 const CACHE_KEY = 'siceep_expediente_borrador_v1';
@@ -10,12 +11,10 @@ const ExpedienteInicial = {
     contrato: { ordinal: null, numInss: '', tipoContrato: 'P', fechaInicio: null, fechaCese: null, salarioMensual: 0, plaza: null },
     contactoEmergencia: null,
     caracteristicasFisicas: null,
-    familiares: [],
+    // El nucleo es una lista, no un molde fijo de madre/padre/conyuge/hijos: cada
+    // familia guarda su idParentesco, y los campos de union solo aplican al conyuge.
     nucleoFamiliar: {
-        madre: { pnombre: '', snombre: '', papellido: '', sapellido: '', sexo: 'F', cedula: '', fechaNacimiento: '' },
-        padre: { pnombre: '', snombre: '', papellido: '', sapellido: '', sexo: 'M', cedula: '', fechaNacimiento: '' },
-        conyuge: { pnombre: '', snombre: '', papellido: '', sapellido: '', sexo: '', cedula: '', fechaNacimiento: '', tipoUnion: '', observaciones: '' },
-        hijos: []
+        familiares: []
     }
 };
 
@@ -47,6 +46,37 @@ const verificarSeccionCompleta = (seccion, data) => {
     }
 };
 
+// Los borradores guardados antes del cambio tienen el molde fijo
+// (madre/padre/conyuge/hijos). Se convierten a la lista actual para no perder
+// lo que el usuario ya habia escrito a mano.
+const migrarNucleoLegacy = (nucleo) => {
+    if (!nucleo) return [];
+    if (Array.isArray(nucleo.familiares)) return nucleo.familiares;
+
+    const lista = [];
+    const CAMPOS = ['pnombre', 'snombre', 'papellido', 'sapellido', 'cedula', 'fechaNacimiento'];
+
+    const agregar = (persona, idParentesco) => {
+        if (!persona) return;
+        const tieneDatos = CAMPOS.some((c) => String(persona[c] ?? '').trim() !== '');
+        if (!tieneDatos) return;
+        lista.push({
+            ...familiarVacio(idParentesco),
+            ...persona,
+            idParentesco,
+            tipoUnion: persona.tipoUnion || '',
+            observaciones: persona.observaciones || ''
+        });
+    };
+
+    agregar(nucleo.madre, 4);
+    agregar(nucleo.padre, 5);
+    agregar(nucleo.conyuge, 1);
+    (nucleo.hijos || []).forEach((hijo) => agregar(hijo, hijo?.sexo === 'F' ? 3 : 2));
+
+    return lista;
+};
+
 // Mezcla el borrador guardado con el esquema inicial (defensivo ante cambios de estructura)
 const mezclarBorrador = (guardado) => ({
     ...ExpedienteInicial,
@@ -55,14 +85,8 @@ const mezclarBorrador = (guardado) => ({
     contrato: { ...ExpedienteInicial.contrato, ...(guardado.contrato || {}) },
     contactoEmergencia: guardado.contactoEmergencia ?? null,
     caracteristicasFisicas: guardado.caracteristicasFisicas ?? null,
-    familiares: guardado.familiares || [],
     nucleoFamiliar: {
-        ...ExpedienteInicial.nucleoFamiliar,
-        ...(guardado.nucleoFamiliar || {}),
-        madre: { ...ExpedienteInicial.nucleoFamiliar.madre, ...(guardado.nucleoFamiliar?.madre || {}) },
-        padre: { ...ExpedienteInicial.nucleoFamiliar.padre, ...(guardado.nucleoFamiliar?.padre || {}) },
-        conyuge: { ...ExpedienteInicial.nucleoFamiliar.conyuge, ...(guardado.nucleoFamiliar?.conyuge || {}) },
-        hijos: guardado.nucleoFamiliar?.hijos || []
+        familiares: migrarNucleoLegacy(guardado.nucleoFamiliar)
     }
 });
 
