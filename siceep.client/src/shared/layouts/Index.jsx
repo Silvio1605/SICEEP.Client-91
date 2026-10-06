@@ -28,7 +28,10 @@ const Index = () => {
 
             {/* Panel derecho principal */}
             <PageContent>
-                <BarraNav />
+                <BarraNav
+                    sidebarOpen={sidebarOpen}
+                    toggleNav={() => setSidebarOpen(!sidebarOpen)}
+                />
 
                 {/* Área de renderizado para las sub-rutas (Tablas, Formularios) */}
                 <ContentWrapper>
