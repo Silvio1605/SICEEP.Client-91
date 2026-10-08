@@ -14,8 +14,8 @@ import InfoLaboral from '../components/ver/InfoLaboral';
 import InfoNomina from '../components/ver/InfoNomina';
 import InfoAcademica from '../components/ver/InfoAcademica';
 import TabDocumentos from '../components/crear/TabDocumentos';
-import ModalImpresion from '../components/ModalImpresion';
-import ModalVistaPreviaPDF from '../components/ModalVistaPreviaPDF';
+import ModalImpresion from '../components/modal/ModalImpresion';
+import ModalVistaPreviaPDF from '../components/modal/ModalVistaPreviaPDF';
 
 import { getExpedienteCompleto, getSelectEstCivil, getEstudios } from '../services/expedienteService';
 import { mapearCompletoADetalle } from '../utils/expedienteMappers';

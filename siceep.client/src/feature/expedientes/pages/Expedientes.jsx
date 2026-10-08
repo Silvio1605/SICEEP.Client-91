@@ -9,8 +9,8 @@ import Skeleton from '@mui/material/Skeleton';
 import Stack from '@mui/material/Stack';
 import { columnsExpedientes } from '../components/columns/columnsExpediente';
 import FiltroExpediente from '../components/FiltroExpediente';
-import ModalBaja from '../components/ModalBaja';
-import ModalReactivar from '../components/ModalReactivar';
+import ModalBaja from '../components/modal/ModalBaja';
+import ModalReactivar from '../components/modal/ModalReactivar';
 import { useExpediente } from '../hooks/useExpediente';
 import { useScreenType } from '../../../shared/hooks/useScreenType';
 

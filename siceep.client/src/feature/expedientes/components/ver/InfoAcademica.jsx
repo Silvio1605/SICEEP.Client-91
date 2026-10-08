@@ -57,11 +57,11 @@ const COLUMNAS_CURSO = [
 export default function InfoAcademica({ data, estudios }) {
     const formatearFecha = (fecha) => (fecha ? String(fecha).slice(0, 10) : '—');
 
-    // =================================================================
+    
     // Los estudios se leen de la tabla Estudios. La categoría la deriva el
     // backend del Subsistema del nivel (BASICA/MEDIA/TECNICA/SUPERIOR/
     // POSGRADO con documento de soporte; CURSOS sin documento).
-    // =================================================================
+
     const lista = estudios || data?.estudios || [];
 
     const construirFila = (e, index) => ({

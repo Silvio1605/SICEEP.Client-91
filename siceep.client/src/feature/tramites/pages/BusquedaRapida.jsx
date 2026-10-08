@@ -23,7 +23,7 @@ import {
     generarConstanciaRecorridoURL,
     generarConstanciaSalarialURL,
 } from '../../reportes/pdf/constanciasPdfService';
-import ModalVistaPreviaPDF from '../../expedientes/components/ModalVistaPreviaPDF';
+import ModalVistaPreviaPDF from '../../expedientes/components/modal/ModalVistaPreviaPDF';
 import ModalOpcionesImpresion from '../components/ModalOpcionesImpresion';
 import ModalDocumentosDigitales from '../components/ModalDocumentosDigitales';
 import TablaExpedientes from '../components/TablaExpedientes';

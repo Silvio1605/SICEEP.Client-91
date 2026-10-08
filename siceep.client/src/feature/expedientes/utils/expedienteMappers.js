@@ -214,19 +214,25 @@ export const construirPayloadActualizar = (expediente) => {
     const caracteristicas = expediente.caracteristicasFisicas || {};
     const nucleo = expediente.nucleoFamiliar || {};
 
-    const construirPersona = (p, sexoPorDefecto) => ({
-        cedula: (p.cedula ?? '').trim(),
-        pnombre: (p.pnombre ?? '').trim(),
-        snombre: (p.snombre ?? '').trim(),
-        papellido: (p.papellido ?? '').trim(),
-        sapellido: (p.sapellido ?? '').trim(),
-        fechaNacimiento: p.fechaNacimiento ? aISOCompleto(p.fechaNacimiento) : null,
-        sexo: p.sexo ? p.sexo : sexoPorDefecto,
-        idEstadoCivil: p.idEstadoCivil ?? 1,
-        direccion: p.direccion ?? '',
-        lugarNacimiento: p.lugarNacimiento ?? '',
-        celular: (p.celular ?? '').trim(),
-    });
+    const construirPersona = (p, sexoPorDefecto) => {
+        const fechaNac = p.fechaNacimiento ? aISOCompleto(p.fechaNacimiento) : null;
+        if (p.fechaNacimiento && !fechaNac) {
+            console.warn('fechaNacimiento inválida:', p.fechaNacimiento);
+        }
+        return {
+            cedula: (p.cedula ?? '').trim(),
+            pnombre: (p.pnombre ?? '').trim(),
+            snombre: (p.snombre ?? '').trim(),
+            papellido: (p.papellido ?? '').trim(),
+            sapellido: (p.sapellido ?? '').trim(),
+            fechaNacimiento: fechaNac,
+            sexo: p.sexo ? p.sexo : sexoPorDefecto,
+            idEstadoCivil: p.idEstadoCivil ?? 1,
+            direccion: p.direccion ?? '',
+            lugarNacimiento: p.lugarNacimiento ?? '',
+            celular: (p.celular ?? '').trim(),
+        };
+    };
 
     // El idParentesco lo elige el usuario en el selector, no se deduce de la
     // posicion. tipoUnion solo viaja para el conyuge, igual que en el backend.
@@ -240,18 +246,43 @@ export const construirPayloadActualizar = (expediente) => {
 
     const familiares = (nucleo.familiares || [])
         .filter((f) => f && (f.idRelacion > 0 || !filaVacia(f)))
-        .map((f) => ({
-            idEmpleado: expediente.idEmpleado || 0,
-            idRelacion: f.idRelacion ?? null,
-            idPersonaDestino: f.idPersonaDestino ?? null,
-            idParentesco: Number(f.idParentesco) || 0,
-            fechaInicio: f.fechaInicio || null,
-            fechaFin: f.fechaFin || null,
-            tipoUnion: f.tipoUnion || '',
-            observaciones: f.observaciones || '',
-            fechaCreacion: new Date().toISOString(),
-            persona: construirPersona(f, f.sexo),
-        }));
+        .map((f) => {
+            // Validación de campos requeridos por familiar
+            const idPar = Number(f.idParentesco);
+            if (!idPar || idPar <= 0) {
+                console.error('Familiar sin idParentesco válido:', f);
+                throw new Error(`Familiar "${f.pnombre} ${f.papellido}": falta tipo de parentesco válido.`);
+            }
+            if (!f.pnombre?.trim() && !f.papellido?.trim()) {
+                console.error('Familiar sin nombre:', f);
+                throw new Error(`Familiar con parentesco ${idPar}: falta al menos un nombre.`);
+            }
+            if (!f.sexo?.trim()) {
+                console.error('Familiar sin sexo:', f);
+                throw new Error(`Familiar "${f.pnombre} ${f.papellido}": falta sexo.`);
+            }
+            if (!f.fechaNacimiento) {
+                console.error('Familiar sin fechaNacimiento:', f);
+                throw new Error(`Familiar "${f.pnombre} ${f.papellido}": falta fecha de nacimiento.`);
+            }
+
+            const baseFam = {
+                idEmpleado: expediente.idEmpleado || 0,
+                idRelacion: f.idRelacion ?? null,
+                idPersonaDestino: f.idPersonaDestino ?? null,
+                idParentesco: Number(f.idParentesco) || 0,
+                fechaInicio: f.fechaInicio || null,
+                fechaFin: f.fechaFin || null,
+                tipoUnion: f.tipoUnion || '',
+                observaciones: f.observaciones || '',
+                persona: construirPersona(f, f.sexo),
+            };
+            // Solo enviar fechaCreacion en inserciones (idRelacion null)
+            if (f.idRelacion == null || f.idRelacion === undefined || f.idRelacion <= 0) {
+                baseFam.fechaCreacion = new Date().toISOString();
+            }
+            return baseFam;
+        });
 
     return {
         persona: {

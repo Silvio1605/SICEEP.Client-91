@@ -4,10 +4,10 @@ import {
     DialogActions, Button, Avatar, Divider, Grid, FormHelperText
 } from '@mui/material';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
-import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
-import { reactivarEmpleado } from './../services/bajaService';
-import { getPlazas } from './../../laboral/services/laboralServices';
-import FormContratoPlaza from './FormContratoPlaza';
+import { useNotificacionContext } from './../../../../providers/Notificacion/useNotificacionContext';
+import { reactivarEmpleado } from './../../services/bajaService';
+import { getPlazas } from './../../../laboral/services/laboralServices';
+import FormContratoPlaza from './../FormContratoPlaza';
 
 export default function ModalReactivar({ open, onClose, empleado, onConfirmada }) {
 

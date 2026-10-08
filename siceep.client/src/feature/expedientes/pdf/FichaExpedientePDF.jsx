@@ -478,7 +478,7 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                     </View>
 
                     {/* SECCIÓNES DE DETALLE (hoja 2+) */}
-                    <View style={styles.separadorHoja} />
+                    <View break />
 
                     {familiar && familiares.length > 0 && (
                         <View wrap={false}>
@@ -503,6 +503,8 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                             </View>
                         </View>
                     )}
+
+                    <View break />
 
                     {academica && (estudios || []).length > 0 && (
                         <View wrap={false}>

@@ -96,14 +96,18 @@ export default function CrearExpediente() {
             return;
         }
 
-        try {
+try {
             const payload = { ...expediente, contrato: normalizarContrato(expediente.contrato) };
             await registrar(payload);
             resetExpediente();
             setAviso({ open: true, mensaje: 'Expediente creado exitosamente.', severidad: 'success' });
             navigate('/index/expedientes');
         } catch (e) {
-            setAviso({ open: true, mensaje: e?.message || 'Error al guardar el expediente.', severidad: 'error' });
+            console.error('Error creando expediente:', e);
+            console.error('Response data:', e?.response?.data);
+            console.error('Response status:', e?.response?.status);
+            const serverMessage = e?.response?.data?.message || e?.message || 'Error al guardar el expediente.';
+            setAviso({ open: true, mensaje: serverMessage, severidad: 'error' });
         }
     };
 

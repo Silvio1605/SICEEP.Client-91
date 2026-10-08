@@ -1,18 +1,18 @@
-import { useContext, useMemo } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import {
-    Box, Grid, Typography, Paper, TextField, Button, Divider, MenuItem,
-    Accordion, AccordionSummary, AccordionDetails, Chip, IconButton, Tooltip
+    Box, Grid, Typography, Paper, Button, Chip, IconButton, Tooltip,
+    Divider, Accordion, AccordionSummary, AccordionDetails, Card, CardContent
 } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
+import AddIcon from '@mui/icons-material/Add';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import EditIcon from '@mui/icons-material/Edit';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import PersonIcon from '@mui/icons-material/Person';
 import { ExpedienteContext } from './../../context/ExpedienteContext';
-import { familiarVacio } from './../../utils/expedienteMappers';
-import { useSelectParentesco, sexoSegunParentesco, ajustarDescendiente } from './../../hooks/Select/useSelectParentesco';
+import { useSelectParentesco } from './../../hooks/Select/useSelectParentesco';
+import ModalFamiliar from './ModalFamiliar';
 
-// Resumen de una linea para la cabecera del acordeon, para no repetir los
-// nombres dentro del cuerpo desplegado.
+// Resumen de una linea para la cabecera del acordeon
 const resumir = (f) => {
     const nombre = [f.pnombre, f.snombre, f.papellido, f.sapellido]
         .filter(Boolean)
@@ -20,18 +20,6 @@ const resumir = (f) => {
         .trim();
     return nombre || 'Familiar sin nombre';
 };
-
-const Campo = ({ label, value, onChange, type = 'text', required = false, ...rest }) => (
-    <Grid size={{  xs: 12, sm: 6, md: 3  }}>
-        <TextField
-            fullWidth size="small" type={type} label={label} required={required}
-            value={value || ''}
-            onChange={(e) => onChange(e.target.value)}
-            InputLabelProps={type === 'date' ? { shrink: true } : undefined}
-            {...rest}
-        />
-    </Grid>
-);
 
 export default function TabNucleofamiliar() {
     const { expediente, actualizarSeccion } = useContext(ExpedienteContext);
@@ -41,8 +29,11 @@ export default function TabNucleofamiliar() {
     const familiares = nucleo.familiares || [];
     const sexoEmpleado = expediente.persona?.sexo;
 
-    // El catalogo viene con id en camelCase desde la API; se normaliza una vez
-    // para que el resto del componente use la misma forma.
+    // Modal state
+    const [modalAbierto, setModalAbierto] = useState(false);
+    const [familiarEditando, setFamiliarEditando] = useState(null);
+
+    // Catalogo normalizado
     const catalogo = useMemo(
         () => parentescos.map((p) => ({
             id: p.id,
@@ -57,48 +48,34 @@ export default function TabNucleofamiliar() {
 
     const guardarLista = (lista) => actualizarSeccion('nucleoFamiliar', { familiares: lista });
 
-    const agregar = () => {
-        guardarLista([...familiares, familiarVacio()]);
+    const abrirModalNuevo = () => {
+        setFamiliarEditando(null);
+        setModalAbierto(true);
+    };
+
+    const abrirModalEditar = (f) => {
+        setFamiliarEditando(f);
+        setModalAbierto(true);
+    };
+
+    const cerrarModal = () => {
+        setModalAbierto(false);
+        setFamiliarEditando(null);
+    };
+
+    const confirmarModal = (datos) => {
+        if (familiarEditando) {
+            // Edición: reemplaza el familiar
+            guardarLista(familiares.map(f => f.id === familiarEditando.id ? { ...f, ...datos, id: f.id } : f));
+        } else {
+            // Alta: añade con id temporal
+            guardarLista([...familiares, { ...datos, id: Date.now() }]);
+        }
+        cerrarModal();
     };
 
     const eliminar = (id) => {
         guardarLista(familiares.filter((f) => f.id !== id));
-    };
-
-    // Cambiar el parentesco puede obligar a mover el sexo (Madre siempre F,
-    // Padre siempre M) y puede obligar a cambiar HIJO<->HIJA.
-    const cambiarParentesco = (id, idParentesco) => {
-        const elegido = catalogo.find((p) => p.id === Number(idParentesco));
-        guardarLista(
-            familiares.map((f) => {
-                if (f.id !== id) return f;
-                const sexoImpuesto = sexoSegunParentesco(elegido, sexoEmpleado);
-                let actualizado = {
-                    ...f,
-                    idParentesco: idParentesco || '',
-                    sexo: sexoImpuesto || f.sexo
-                };
-                // Al dejar de ser conyuge se limpian los campos que solo aplican a ese caso.
-                if (!elegido?.esConyuge) {
-                    actualizado = { ...actualizado, tipoUnion: '', observaciones: '', fechaInicio: '', fechaFin: '' };
-                }
-                return ajustadoDescendiente(actualizado, catalogo);
-            })
-        );
-    };
-
-    const cambiarCampo = (id, campo, valor) => {
-        guardarLista(
-            familiares.map((f) => {
-                if (f.id !== id) return f;
-                let actualizado = { ...f, [campo]: valor };
-                // El sexo determina HIJO o HIJA dentro del catalogo.
-                if (campo === 'sexo') {
-                    actualizado = ajustadoDescendiente(actualizado, catalogo);
-                }
-                return actualizado;
-            })
-        );
     };
 
     return (
@@ -113,7 +90,7 @@ export default function TabNucleofamiliar() {
                         habilitan las opciones de la unión.
                     </Typography>
                 </Box>
-                <Button variant="outlined" startIcon={<AddIcon />} onClick={agregar}>
+                <Button variant="outlined" startIcon={<AddIcon />} onClick={abrirModalNuevo} disabled={loading}>
                     AGREGAR FAMILIAR
                 </Button>
             </Box>
@@ -125,7 +102,7 @@ export default function TabNucleofamiliar() {
                         No hay familiares registrados.
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                        Use “AGREGAR FAMILIAR” para incluir madre, padre, cónyuge o hijos.
+                        Use "AGREGAR FAMILIAR" para incluir madre, padre, cónyuge o hijos.
                     </Typography>
                 </Paper>
             ) : (
@@ -135,14 +112,9 @@ export default function TabNucleofamiliar() {
                         const esConyuge = !!parentesco?.esConyuge;
 
                         return (
-                            <Accordion
-                                key={f.id}
-                                defaultExpanded={familiares.length === 1}
-                                disableGutters
-                                sx={{ mb: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: '8px !important', '&:before': { display: 'none' } }}
-                            >
-                                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%', flexWrap: 'wrap' }}>
+                            <Card key={f.id} sx={{ mb: 1.5, border: '1px solid', borderColor: 'divider' }}>
+                                <CardContent sx={{ pb: 1 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', mb: 1 }}>
                                         <Chip
                                             size="small"
                                             color={parentesco ? 'primary' : 'default'}
@@ -159,98 +131,62 @@ export default function TabNucleofamiliar() {
                                             #{indice + 1}
                                         </Typography>
                                     </Box>
-                                </AccordionSummary>
 
-                                <AccordionDetails sx={{ pt: 0 }}>
-                                    <Grid container spacing={2}>
-                                        <Campo
-                                            label="Tipo de parentesco"
-                                            required
-                                            select
-                                            value={f.idParentesco || ''}
-                                            onChange={(e) => cambiarParentesco(f.id, e.target.value)}
-                                            disabled={loading}
-                                        >
-                                            <MenuItem value="">
-                                                <em>Seleccione…</em>
-                                            </MenuItem>
-                                            {catalogo.map((p) => (
-                                                <MenuItem key={p.id} value={p.id}>
-                                                    {p.nombre}
-                                                </MenuItem>
-                                            ))}
-                                        </Campo>
-
-                                        <Campo label="P. Nombre" value={f.pnombre} onChange={(v) => cambiarCampo(f.id, 'pnombre', v)} />
-                                        <Campo label="S. Nombre" value={f.snombre} onChange={(v) => cambiarCampo(f.id, 'snombre', v)} />
-                                        <Campo label="P. Apellido" value={f.papellido} onChange={(v) => cambiarCampo(f.id, 'papellido', v)} />
-                                        <Campo label="S. Apellido" value={f.sapellido} onChange={(v) => cambiarCampo(f.id, 'sapellido', v)} />
-                                        <Campo label="N° Cédula" value={f.cedula} onChange={(v) => cambiarCampo(f.id, 'cedula', v)} />
-                                        <Campo
-                                            label="Sexo"
-                                            select
-                                            value={f.sexo || ''}
-                                            onChange={(v) => cambiarCampo(f.id, 'sexo', v)}
-                                        >
-                                            <MenuItem value=""><em>Seleccione…</em></MenuItem>
-                                            <MenuItem value="M">Masculino</MenuItem>
-                                            <MenuItem value="F">Femenino</MenuItem>
-                                        </Campo>
-                                        <Campo
-                                            label="Fecha de Nacimiento"
-                                            type="date"
-                                            value={f.fechaNacimiento}
-                                            onChange={(v) => cambiarCampo(f.id, 'fechaNacimiento', v)}
-                                        />
+                                    <Grid container spacing={1} sx={{ mb: 1 }}>
+                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                            <Typography variant="caption" color="text.secondary">Cédula</Typography>
+                                            <Typography variant="body2">{f.cedula || '—'}</Typography>
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                            <Typography variant="caption" color="text.secondary">Sexo</Typography>
+                                            <Typography variant="body2">{f.sexo === 'M' ? 'Masculino' : f.sexo === 'F' ? 'Femenino' : '—'}</Typography>
+                                        </Grid>
+                                        <Grid size={{ xs: 12, sm: 6 }}>
+                                            <Typography variant="caption" color="text.secondary">Nacimiento</Typography>
+                                            <Typography variant="body2">{f.fechaNacimiento || '—'}</Typography>
+                                        </Grid>
+                                        {esConyuge && f.tipoUnion && (
+                                            <Grid size={{ xs: 12, sm: 6 }}>
+                                                <Typography variant="caption" color="text.secondary">Unión</Typography>
+                                                <Typography variant="body2">{f.tipoUnion}</Typography>
+                                            </Grid>
+                                        )}
                                     </Grid>
 
-                                    {esConyuge && (
-                                        <>
-                                            <Divider sx={{ my: 2 }}>
-                                                <Chip size="small" label="OPCIONES DEL CÓNYUGE" />
-                                            </Divider>
-                                            <Grid container spacing={2}>
-                                                <Campo
-                                                    label="Tipo de Unión"
-                                                    select
-                                                    value={f.tipoUnion || ''}
-                                                    onChange={(v) => cambiarCampo(f.id, 'tipoUnion', v)}
-                                                >
-                                                    <MenuItem value=""><em>Seleccione…</em></MenuItem>
-                                                    {tiposUnion.map((t) => (
-                                                        <MenuItem key={t.id} value={t.nombre}>
-                                                            {t.nombre}
-                                                        </MenuItem>
-                                                    ))}
-                                                </Campo>
-                                                <Campo
-                                                    label="Fecha de Inicio"
-                                                    type="date"
-                                                    value={f.fechaInicio}
-                                                    onChange={(v) => cambiarCampo(f.id, 'fechaInicio', v)}
-                                                />
-                                                <Campo
-                                                    label="Observaciones"
-                                                    value={f.observaciones}
-                                                    onChange={(v) => cambiarCampo(f.id, 'observaciones', v)}
-                                                />
-                                            </Grid>
-                                        </>
+                                    {esConyuge && f.observaciones && (
+                                        <Typography variant="caption" color="text.secondary">
+                                            Obs.: {f.observaciones}
+                                        </Typography>
                                     )}
 
-                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-                                        <Tooltip title="Quitar este familiar del expediente">
-                                            <IconButton color="error" onClick={() => eliminar(f.id)}>
-                                                <DeleteOutlineIcon />
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 1, mt: 1 }}>
+                                        <Tooltip title="Editar">
+                                            <IconButton size="small" onClick={() => abrirModalEditar(f)} disabled={loading}>
+                                                <EditIcon fontSize="small" />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Eliminar">
+                                            <IconButton size="small" color="error" onClick={() => eliminar(f.id)}>
+                                                <DeleteOutlineIcon fontSize="small" />
                                             </IconButton>
                                         </Tooltip>
                                     </Box>
-                                </AccordionDetails>
-                            </Accordion>
+                                </CardContent>
+                            </Card>
                         );
                     })}
                 </Box>
             )}
+
+            <ModalFamiliar
+                open={modalAbierto}
+                onClose={cerrarModal}
+                catalogo={catalogo}
+                tiposUnion={tiposUnion}
+                sexoEmpleado={sexoEmpleado}
+                familiar={familiarEditando}
+                onConfirmar={confirmarModal}
+            />
         </Box>
     );
 }

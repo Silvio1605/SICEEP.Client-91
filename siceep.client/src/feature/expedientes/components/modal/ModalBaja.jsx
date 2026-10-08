@@ -4,8 +4,8 @@ import {
     DialogActions, Button, Avatar, Divider, Grid, LinearProgress, FormHelperText
 } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
-import { useNotificacionContext } from './../../../providers/Notificacion/useNotificacionContext';
-import { getTiposBaja, aplicarBaja } from './../services/bajaService';
+import { useNotificacionContext } from './../../../../providers/Notificacion/useNotificacionContext';
+import { getTiposBaja, aplicarBaja } from './../../services/bajaService';
 
 export default function ModalBaja({ open, onClose, empleado, onConfirmada }) {
 

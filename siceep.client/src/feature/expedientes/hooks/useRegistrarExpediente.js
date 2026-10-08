@@ -95,10 +95,10 @@ export function useRegistroExpediente() {
         setError(null);
 
         try {
-            // Transformar el n�cleo familiar a la estructura de familiares (infiere el sexo por parentesco)
+            // Transformar el núcleo familiar a la estructura de familiares (infiere el sexo por parentesco)
             const familiaresTransformados = transformarNucleoAFamiliares(expediente);
 
-            // Construir el objeto de forma expl�cita (sin propagar todo el expediente)
+            // Construir el objeto de forma explícita (sin propagar todo el expediente)
             const expedientePayload = construirPayloadRegistro(expediente, familiaresTransformados);
 
             console.log('Payload para crear expediente:', expedientePayload);
@@ -110,7 +110,7 @@ export function useRegistroExpediente() {
             setData(response.data); 
             return response.data;
         } catch (err) {
-            // El error ya fue procesado por el interceptor, pero aqu� lo capturamos para el estado local
+            // El error ya fue procesado por el interceptor, pero aquí lo capturamos para el estado local
             const errorObj = err instanceof Error ? err : new Error(String(err));
             setError(errorObj);
             throw errorObj;
@@ -127,4 +127,3 @@ export function useRegistroExpediente() {
 
     return { registrar, loading, error, data, reset };
 }
-

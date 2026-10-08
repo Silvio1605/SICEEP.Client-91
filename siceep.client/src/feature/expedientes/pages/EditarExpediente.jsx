@@ -136,6 +136,9 @@ export default function EditarExpediente() {
                 navigate(`/index/info-personal/${id}`);
             }, 800);
         } catch (err) {
+            console.error('Error actualizando expediente:', err);
+            console.error('Response data:', err?.response?.data);
+            console.error('Response status:', err?.response?.status);
             setAviso({
                 open: true,
                 mensaje: err?.response?.data?.message || err?.message || 'Error al guardar los cambios.',
