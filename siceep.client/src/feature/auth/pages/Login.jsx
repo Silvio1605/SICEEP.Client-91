@@ -165,10 +165,10 @@ function Login() {
                             {loading ? (
                                 <>
                                     <CircularProgress size={18} color="inherit" sx={{ mr: 1, verticalAlign: 'middle' }} />
-                                    Validando información...
+                                    <span>Validando información...</span>
                                 </>
                             ) : (
-                                'Iniciar sesión'
+                                <span>Iniciar sesión</span>
                             )}
                         </button>
                         {loading == true && (

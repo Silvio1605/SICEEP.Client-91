@@ -50,7 +50,7 @@ function Confirm({ open, handleClose, onConfirm, title, content }) {
                         left: 0,
                         right: 0,
                         height: 4,
-                        background: 'linear-gradient(90deg, #1976d2, #64b5f6)',
+                        background: 'linear-gradient(90deg, #0D2A4A, #4A90C2)',
                     }}
                 />
 
@@ -74,13 +74,13 @@ function Confirm({ open, handleClose, onConfirm, title, content }) {
                             width: 32,
                             height: 32,
                             borderRadius: '50%',
-                            bgcolor: 'rgba(25, 118, 210, 0.1)',
+                            bgcolor: 'rgba(74, 144, 194, 0.12)',
                             display: 'flex',
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}
                     >
-                        <InfoIcon sx={{ color: '#1976d2', fontSize: 20 }} />
+                        <InfoIcon sx={{ color: '#0D2A4A', fontSize: 20 }} />
                     </Box>
                     {title}
                 </DialogTitle>
@@ -133,10 +133,10 @@ function Confirm({ open, handleClose, onConfirm, title, content }) {
                             borderRadius: 2,
                             px: 3,
                             py: 0.8,
-                            boxShadow: '0 2px 6px rgba(25, 118, 210, 0.3)',
+                            boxShadow: '0 2px 6px rgba(13, 42, 74, 0.3)',
                             '&:hover': {
                                 transform: 'translateY(-1px)',
-                                boxShadow: '0 4px 12px rgba(25, 118, 210, 0.4)',
+                                boxShadow: '0 4px 12px rgba(13, 42, 74, 0.4)',
                             }
                         }}
                     >

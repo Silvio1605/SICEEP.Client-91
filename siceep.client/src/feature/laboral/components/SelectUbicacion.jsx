@@ -27,6 +27,7 @@ export default function SelectUbicacion({ value, onChange, label, ayuda }) {
             options={opciones}
             loading={cargando}
             getOptionLabel={(opcion) => opcion?.nombre || ''}
+            getOptionKey={(opcion) => opcion?.id}
             isOptionEqualToValue={(opcion, valor) => opcion?.id === valor?.id}
             onChange={(_event, valor) => onChange(valor || null)}
             onOpen={cargarOpciones}

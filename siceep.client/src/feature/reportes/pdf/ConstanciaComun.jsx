@@ -7,6 +7,7 @@ import logo from '../../../assets/Logo_p.png?inline';
 import {
     estilos,
     formatearFechaFirma,
+    firmaImagen,
 } from './constanciaBase';
 
 export const EncabezadoConstancia = () => (
@@ -31,6 +32,7 @@ export const FirmaConstancia = ({ config }) => {
     return (
         <View style={estilos.firma}>
             <Text style={estilos.firmaLugar}>{formatearFechaFirma(ciudad)}</Text>
+            {firmaImagen && <Image src={firmaImagen} style={estilos.firmaImagen} />}
             <Text style={estilos.firmaTitulo}>{firmanteTitulo}</Text>
             <Text style={estilos.firmaNombre}>{firmanteNombre}</Text>
             <Text style={estilos.firmaCargo}>{firmanteCargo}</Text>

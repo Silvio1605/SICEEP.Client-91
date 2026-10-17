@@ -1,19 +1,12 @@
-﻿import React, { useState, useCallback, useRef } from 'react';
-import {
-    Box, Typography, Divider, ListItemIcon, Menu, MenuItem
-} from '@mui/material';
-
-import DescriptionIcon from '@mui/icons-material/Description';
-import AssignmentIcon from '@mui/icons-material/Assignment';
-import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
-import GroupOutlinedIcon from '@mui/icons-material/GroupOutlined';
-import PersonOffOutlinedIcon from '@mui/icons-material/PersonOffOutlined';
-import TimelineOutlinedIcon from '@mui/icons-material/TimelineOutlined';
-import FolderSharedIcon from '@mui/icons-material/FolderShared';
+﻿import React, { useState, useCallback, useRef, useMemo } from 'react';
+import { Box, Typography, Alert, Skeleton, Stack } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 
 import { getExpedienteCompleto, getEstudios } from '../../expedientes/services/expedienteService';
-import { mapearCompletoADetalle } from '../../expedientes/utils/expedienteMappers';
+import { mapearCompletoADetalle, nombreCompletoPersona } from '../../expedientes/utils/expedienteMappers';
 import { generarFichaExpedienteURL, obtenerFotoPerfilURL } from '../../expedientes/services/pdfService.jsx';
+import { registrarBitacora } from '../../bitacora/service/bitacoraService';
+import { ACCION_BITACORA } from '../../../shared/constants/accionesBitacora';
 import { getHistorial } from '../../laboral/services/laboralServices';
 import { getConstanciaBaja } from '../../reportes/services/reporteService';
 import {
@@ -26,8 +19,10 @@ import {
 import ModalVistaPreviaPDF from '../../expedientes/components/modal/ModalVistaPreviaPDF';
 import ModalOpcionesImpresion from '../components/ModalOpcionesImpresion';
 import ModalDocumentosDigitales from '../components/ModalDocumentosDigitales';
-import TablaExpedientes from '../components/TablaExpedientes';
+import FiltroBusqueda from '../components/FiltroBusqueda';
+import { columnsBusquedaRapida } from '../services/expedientesData';
 import useExpedientes from '../hooks/useExpedientes';
+import { useScreenType } from '../../../shared/hooks/useScreenType';
 
 
 // Traduce las opciones del modal (fichaCompleta, etc.) a las que espera el PDF
@@ -44,9 +39,19 @@ const mapearOpcionesImpresion = (opciones) => {
     return algunaMarcada ? secciones : { todo: true };
 };
 
+// Etiquetas legibles por tipo de constancia, para la descripción de la bitácora
+const ETIQUETA_CONSTANCIA = {
+    laboral: 'constancia laboral',
+    salarial: 'constancia salarial',
+    familiar: 'constancia familiar',
+    baja: 'constancia de baja',
+    recorrido: 'constancia de recorrido',
+};
+
 export default function BusquedaRapida() {
-    // Menu flotante / acciones
-    const [anchorEl, setAnchorEl] = useState(null);
+    const { isMobile } = useScreenType();
+
+    // Empleado sobre el que se ejecutan las acciones (constancias, ficha, documentos)
     const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
 
     // Modal de opciones de impresión (claveImpresion re-monta el modal en cada apertura)
@@ -65,75 +70,53 @@ export default function BusquedaRapida() {
     const [claveDocs, setClaveDocs] = useState(0);
 
     // Búsqueda y paginación de expedientes (en el hook useExpedientes)
-    const { expedientes, total, cargando, error, busqueda, page, manejarBusqueda, cambiarPagina } = useExpedientes();
+    const { expedientes, total, cargando, error, busqueda, page, manejarBusqueda, cambiarPagina, PAGINA_TAMANO } = useExpedientes();
 
-    const isMenuOpen = Boolean(anchorEl);
-
-    const abrirMenuOpciones = useCallback((event, empleado) => {
-        setAnchorEl(event.currentTarget);
-        setEmpleadoSeleccionado(empleado);
-    }, []);
-
-    const cerrarMenuOpciones = useCallback(() => {
-        setAnchorEl(null);
-    }, []);
-
-    const abrirModal = useCallback(() => {
-        cerrarMenuOpciones();
-        setClaveImpresion((c) => c + 1); // re-monta el modal para que reinicie las opciones
-        setModalImpresionAbierto(true);
-    }, [cerrarMenuOpciones]);
-
-    const cargarExpedienteCompleto = async (empleado) => {
+    const cargarExpedienteCompleto = useCallback(async (empleado) => {
         const dto = (await getExpedienteCompleto(empleado?.id)).data;
         const detalle = mapearCompletoADetalle(dto);
         const estudios = dto?.persona?.idPersona
             ? (await getEstudios(dto.persona.idPersona).catch(() => ({ data: [] }))).data
             : [];
         return { dto, detalle, estudios };
-    };
+    }, []);
 
-    const generarConstancia = async (tipo) => {
+    const generarConstancia = useCallback(async (tipo, empleado) => {
         try {
-            cerrarMenuOpciones();
             setGenerandoPDF(true);
             setVistaPreviaAbierta(true);
 
-            const { dto } = await cargarExpedienteCompleto(empleadoSeleccionado);
-            const codigo = dto?.codigo || empleadoSeleccionado?.codigo || 'sincodigo';
+            const { dto } = await cargarExpedienteCompleto(empleado);
+            const codigo = dto?.codigo || empleado?.codigo || 'sincodigo';
             const config = { numeroDocumento: `C-${codigo}` };
 
             if (tipo === 'baja') {
                 // En BAJA muestra período laborado, salario y motivo de la baja
-                const bajaDto = (await getConstanciaBaja(empleadoSeleccionado.id)).data;
+                const bajaDto = (await getConstanciaBaja(empleado.id)).data;
                 setNombreDescarga(`Constancia-Baja-${codigo}.pdf`);
                 setPdfUrl(await generarConstanciaBajaURL(bajaDto, config));
-                return;
-            }
-
-            if (tipo === 'recorrido') {
-                const historial = (await getHistorial(empleadoSeleccionado.id).catch(() => ({ data: [] }))).data;
+            } else if (tipo === 'recorrido') {
+                const historial = (await getHistorial(empleado.id).catch(() => ({ data: [] }))).data;
                 if (!historial?.length) throw new Error('El empleado no presenta recorrido laboral registrado.');
                 setNombreDescarga(`Constancia-Recorrido-${codigo}.pdf`);
                 setPdfUrl(await generarConstanciaRecorridoURL({ ...dto }, historial, config));
-                return;
-            }
-
-            if (tipo === 'familiar') {
+            } else if (tipo === 'familiar') {
                 if (!dto?.familiares?.length) throw new Error('El expediente no contiene miembros de familia registrados.');
                 setNombreDescarga(`Constancia-Familiar-${codigo}.pdf`);
                 setPdfUrl(await generarConstanciaFamiliarURL({ ...dto }, config));
-                return;
-            }
-
-            if (tipo === 'salarial') {
+            } else if (tipo === 'salarial') {
                 setNombreDescarga(`Constancia-Salarial-${codigo}.pdf`);
                 setPdfUrl(await generarConstanciaSalarialURL({ ...dto }, config));
-                return;
+            } else {
+                setNombreDescarga(`Constancia-${codigo}.pdf`);
+                setPdfUrl(await generarConstanciaLaboralURL({ ...dto }, config));
             }
 
-            setNombreDescarga(`Constancia-${codigo}.pdf`);
-            setPdfUrl(await generarConstanciaLaboralURL({ ...dto }, config));
+            // Registra la generación en la bitácora (fire-and-forget: no rompe el PDF)
+            registrarBitacora(
+                ACCION_BITACORA.GENERAR_CONSTANCIA,
+                `Generación de ${ETIQUETA_CONSTANCIA[tipo] || `constancia (${tipo})`} - Expediente ${codigo} - ${nombreCompletoPersona(dto?.persona) || 'funcionario'}`
+            );
         } catch (err) {
             console.error('Error al generar la constancia: ', err);
             setVistaPreviaAbierta(false);
@@ -142,7 +125,7 @@ export default function BusquedaRapida() {
         } finally {
             setGenerandoPDF(false);
         }
-    };
+    }, [cargarExpedienteCompleto]);
 
     const manejarImpresion = async (opcionesSeleccionadas) => {
         try {
@@ -179,12 +162,33 @@ export default function BusquedaRapida() {
         setVistaPreviaAbierta(false);
     };
 
+    // Abre el modal de opciones de impresión (Ficha) para el empleado seleccionado
+    const abrirFicha = useCallback((row) => {
+        setEmpleadoSeleccionado(row);
+        setClaveImpresion((c) => c + 1); // re-monta el modal para que reinicie las opciones
+        setModalImpresionAbierto(true);
+    }, []);
+
+    // Genera la constancia del tipo indicado para el empleado seleccionado
+    const manejarConstancia = useCallback((row, tipo) => {
+        setEmpleadoSeleccionado(row);
+        generarConstancia(tipo, row);
+    }, [generarConstancia]);
+
     // Abre el modal con los documentos digitales del funcionario seleccionado
-    const abrirDocumentos = useCallback(() => {
-        cerrarMenuOpciones();
+    const abrirDocumentos = useCallback((row) => {
+        setEmpleadoSeleccionado(row);
         setClaveDocs((c) => c + 1); // re-monta el modal para que recargue los documentos
         setModalDocsAbierto(true);
-    }, [cerrarMenuOpciones]);
+    }, []);
+
+    // Columnas memorizadas: mismo patrón que la tabla de Usuarios
+    const registros = useMemo(() => columnsBusquedaRapida({
+        isMobile,
+        onFicha: abrirFicha,
+        onConstancia: manejarConstancia,
+        onDocumentos: abrirDocumentos,
+    }), [isMobile, abrirFicha, manejarConstancia, abrirDocumentos]);
 
     return (
         <Box sx={{ width: '100%', pb: 5 }}>
@@ -195,58 +199,54 @@ export default function BusquedaRapida() {
                 Consulta ágil de expedientes y generación de reportes.
             </Typography>
 
-            <TablaExpedientes
-                expedientes={expedientes}
-                total={total}
-                cargando={cargando}
-                error={error}
-                busqueda={busqueda}
-                page={page}
-                onBuscar={manejarBusqueda}
-                onCambiaPagina={cambiarPagina}
-                onAbrirAcciones={abrirMenuOpciones}
-            />
+            <Box sx={{ width: '100%', minWidth: 0, minHeight: 0 }}>
+                <FiltroBusqueda busqueda={busqueda} onBuscar={manejarBusqueda} />
 
-            {/* Menú flotante de acciones */}
-            <Menu
-                anchorEl={anchorEl}
-                open={isMenuOpen}
-                onClose={cerrarMenuOpciones}
-                transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-                anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-                PaperProps={{ elevation: 3, sx: { minWidth: 200, mt: 0.5 } }}
-            >
-                <MenuItem onClick={abrirModal}>
-                    <ListItemIcon><DescriptionIcon fontSize="small" color="primary" /></ListItemIcon>
-                    Ficha
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={() => generarConstancia('laboral')}>
-                    <ListItemIcon><AssignmentIcon fontSize="small" color="secondary" /></ListItemIcon>
-                    Constancia Laboral
-                </MenuItem>
-                <MenuItem onClick={() => generarConstancia('salarial')}>
-                    <ListItemIcon><PaymentsOutlinedIcon fontSize="small" color="success" /></ListItemIcon>
-                    Constancia Salarial
-                </MenuItem>
-                <MenuItem onClick={() => generarConstancia('familiar')}>
-                    <ListItemIcon><GroupOutlinedIcon fontSize="small" color="action" /></ListItemIcon>
-                    Constancia Familiar
-                </MenuItem>
-                <MenuItem onClick={() => generarConstancia('baja')}>
-                    <ListItemIcon><PersonOffOutlinedIcon fontSize="small" color="error" /></ListItemIcon>
-                    Constancia de Baja
-                </MenuItem>
-                <MenuItem onClick={() => generarConstancia('recorrido')}>
-                    <ListItemIcon><TimelineOutlinedIcon fontSize="small" color="warning" /></ListItemIcon>
-                    Constancia de Recorrido
-                </MenuItem>
-                <Divider />
-                <MenuItem onClick={abrirDocumentos}>
-                    <ListItemIcon><FolderSharedIcon fontSize="small" color="info" /></ListItemIcon>
-                    Documentos Digitales
-                </MenuItem>
-            </Menu>
+                <Typography variant="body1" color="text.secondary" sx={{ mb: 2 }}>
+                    Registros de expedientes
+                </Typography>
+
+                {error && (
+                    <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>
+                )}
+
+                {cargando && expedientes.length === 0 ? (
+                    <Stack spacing={1}>
+                        <Skeleton variant="rectangular" width={'100%'} height={20} />
+                        <Skeleton variant="rounded" width={'100%'} height={60} />
+                    </Stack>
+                ) : (
+                    <DataGrid
+                        rows={expedientes}
+                        columns={registros}
+                        getRowId={(row) => row.id}
+                        autoHeight
+                        loading={cargando}
+                        disableColumnMenu
+                        disableRowSelectionOnClick
+                        hideFooterSelectedRowCount
+                        disableColumnFilter
+                        disableColumnSelector
+                        disableDensitySelector
+                        pagination
+                        paginationMode="server"
+                        rowCount={total ?? 0}
+                        paginationModel={{ page, pageSize: PAGINA_TAMANO }}
+                        onPaginationModelChange={(model) => cambiarPagina(model.page)}
+                        pageSizeOptions={[PAGINA_TAMANO]}
+                        slots={{ toolbar: null }}
+                        initialState={{ pagination: { paginationModel: { pageSize: PAGINA_TAMANO } } }}
+                        localeText={{ noRowsLabel: "No hay expedientes", noResultsOverlayLabel: "No se encontraron resultados", MuiTablePagination: { labelRowsPerPage: "Filas:" } }}
+                        sx={{
+                            border: 'none',
+                            backgroundColor: '#ffffff',
+                            '& .MuiDataGrid-columnHeaders': { borderBottom: 'none', backgroundColor: '#f8f9fa' },
+                            '& .MuiDataGrid-cell': { borderBottom: '1px solid #f0f0f0' },
+                            '& .header-negrita': { fontWeight: 'bold' },
+                        }}
+                    />
+                )}
+            </Box>
 
             {/* Modal de opciones de impresión */}
             <ModalOpcionesImpresion

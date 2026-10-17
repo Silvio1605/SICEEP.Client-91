@@ -49,13 +49,13 @@ export default function MenuAcciones({ row, abrirPerfil, abrirCambioContra }) {
                 transformOrigin={{ vertical: 'top', horizontal: 'right' }}
             >
                 <MenuItem onClick={() => seleccionar(row.id)}>
-                    <FaceIcon sx={{ mr: 1 }} /> Perfil
+                    <FaceIcon sx={{ mr: 1 }} color="primary" /> Perfil
                 </MenuItem>
                 
                 <MenuItem
                     onClick={() => handleAction(row.id, row.nombreUsuario)}
                 >
-                    <PasswordIcon sx={{ mr: 1 }} /> Reestablecer contraseña
+                    <PasswordIcon sx={{ mr: 1 }} color="secondary" /> Reestablecer contraseña
                 </MenuItem>
             </Menu>
         </>

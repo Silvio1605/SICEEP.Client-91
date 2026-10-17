@@ -15,13 +15,13 @@ const TIPO_FOTO_PERFIL = 1;
 
 // Colores del estado funcional para las píldoras de la tarjeta de presentación
 const ESTADO_PILL = {
-    1: { label: 'De baja', bg: 'rgba(211,47,47,0.92)' },
-    2: { label: 'Activo', bg: 'rgba(46,125,50,0.92)' },
-    3: { label: 'Com/Servicio', bg: 'rgba(237,108,2,0.92)' },
+    1: { label: 'De baja', bg: 'rgba(198,40,40,0.92)', fg: '#fff' },
+    2: { label: 'Activo', bg: 'rgba(46,125,50,0.92)', fg: '#fff' },
+    3: { label: 'Com/Servicio', bg: 'rgba(242,194,0,0.92)', fg: '#1A2027' },
 };
 
 // Píldora (badge) translúcida sobre el fondo degradado de la cabecera
-const Pill = ({ children, bg }) => (
+const Pill = ({ children, bg, color }) => (
     <Box component="span" sx={{
         display: 'inline-flex',
         alignItems: 'center',
@@ -29,7 +29,7 @@ const Pill = ({ children, bg }) => (
         py: 0.45,
         borderRadius: 999,
         bgcolor: bg || 'rgba(255,255,255,0.18)',
-        color: '#fff',
+        color: color || '#fff',
         fontSize: '0.78rem',
         fontWeight: 600,
         letterSpacing: 0.2,
@@ -45,7 +45,7 @@ const CampoInfo = ({ etiqueta, valor, destacado = false }) => (
         borderRadius: 1.5,
         border: '1px solid',
         borderColor: destacado ? 'primary.main' : 'divider',
-        bgcolor: destacado ? 'rgba(46,116,181,0.08)' : '#fafafa',
+        bgcolor: destacado ? 'rgba(74,144,194,0.08)' : '#fafafa',
         p: 1.5,
     }}>
         <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5, letterSpacing: 0.3 }}>
@@ -86,7 +86,6 @@ const Seccion = ({ titulo, icono, children }) => (
 
 export default function InfoPersonal({ data }) {
     const persona = data?.persona || {};
-    const caracteristicas = data?.caracteristicasFisicas || {};
     const contacto = data?.contactoEmergencia || {};
 
     // Fotografía del funcionario (FOTO_PERFIL más reciente)
@@ -127,7 +126,7 @@ export default function InfoPersonal({ data }) {
                 {/* Cabecera destacada: fotografía e información resumida del funcionario */}
                 <Box sx={{
                     borderRadius: 2,
-                    background: 'linear-gradient(135deg, #1f3864 0%, #2e74b5 100%)',
+                    background: 'linear-gradient(135deg, #0D2A4A 0%, #4A90C2 100%)',
                     p: 3,
                     mb: 3,
                     display: 'flex',
@@ -165,7 +164,7 @@ export default function InfoPersonal({ data }) {
                             <Pill>Edad: {edad !== null ? `${edad} años` : 'S/D'}</Pill>
                             <Pill>Estado Civil: {nombreEstadoCivil(persona.idEstadoCivil)}</Pill>
                             {data?.idEstado && (
-                                <Pill bg={ESTADO_PILL[data.idEstado]?.bg}>
+                                <Pill bg={ESTADO_PILL[data.idEstado]?.bg} color={ESTADO_PILL[data.idEstado]?.fg}>
                                     Estado: {ESTADO_PILL[data.idEstado]?.label || data.desEstado || 'S/D'}
                                 </Pill>
                             )}
@@ -213,42 +212,6 @@ export default function InfoPersonal({ data }) {
                         </Grid>
                     </SubSeccion>
                 </Seccion>
-
-                {/* Características Físicas */}
-                {data?.caracteristicasFisicas ? (
-                    <Seccion titulo="Características Físicas">
-                        <SubSeccion titulo="Medidas y Complexión">
-                            <Grid container spacing={2}>
-                                <Grid size={{  xs: 12, sm: 6, md: 6  }}>
-                                    <CampoInfo etiqueta="Estatura" valor={caracteristicas.estatura ? `${caracteristicas.estatura} m` : null} />
-                                </Grid>
-                                <Grid size={{  xs: 12, sm: 6, md: 6  }}>
-                                    <CampoInfo etiqueta="Peso" valor={caracteristicas.peso ? `${caracteristicas.peso} lbs` : null} />
-                                </Grid>
-                            </Grid>
-                        </SubSeccion>
-                        <SubSeccion titulo="Rasgos">
-                            <Grid container spacing={2}>
-                                <Grid size={{  xs: 12, sm: 6, md: 4  }}>
-                                    <CampoInfo etiqueta="Tono de Piel" valor={caracteristicas.tonoPiel} />
-                                </Grid>
-                                <Grid size={{  xs: 12, sm: 6, md: 4  }}>
-                                    <CampoInfo etiqueta="Color de Ojos" valor={caracteristicas.colorOjos} />
-                                </Grid>
-                                <Grid size={{  xs: 12, sm: 6, md: 4  }}>
-                                    <CampoInfo etiqueta="Color de Cabello" valor={caracteristicas.colorCabello} />
-                                </Grid>
-                                <Grid size={{  xs: 12, sm: 6, md: 4  }}>
-                                    <CampoInfo etiqueta="Tipo de Cabello" valor={caracteristicas.tipoCabello} />
-                                </Grid>
-                            </Grid>
-                        </SubSeccion>
-                    </Seccion>
-                ) : (
-                    <Seccion titulo="Características Físicas">
-                        <Typography variant="body2" color="text.secondary">No registrado.</Typography>
-                    </Seccion>
-                )}
 
                 {/* Contacto de Emergencia */}
                 <Seccion titulo="Contacto de Emergencia">

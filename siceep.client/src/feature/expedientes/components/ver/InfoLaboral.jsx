@@ -8,7 +8,7 @@ const CampoInfo = ({ etiqueta, valor, destacado = false }) => (
         borderRadius: 1.5,
         border: '1px solid',
         borderColor: destacado ? 'primary.main' : 'divider',
-        bgcolor: destacado ? 'rgba(46,116,181,0.08)' : '#fafafa',
+        bgcolor: destacado ? 'rgba(74,144,194,0.08)' : '#fafafa',
         p: 1.5,
     }}>
         <Typography variant="caption" color="text.secondary" display="block" sx={{ mb: 0.5, letterSpacing: 0.3 }}>

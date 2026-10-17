@@ -114,6 +114,7 @@ export default function FormContratoPlaza({
                             freeSolo={freeSolo}
                             options={plazas}
                             getOptionLabel={(option) => option?.ordinal || ''}
+                            getOptionKey={(option) => option?.idPlaza}
                             loading={loading}
                             onInputChange={(_, newValue) => buscarPlazas(newValue)}
                             onChange={(_, newValue) => handlePlazaSelected(newValue)}

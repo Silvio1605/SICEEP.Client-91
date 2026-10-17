@@ -137,7 +137,7 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
                             <Divider sx={{ mb: 1 }} />
                             <List dense>
                                 {agregados.map(p => (
-                                    <ListItemButton key={p.idRecurso} sx={{ borderRadius: 2 }}>
+                                    <ListItemButton key={`add-${p.idRecurso}`} sx={{ borderRadius: 2 }}>
                                         <ListItemIcon>
                                             <CheckCircleOutlineIcon color="success" />
                                         </ListItemIcon>
@@ -156,7 +156,7 @@ export default function GuardarPermisosDialog({ open, onClose, idUsuario }) {
                             <Divider sx={{ mb: 1 }} />
                             <List dense>
                                 {quitados.map(p => (
-                                    <ListItemButton key={p.idRecurso} sx={{ borderRadius: 2 }}>
+                                    <ListItemButton key={`rem-${p.idRecurso}`} sx={{ borderRadius: 2 }}>
                                         <ListItemIcon>
                                             <HighlightOffIcon color="error" />
                                         </ListItemIcon>

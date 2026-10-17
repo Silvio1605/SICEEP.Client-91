@@ -324,7 +324,7 @@ export default function TabInfoAcademica({ idPersona, alGuardar }) {
         if (r.archivo) return <Typography variant="caption" color="success.main">Pendiente</Typography>;
         if (r.documentoUrl) {
             return (
-                <a href={r.documentoUrl} target="_blank" rel="noreferrer" style={{ color: '#1976d2' }}>
+                <a href={r.documentoUrl} target="_blank" rel="noreferrer" style={{ color: '#4A90C2' }}>
                     Ver
                 </a>
             );

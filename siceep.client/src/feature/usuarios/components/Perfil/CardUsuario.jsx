@@ -138,7 +138,7 @@ function CardUsuario({ actualizar }) {
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon sx={{ color: '#fff' }} />}
                     sx={{
-                        background: 'linear-gradient(135deg, #1565C0 0%, #42A5F5 100%)',
+                        background: 'linear-gradient(135deg, #0D2A4A 0%, #4A90C2 100%)',
                         color: '#fff',
                         p: 2.5,
                         '& .MuiAccordionSummary-content': { alignItems: 'center', m: 0 }
@@ -150,7 +150,7 @@ function CardUsuario({ actualizar }) {
                             height: 64,
                             mr: 2.5,
                             bgcolor: '#fff',
-                            color: '#1565C0',
+                            color: '#0D2A4A',
                             fontWeight: 700,
                             fontSize: '1.6rem',
                             boxShadow: 3
@@ -208,7 +208,7 @@ function CardUsuario({ actualizar }) {
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ '& .MuiAccordionSummary-content': { alignItems: 'center', gap: 1 } }}
                 >
-                    <Box sx={{ width: '4px', height: '20px', backgroundColor: '#1565C0', borderRadius: '2px' }} />
+                     <Box sx={{ width: '4px', height: '20px', backgroundColor: '#0D2A4A', borderRadius: '2px' }} />
                     <WorkIcon fontSize="small" color="primary" />
                     <Typography variant="subtitle1" sx={tituloSeccion()}>
                         Rol
@@ -230,7 +230,7 @@ function CardUsuario({ actualizar }) {
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ '& .MuiAccordionSummary-content': { alignItems: 'center', gap: 1 } }}
                 >
-                    <Box sx={{ width: '4px', height: '20px', backgroundColor: '#1565C0', borderRadius: '2px' }} />
+                     <Box sx={{ width: '4px', height: '20px', backgroundColor: '#0D2A4A', borderRadius: '2px' }} />
                     <AccountBoxIcon fontSize="small" color="primary" />
                     <Typography variant="subtitle1" sx={tituloSeccion()}>
                         Cuenta
@@ -252,7 +252,7 @@ function CardUsuario({ actualizar }) {
                     expandIcon={<ExpandMoreIcon />}
                     sx={{ '& .MuiAccordionSummary-content': { alignItems: 'center', gap: 1 } }}
                 >
-                    <Box sx={{ width: '4px', height: '20px', backgroundColor: '#1565C0', borderRadius: '2px' }} />
+                     <Box sx={{ width: '4px', height: '20px', backgroundColor: '#0D2A4A', borderRadius: '2px' }} />
                     <LockResetIcon fontSize="small" color="primary" />
                     <Typography variant="subtitle1" sx={tituloSeccion()}>
                         Reestablecer Contraseña

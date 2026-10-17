@@ -35,7 +35,7 @@ const COLUMNAS_ESTUDIO = [
         headerClassName: 'header-negrita',
         renderCell: (params) =>
             params.row.documentoUrl ? (
-                <a href={params.row.documentoUrl} target="_blank" rel="noreferrer" style={{ color: '#1976d2' }}>
+                <a href={params.row.documentoUrl} target="_blank" rel="noreferrer" style={{ color: '#4A90C2' }}>
                     Ver
                 </a>
             ) : (

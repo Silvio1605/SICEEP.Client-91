@@ -181,6 +181,14 @@ const styles = StyleSheet.create({
         width: 110,
         height: 130,
     },
+    fotoPlaceholder: {
+        width: 110,
+        height: 130,
+        borderWidth: 1,
+        borderColor: '#b2b1b1',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     titleSection: {
         fontSize: 13,
         marginBottom: 2,
@@ -351,7 +359,9 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                                     {fotoSrc ? (
                                         <Image style={styles.foto} src={fotoSrc} />
                                     ) : (
-                                        <Text style={[styles.labelDato, styles.Center]}>SIN FOTO</Text>
+                                        <View style={styles.fotoPlaceholder}>
+                                            <Text style={[styles.labelDato, styles.Center]}>SIN FOTO</Text>
+                                        </View>
                                     )}
                                 </View>
                             </View>

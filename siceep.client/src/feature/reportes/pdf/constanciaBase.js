@@ -3,6 +3,12 @@ import {
     StyleSheet,
 } from '@react-pdf/renderer';
 
+// Imagen de firma compartida por todas las constancias.
+// Para cambiarla, reemplace el archivo src/assets/Firma.png por otro PNG/JPG.
+import firmaImagen from '../../../assets/Firma.png?inline';
+
+export { firmaImagen };
+
 // Fuente con cursiva (Tinos) para el lema, igual que la constancia general
 Font.register({
     family: 'Times Italic',
@@ -148,7 +154,14 @@ export const estilos = StyleSheet.create({
     },
     firmaLugar: {
         fontSize: 11,
-        marginBottom: 50,
+        marginBottom: 8,
+    },
+    firmaImagen: {
+        width: 200,
+        height: 55,
+        objectFit: 'contain',
+        alignSelf: 'center',
+        marginBottom: 2,
     },
     firmaTitulo: {
         fontFamily: 'Times-Bold',

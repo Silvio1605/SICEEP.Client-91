@@ -85,6 +85,7 @@ function ContenidoModal({ onClose, onGuardado }) {
                         options={cargos}
                         loading={cargandoCargos}
                         getOptionLabel={(opcion) => opcion?.nombre || ''}
+                        getOptionKey={(opcion) => opcion?.id}
                         isOptionEqualToValue={(opcion, valor) => opcion?.id === valor?.id}
                         onChange={(_event, valor) => setCargo(valor || null)}
                         renderInput={(params) => (

@@ -26,7 +26,7 @@ export const formatearFechaLegible = (valor) => {
 };
 
 export const nombreCompletoPersona = (p = {}) =>
-    [p.papellido, p.sapellido, p.pnombre, p.snombre].filter(Boolean).join(' ').trim();
+    [p.pnombre, p.snombre, p.papellido, p.sapellido].filter(Boolean).join(' ').trim();
 
 export const calcularEdad = (fechaNacimiento) => {
     if (!fechaNacimiento) return null;

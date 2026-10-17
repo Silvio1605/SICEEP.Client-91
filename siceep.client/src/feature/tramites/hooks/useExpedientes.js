@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getExpedientes } from '../../expedientes/services/expedienteService';
 
+const PAGINA_TAMANO = 10;
+
 // Encapsula la búsqueda y paginación de expedientes para Búsqueda Rápida
 export default function useExpedientes(debounceMs = 400) {
 
@@ -23,7 +25,11 @@ export default function useExpedientes(debounceMs = 400) {
                 pagina: pagina + 1,
             };
             const res = await getExpedientes(filtro);
-            setExpedientes(res?.data?.data || []);
+            const filas = res?.data?.data || [];
+            setExpedientes(filas.map((item, index) => ({
+                ...item,
+                index: pagina * PAGINA_TAMANO + index + 1,
+            })));
             setTotal(res?.data?.totalRegistros || 0);
         } catch (err) {
             setError(err?.message || 'Error al cargar los expedientes.');
@@ -48,9 +54,9 @@ export default function useExpedientes(debounceMs = 400) {
         setPage(0);
     }, []);
 
-    const cambiarPagina = useCallback((event, nuevaPagina) => {
+    const cambiarPagina = useCallback((nuevaPagina) => {
         setPage(nuevaPagina);
     }, []);
 
-    return { expedientes, total, cargando, error, busqueda, page, manejarBusqueda, cambiarPagina };
+    return { expedientes, total, cargando, error, busqueda, page, manejarBusqueda, cambiarPagina, PAGINA_TAMANO };
 }

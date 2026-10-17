@@ -18,7 +18,6 @@ import TableRow from '@mui/material/TableRow';
 //
 import { useReportes } from './../hooks/useReportes';
 import { nombreMes } from './../pdf/reportePdfService';
-import ConstanciasPanel from './../components/ConstanciasPanel';
 
 const anioActual = new Date().getFullYear();
 const anios = Array.from({ length: 7 }, (_, i) => anioActual - i);
@@ -257,11 +256,6 @@ export default function Reportes() {
                             )}
                         </Box>
                     </Paper>
-                </Grid>
-
-                {/* Constancias del personal */}
-                <Grid size={{ xs: 12 }}>
-                    <ConstanciasPanel />
                 </Grid>
             </Grid>
         </Box>

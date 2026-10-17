@@ -46,7 +46,7 @@ const Tarjeta = ({ etiqueta, valor, ayuda, color, fondo, borde }) => (
     </Paper>
 );
 
-export default function InfoNomina({ idEmpleado }) {
+export default function InfoSalarial({ idEmpleado }) {
     const [nomina, setNomina] = useState(null);
     const [periodo, setPeriodo] = useState('');
     const [cargando, setCargando] = useState(true);
@@ -68,6 +68,7 @@ export default function InfoNomina({ idEmpleado }) {
     }, [idEmpleado]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         cargar(periodo);
     }, [cargar, periodo]);
 
@@ -161,20 +162,20 @@ export default function InfoNomina({ idEmpleado }) {
                         <Tarjeta etiqueta="Salario bruto"
                             valor={formatoMoneda(nomina.salarioBruto)}
                             ayuda="Suma de devengados"
-                            color="#1b5e20" fondo="#e8f5e9" borde="#2e7d32" />
+                            color="#0D2A4A" fondo="#EAF1F7" borde="#0D2A4A" />
                     </Grid>
                     <Grid size={{  xs: 12, sm: 6, md: 3  }}>
                         <Tarjeta etiqueta="Deducciones"
                             valor={formatoMoneda(nomina.totalDeducciones)}
                             ayuda="Total del periodo"
-                            color="#b71c1c" fondo="#fdecea" borde="#c62828" />
+                            color="#C62828" fondo="#FBEDED" borde="#C62828" />
                     </Grid>
                     <Grid size={{  xs: 12, sm: 6, md: 3  }}>
                         <Tooltip title="Bruto menos deducciones">
                             <Tarjeta etiqueta="Salario neto"
                                 valor={formatoMoneda(nomina.salarioNeto)}
                                 ayuda="Lo que recibe el empleado"
-                                color="#0d47a1" fondo="#e3f2fd" borde="#1565c0" />
+                                color="#0D2A4A" fondo="#EAF1F7" borde="#4A90C2" />
                         </Tooltip>
                     </Grid>
                 </Grid>
@@ -183,7 +184,7 @@ export default function InfoNomina({ idEmpleado }) {
 
                 <TablaDetalle
                     titulo="Devengados"
-                    colorBorde="#2e7d32"
+                    colorBorde="#0D2A4A"
                     filas={filasDevengados}
                     columnaMonto="Monto"
                     total={nomina.salarioBruto}
@@ -193,7 +194,7 @@ export default function InfoNomina({ idEmpleado }) {
 
                 <TablaDetalle
                     titulo="Deducciones"
-                    colorBorde="#c62828"
+                    colorBorde="#C62828"
                     filas={filasDeducciones}
                     columnaMonto="Monto"
                     total={nomina.totalDeducciones}

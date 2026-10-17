@@ -153,16 +153,16 @@ export default function TabInfoLaboral() {
                                     InputProps={{
                                         readOnly: true,
                                         startAdornment: <InputAdornment position="start">C$</InputAdornment>,
-                                        sx: {
-                                            backgroundColor: '#e8f5e9',
-                                            fontWeight: 'bold',
-                                            '& .MuiInputBase-input': { fontWeight: 'bold', color: '#2e7d32' }
-                                        }
+                                         sx: {
+                                             backgroundColor: '#EAF1F7',
+                                             fontWeight: 'bold',
+                                             '& .MuiInputBase-input': { fontWeight: 'bold', color: '#0D2A4A' }
+                                         }
                                     }}
                                     InputLabelProps={{ shrink: true }}
                                     sx={{
                                         '& .MuiOutlinedInput-root': {
-                                            '& fieldset': { borderColor: '#2e7d32', borderWidth: 2 }
+                                             '& fieldset': { borderColor: '#0D2A4A', borderWidth: 2 }
                                         }
                                     }}
                                 />

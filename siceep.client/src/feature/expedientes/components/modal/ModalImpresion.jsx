@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { 
     Dialog, DialogTitle, DialogContent, DialogActions, 
     FormGroup, FormControlLabel, Checkbox, Divider, Typography, Button 
@@ -21,12 +21,10 @@ export default function ModalImpresion({ abierto, alCerrar, alImprimir }) {
         todo: false
     });
 
-    // Reinicia las opciones cada vez que el modal se abre
-    useEffect(() => {
-        if (abierto) {
-            setOpciones({ personal: false, familiar: false, laboral: false, academica: false, todo: false });
-        }
-    }, [abierto]);
+    // Reinicia las opciones al terminar de cerrarse el modal
+    const reiniciarOpciones = () => {
+        setOpciones({ personal: false, familiar: false, laboral: false, academica: false, todo: false });
+    };
 
     /**
      * Maneja la lógica de selección de las casillas.
@@ -51,7 +49,13 @@ export default function ModalImpresion({ abierto, alCerrar, alImprimir }) {
     const haySeleccion = opciones.personal || opciones.familiar || opciones.laboral || opciones.academica || opciones.todo;
 
     return (
-        <Dialog open={abierto} onClose={alCerrar} maxWidth="sm" fullWidth>
+        <Dialog
+            open={abierto}
+            onClose={alCerrar}
+            maxWidth="sm"
+            fullWidth
+            TransitionProps={{ onExited: reiniciarOpciones }}
+        >
             <DialogTitle sx={{ fontWeight: 'bold', color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}>
                 <PrintIcon /> Opciones de Impresión
             </DialogTitle>

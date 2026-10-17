@@ -3,14 +3,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import {
     Box,
     Button,
-    CssBaseline,
     Paper,
     Stack,
     Tab,
     Tabs,
-    TextField,
-    ThemeProvider,
-    createTheme
+    TextField
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -33,37 +30,6 @@ const TABS_CATALOGO = [
     { dominio: 1, label: 'Estructuras', idPermiso: RECURSO.ESTRUCTURAS },
     { dominio: 2, label: 'Ubicaciones', idPermiso: RECURSO.UBICACIONES_Y_UNIDADES },
 ];
-
-const theme = createTheme({
-    palette: {
-        secondary: {
-            main: '#2e7d32',
-        },
-        background: {
-            default: '#f4f6f8',
-        },
-    },
-    typography: {
-        fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
-        h6: { fontWeight: 600 },
-        button: { textTransform: 'none' },
-    },
-    components: {
-        MuiPaper: {
-            styleOverrides: {
-                root: {
-                    borderRadius: 12,
-                    boxShadow: '0px 2px 8px rgba(0,0,0,0.04)',
-                },
-            },
-        },
-        MuiDialog: {
-            styleOverrides: {
-                paper: { borderRadius: 16, padding: '4px' },
-            },
-        },
-    },
-});
 
 export default function Ubicacion() {
 
@@ -303,8 +269,7 @@ export default function Ubicacion() {
 
     return (
 
-        <ThemeProvider theme={theme}>
-            <CssBaseline />
+        <>
             <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
                
                 {/* Contenido principal */}
@@ -413,6 +378,6 @@ export default function Ubicacion() {
                 {...modal.props}
             />
 
-        </ThemeProvider>
+        </>
     );
 }

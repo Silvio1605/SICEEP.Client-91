@@ -38,6 +38,7 @@ export const usePerfil = (id) => {
     }, [id]);
 
     useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         cargar();
     }, [cargar]);
 

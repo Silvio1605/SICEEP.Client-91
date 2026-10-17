@@ -259,6 +259,7 @@ export default function TabMovimientos() {
                                                     ? `${opcion.ordinal} · ${opcion.cargo} · ${opcion.estructura} - ${opcion.unidad}`
                                                     : ''
                                             }
+                                            getOptionKey={(opcion) => opcion?.idPlaza}
                                             isOptionEqualToValue={(opcion, valor) => opcion?.idPlaza === valor?.idPlaza}
                                             onChange={(_event, valor) => setPlazaNueva(valor || null)}
                                             onInputChange={(_event, termino) => buscarOpcionesPlaza(termino)}
@@ -275,6 +276,7 @@ export default function TabMovimientos() {
                                             value={cargoNuevo}
                                             options={cargos}
                                             getOptionLabel={(opcion) => opcion?.nombre || ''}
+                                            getOptionKey={(opcion) => opcion?.id}
                                             isOptionEqualToValue={(opcion, valor) => opcion?.id === valor?.id}
                                             onChange={(_event, valor) => setCargoNuevo(valor || null)}
                                             renderInput={(params) => (
@@ -336,7 +338,7 @@ export default function TabMovimientos() {
                                                 </TableHead>
                                                 <TableBody>
                                                     {historial.map((r) => (
-                                                        <TableRow key={r.idRecorrido} hover>
+                                                        <TableRow key={`mov-${r.idRecorrido}`} hover>
                                                             <TableCell>{r.cargo}</TableCell>
                                                             <TableCell>{r.estructura} - {r.unidad}</TableCell>
                                                             <TableCell>{formatoFecha(r.fechaInicio)}</TableCell>

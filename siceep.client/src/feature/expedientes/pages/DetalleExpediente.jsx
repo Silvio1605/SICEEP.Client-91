@@ -9,9 +9,10 @@ import { RECURSO } from '../../../shared/constants/recursos';
 
 // Importación de Componentes Hijos
 import InfoPersonal from '../components/ver/InfoPersonal';
+import InfoCaracteristicasFisicas from '../components/ver/InfoCaracteristicasFisicas';
 import InfoFamiliar from '../components/ver/InfoFamiliar';
 import InfoLaboral from '../components/ver/InfoLaboral';
-import InfoNomina from '../components/ver/InfoNomina';
+import InfoSalarial from '../components/ver/InfoSalarial';
 import InfoAcademica from '../components/ver/InfoAcademica';
 import TabDocumentos from '../components/crear/TabDocumentos';
 import ModalImpresion from '../components/modal/ModalImpresion';
@@ -31,8 +32,8 @@ const ESTADO_FUNCIONARIO = {
     3: { label: 'Com/Servicio', color: 'warning' },
 };
 const FONDO_ESTADO = {
-    1: '#ffebe9',
-    3: '#fff7e6',
+    1: 'rgba(198, 40, 40, 0.08)',
+    3: 'rgba(242, 194, 0, 0.16)',
 };
 
 // Cada pestaña declara el recurso que la API exige para su contenido. El menu,
@@ -44,6 +45,12 @@ const TABS = [
         ruta: 'info-personal',
         idPermiso: RECURSO.CONSULTAR_EXPEDIENTES,
         render: ({ datosExpediente }) => <InfoPersonal data={datosExpediente} />,
+    },
+    {
+        label: 'Características Físicas',
+        ruta: 'caracteristicas-fisicas',
+        idPermiso: RECURSO.CONSULTAR_EXPEDIENTES,
+        render: ({ datosExpediente }) => <InfoCaracteristicasFisicas data={datosExpediente} />,
     },
     {
         label: 'Info. Familiar',
@@ -58,10 +65,10 @@ const TABS = [
         render: ({ datosExpediente }) => <InfoLaboral data={datosExpediente} />,
     },
     {
-        label: 'Info. Nomina',
-        ruta: 'info-nomina',
+        label: 'Info. Salarial',
+        ruta: 'info-salarial',
         idPermiso: RECURSO.DEDUCCIONES,
-        render: ({ datosExpediente }) => <InfoNomina idEmpleado={datosExpediente?.idEmpleado} />,
+        render: ({ datosExpediente }) => <InfoSalarial idEmpleado={datosExpediente?.idEmpleado} />,
     },
     {
         label: 'Info. Académica',

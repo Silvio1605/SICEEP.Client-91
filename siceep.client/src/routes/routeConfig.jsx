@@ -60,9 +60,10 @@ export const privateRoutes = [
         )
     },
     { path: "info-personal/:id", element: <DetalleExpediente /> },
+    { path: "caracteristicas-fisicas/:id", element: <DetalleExpediente /> },
     { path: "info-familiar/:id", element: <DetalleExpediente /> },
     { path: "info-laboral/:id", element: <DetalleExpediente /> },
-    { path: "info-nomina/:id", element: <DetalleExpediente /> },
+    { path: "info-salarial/:id", element: <DetalleExpediente /> },
     { path: "info-academica/:id", element: <DetalleExpediente /> },
     { path: "documentos/:id", element: <DetalleExpediente /> },
     { path: "busqueda-rapida", element: <BusquedaRapida /> },
