@@ -17,13 +17,14 @@ import { useScreenType } from './../../../shared/hooks/useScreenType';
 
 export default function Bitacora() {
 
-    const { historial, buscar } = useBitacora();
+    const { historial, buscar, total, cargandoHistorial } = useBitacora();
     // para manejar los parámetros de búsqueda en la URL (si es necesario)
     const [searchParams, setSearchParams] = useSearchParams();
     const { isMobile } = useScreenType();
 
-    //datos de la busqueda con filtro
+    // datos de la busqueda con filtro
     const filtro = useMemo(() => ({
+        busqueda: searchParams.get("busqueda") || searchParams.get("usuario") || null,
         usuario: searchParams.get("usuario") || null,
         fecha: searchParams.get("fecha") || null,
         accion: searchParams.get("accion") || 0,
@@ -31,8 +32,9 @@ export default function Bitacora() {
         tamañoPagina: Number(searchParams.get("tamañoPagina")) || 10
     }), [searchParams]);
 
-    
-    const actualizarFiltro = (nuevoFiltro) => {
+    // Al cambiar un filtro se vuelve a la primera página.
+    // Al cambiar de página se conserva la página solicitada.
+    const actualizarFiltro = (nuevoFiltro, { resetPagina = true } = {}) => {
         const params = new URLSearchParams(searchParams);
 
         Object.entries(nuevoFiltro).forEach(([key, value]) => {
@@ -42,28 +44,37 @@ export default function Bitacora() {
                 params.delete(key);
             }
         });
+
+        if (resetPagina)
+            params.set("pagina", "1");
+
         setSearchParams(params);
     };
 
-    // Cargar usuarios cada vez que cambie el filtro o los parámetros de búsqueda en la URL
+    // Carga el historial cada vez que cambia el filtro o la paginación.
     useEffect(() => {
-        const cargarDatos = async () => {
-            try {
-                await buscar(filtro);
-            } catch (error) {
-                console.error("Error:", error);
-            }
-        };
-        cargarDatos();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+        buscar(filtro).catch((error) => {
+            console.error("Error:", error);
+        });
+    }, [filtro, buscar]);
 
     const registros = useMemo(() => {
         return columnsBitacora({ isMobile });
     }, [isMobile]);
 
     const slots = useMemo(() => ({ toolbar: GridToolbar }), []);
+
+    const paginationModel = {
+        page: Math.max(0, (Number(filtro.pagina) || 1) - 1),
+        pageSize: Number(filtro.tamañoPagina) || 10
+    };
+
+    const manejarPaginacion = (model) => {
+        actualizarFiltro(
+            { pagina: model.page + 1, tamañoPagina: model.pageSize },
+            { resetPagina: false }
+        );
+    };
 
     return (
         <Box
@@ -85,7 +96,6 @@ export default function Bitacora() {
             <BitacoraFiltro 
                 filtro={filtro}
                 actualizarFiltro={actualizarFiltro}
-                buscar={buscar}
             />
 
             <Typography variant="subtitle1" component="h1" color="text.secundary">
@@ -97,15 +107,21 @@ export default function Bitacora() {
                     rows={historial}
                     columns={registros}
                     slots={slots}
-                    initialState={{
-                        pagination: { paginationModel: { pageSize: 10 } },
-                    }}
+                    loading={cargandoHistorial}
+                    paginationMode="server"
+                    rowCount={total}
+                    paginationModel={paginationModel}
+                    onPaginationModelChange={manejarPaginacion}
                     pageSizeOptions={[5, 10, 25]}
+                    disableColumnSorting
+                    disableColumnFilter
                     localeText={{
                         noRowsLabel: "No hay datos",
                         noResultsOverlayLabel: "No se encontraron resultados",
                         MuiTablePagination: {
-                            labelRowsPerPage: "Filas:"
+                            labelRowsPerPage: "Filas:",
+                            labelDisplayedRows: ({ from, to, count }) =>
+                                `${from}-${to} de ${count !== -1 ? count : `más de ${to}`}`
                         }
                     }}
                 />

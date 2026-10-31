@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { getBitacora, getAcciones } from './../service/bitacoraService'; 
+import { useState, useEffect, useCallback } from 'react';
+import { getBitacora, getAcciones } from './../service/bitacoraService';
 
 export const useBitacora = () => {
 
@@ -9,24 +9,37 @@ export const useBitacora = () => {
     // estado para almacenar las opciones del select de acciones
     const [selAccion, setSelAccion] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [cargandoHistorial, setCargandoHistorial] = useState(false);
+    const [total, setTotal] = useState(0);
 
-    const buscar = async (filtro) => {
+    const buscar = useCallback(async (filtro) => {
+        const pagina = Number(filtro.pagina) > 0 ? Number(filtro.pagina) : 1;
+        const tamañoPagina = Number(filtro.tamañoPagina) > 0 ? Number(filtro.tamañoPagina) : 10;
 
-        //validaciones
-        if (filtro.estado === "") {
-            filtro.estado = null;
+        const filtroApi = {
+            busqueda: filtro.busqueda || filtro.usuario || null,
+            usuario: filtro.usuario || null,
+            fecha: filtro.fecha || null,
+            accion: Number(filtro.accion) || 0,
+            pagina,
+            tamañoPagina
+        };
+
+        setCargandoHistorial(true);
+        try {
+            const res = await getBitacora(filtroApi);
+            const desplazamiento = (pagina - 1) * tamañoPagina;
+
+            setHistorial((res.data.data || []).map((item, index) => ({
+                ...item,
+                // Numeración continua entre páginas, como en las demás tablas.
+                index: desplazamiento + index + 1,
+            })));
+            setTotal(Number(res.data.totalRegistros) || 0);
+        } finally {
+            setCargandoHistorial(false);
         }
-        //definir el tamaño de la paginacion
-        filtro.pagina = 1;
-        filtro.tamañoPagina = 10;
-
-        const res = await getBitacora(filtro);
-
-        setHistorial((res.data.data || []).map((item, index) => ({
-            ...item,
-            index: index + 1,
-        })));
-    };
+    }, []);
 
     useEffect(() => {
         let isMounted = true;
@@ -52,5 +65,5 @@ export const useBitacora = () => {
         };
     }, []);
 
-    return { historial, buscar, selAccion, loading };
+    return { historial, buscar, selAccion, loading, total, cargandoHistorial };
 }

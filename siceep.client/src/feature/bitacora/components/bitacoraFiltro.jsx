@@ -9,22 +9,18 @@ import IconButton from '@mui/material/IconButton';
 import AppInput from './../../../shared/components/AppInput';
 import { useBitacora } from './../hooks/useBitacora';
 
-export default function BitacoraFiltro({ filtro, actualizarFiltro, buscar }) {
+export default function BitacoraFiltro({ filtro, actualizarFiltro }) {
 
     const { selAccion, loading } = useBitacora(); 
 
-    const [inputUsuario, setInputUsuario] = useState(
-        filtro.usuario || ""
+    const [inputBusqueda, setInputBusqueda] = useState(
+        filtro.busqueda || filtro.usuario || ""
     );
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        const nuevoFiltro = {
-            ...filtro,
-            usuario: inputUsuario
-        };
-        actualizarFiltro({ usuario: inputUsuario });
-        buscar(nuevoFiltro);
+        // El cambio de filtro vuelve a la primera página.
+        actualizarFiltro({ busqueda: inputBusqueda, usuario: null });
     };
 
     return (
@@ -57,10 +53,10 @@ export default function BitacoraFiltro({ filtro, actualizarFiltro, buscar }) {
                             >
                                 <InputBase
                                     sx={{ ml: 1, flex: 1 }}
-                                    placeholder="Buscar por nombre de usuario"
-                                    value={inputUsuario}
+                                    placeholder="Buscar por usuario o detalle"
+                                    value={inputBusqueda}
                                     onChange={(e) => {
-                                        setInputUsuario(e.target.value);
+                                        setInputBusqueda(e.target.value);
                                     }}
                                 />
                                 <IconButton

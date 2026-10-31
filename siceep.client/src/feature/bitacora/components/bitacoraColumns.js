@@ -1,7 +1,8 @@
 export const columnsBitacora = ({ isMobile }) => [
     {
-        field: 'index', headerName: 'No.', flex: 1, minWidth: 5,
-        align: 'center', headerAlign: 'center'
+        field: 'index', headerName: 'No.', width: 70,
+        align: 'center', headerAlign: 'center',
+        sortable: false, filterable: false
     },
     {
         field: 'usuario', headerName: 'Usuario', flex: 1, minWidth: 30,
