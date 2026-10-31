@@ -232,7 +232,7 @@ export default function TabDatosGenerales() {
                                     onBlur={() => setCedulaTocada(true)}
                                     error={(cedulaTocada || errorCedula) && errorCedula}
                                     helperText={(cedulaTocada || errorCedula) && errorCedula
-                                        ? 'Cédula inválida. Formato: 000-000000-0000 con letra correcta.'
+                                        ? 'Cédula inválida. Formato: 000-000000-0000A.'
                                         : ''}
                                 />
                             </Grid>

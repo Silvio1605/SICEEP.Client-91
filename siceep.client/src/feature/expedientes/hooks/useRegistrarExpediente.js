@@ -1,5 +1,6 @@
 ﻿import { useState, useCallback } from 'react';
 import { crearExpediente } from './../services/expedienteService';
+import { formatearCedula } from './../utils/validacionExpediente';
 
 // Traduce la lista del formulario al payload de familiares.
 // El idParentesco viene del selector que eligio el usuario. Solo se descartan
@@ -23,7 +24,7 @@ const transformarNucleoAFamiliares = (expediente) => {
             observaciones: f.observaciones || '',
             fechaCreacion: new Date().toISOString(),
             persona: {
-                cedula: (f.cedula ?? '').trim(),
+                cedula: formatearCedula(f.cedula ?? ''),
                 pnombre: (f.pnombre ?? '').trim(),
                 snombre: (f.snombre ?? '').trim(),
                 papellido: (f.papellido ?? '').trim(),
@@ -47,7 +48,7 @@ const construirPayloadRegistro = (expediente, familiares) => {
 
     return {
         persona: {
-            cedula: (persona.cedula ?? '').trim(),
+            cedula: formatearCedula(persona.cedula ?? ''),
             pnombre: (persona.pnombre ?? '').trim(),
             snombre: (persona.snombre ?? '').trim(),
             papellido: (persona.papellido ?? '').trim(),

@@ -1,3 +1,5 @@
+import { formatearCedula } from './validacionExpediente';
+
 // normaliza fechas del backend a 'YYYY-MM-DD' (lo que entienden los inputs date)
 export const aISO = (valor) => {
     if (!valor) return '';
@@ -220,7 +222,7 @@ export const construirPayloadActualizar = (expediente) => {
             console.warn('fechaNacimiento inválida:', p.fechaNacimiento);
         }
         return {
-            cedula: (p.cedula ?? '').trim(),
+            cedula: formatearCedula(p.cedula ?? ''),
             pnombre: (p.pnombre ?? '').trim(),
             snombre: (p.snombre ?? '').trim(),
             papellido: (p.papellido ?? '').trim(),

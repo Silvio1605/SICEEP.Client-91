@@ -45,25 +45,28 @@ export const validarSeccion = (seccion, datos) => {
 
 // Validación de CALIDAD de los datos (cédula, fechas, estatura, peso)
 
-// Alfabeto oficial del dígito verificador de la cédula nicaragüense (Módulo 23, sin I ni O)
-export const LETRAS_CEDULA = 'ABCDEFGHJKLMNPQRSTUVWXY';
-
 export const RANGOS_VALIDOS = {
     estatura: { min: 1.0, max: 2.4 },   // metros
     peso: { min: 45, max: 700 }         // libras
 };
 
-// Quita guiones, puntos y espacios de una cédula y la pasa a mayúsculas
-export const limpiarCedula = (valor = '') => String(valor).replace(/[-.\s]/g, '').toUpperCase();
+// Quita guiones, puntos así como guiones tipográficos y espacios, y pasa a mayúsculas.
+// Se aceptan tanto 000-000000-0000A como 000000000000A.
+export const limpiarCedula = (valor = '') =>
+    String(valor).replace(/[\s\-–—.]/g, '').toUpperCase();
 
-// Valida el formato 000-000000-0000X y la letra verificadora (Módulo 23)
+// Devuelve la cédula en el formato que espera el backend: 000-000000-0000A.
+export const formatearCedula = (valor = '') => {
+    const limpia = limpiarCedula(valor);
+    if (!/^\d{13}[A-Z]$/.test(limpia)) return String(valor ?? '').trim();
+    return `${limpia.slice(0, 3)}-${limpia.slice(3, 9)}-${limpia.slice(9, 13)}${limpia.slice(13)}`;
+};
+
+// Valida el formato de la cédula nicaragüense.
+// El backend (PersonaService.EsCedulaValida) solo exige este formato.
 export const esCedulaValida = (valor) => {
     const limpia = limpiarCedula(valor);
-    if (!/^\d{13}[A-Z]$/.test(limpia)) return false;
-
-    const numerica = BigInt(limpia.slice(0, 13));
-    const letraEsperada = LETRAS_CEDULA[Number(numerica % 23n)];
-    return limpia[13] === letraEsperada;
+    return /^\d{13}[A-Z]$/.test(limpia);
 };
 
 // Valida fecha de nacimiento: debe existir, no ser futura ni anterior a 1900
@@ -139,7 +142,7 @@ export const validarCalidadExpediente = (expediente = {}) => {
             errores.push({
                 seccion: 'cedula',
                 campo: 'cedula',
-                mensaje: `La cédula de ${etiqueta} (${cedula}) no es válida. Formato esperado: 000-000000-0000 con letra correcta.`
+                mensaje: `La cédula de ${etiqueta} (${cedula}) no es válida. Formato esperado: 000-000000-0000A.`
             });
         }
     };
