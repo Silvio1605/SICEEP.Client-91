@@ -58,9 +58,6 @@ export default function InfoLaboral({ data }) {
                                     <CampoInfo etiqueta="Fecha de Cese" valor={formatearFechaLegible(contrato?.fechaCese)} />
                                 </Grid>
                                 <Grid size={{  xs: 12  }}>
-                                    <CampoInfo etiqueta="Número de Expediente" valor={data?.numeroExpediente || data?.codigo} />
-                                </Grid>
-                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Salario Mensual" valor={contrato?.salarioMensual ? `C$ ${Number(contrato.salarioMensual).toLocaleString()}` : null} destacado />
                                 </Grid>
                             </Grid>
@@ -74,9 +71,6 @@ export default function InfoLaboral({ data }) {
                                     <CampoInfo etiqueta="Código de Plaza" valor={plaza?.ordinal} />
                                 </Grid>
                                 <Grid size={{  xs: 12  }}>
-                                    <CampoInfo etiqueta="Orden" valor={plaza?.orden} />
-                                </Grid>
-                                <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Estructura" valor={plaza?.estructura} />
                                 </Grid>
                                 <Grid size={{  xs: 12  }}>
@@ -87,9 +81,6 @@ export default function InfoLaboral({ data }) {
                                 </Grid>
                                 <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Nivel / Categoría" valor={plaza?.categoria} />
-                                </Grid>
-                                <Grid size={{  xs: 12  }}>
-                                    <CampoInfo etiqueta="Salario Presupuestado" valor={plaza?.salario ? `C$ ${Number(plaza.salario).toLocaleString()}` : null} />
                                 </Grid>
                                 <Grid size={{  xs: 12  }}>
                                     <CampoInfo etiqueta="Estado de la Plaza" valor={plaza?.estado} />
