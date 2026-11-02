@@ -2,11 +2,13 @@
 import { Box, Typography, Alert, Skeleton, Stack } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
-import { getExpedienteCompleto, getEstudios } from '../../expedientes/services/expedienteService';
+import { getExpedienteCompleto, getEstudios, getNominaResumen } from '../../expedientes/services/expedienteService';
 import { mapearCompletoADetalle, nombreCompletoPersona } from '../../expedientes/utils/expedienteMappers';
 import { generarFichaExpedienteURL, obtenerFotoPerfilURL } from '../../expedientes/services/pdfService.jsx';
 import { registrarBitacora } from '../../bitacora/service/bitacoraService';
 import { ACCION_BITACORA } from '../../../shared/constants/accionesBitacora';
+import { RECURSO } from '../../../shared/constants/recursos';
+import { useAuth } from '../../../providers/Authenticacion/useAuth';
 import { getHistorial } from '../../laboral/services/laboralServices';
 import { getConstanciaBaja } from '../../reportes/services/reporteService';
 import {
@@ -50,6 +52,7 @@ const ETIQUETA_CONSTANCIA = {
 
 export default function BusquedaRapida() {
     const { isMobile } = useScreenType();
+    const { tienePermiso } = useAuth();
 
     // Empleado sobre el que se ejecutan las acciones (constancias, ficha, documentos)
     const [empleadoSeleccionado, setEmpleadoSeleccionado] = useState(null);
@@ -140,7 +143,14 @@ export default function BusquedaRapida() {
             fotoUrlRef.current = fotoUrl;
 
             const opcionesPDF = mapearOpcionesImpresion(opcionesSeleccionadas);
-            const url = await generarFichaExpedienteURL({ ...dto, ...detalle }, estudios, opcionesPDF, fotoUrl);
+            const incluyeLaboral = opcionesPDF?.todo || opcionesPDF?.laboral;
+            const nomina = (incluyeLaboral && tienePermiso(RECURSO.DEDUCCIONES) && dto?.idEmpleado)
+                ? await getNominaResumen(dto.idEmpleado)
+                    .then((res) => res?.data || null)
+                    .catch(() => null)
+                : null;
+
+            const url = await generarFichaExpedienteURL({ ...dto, ...detalle }, estudios, opcionesPDF, fotoUrl, nomina);
             setPdfUrl(url);
         } catch (err) {
             console.error("Error al generar el PDF: ", err);

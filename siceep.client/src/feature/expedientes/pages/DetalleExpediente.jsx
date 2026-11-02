@@ -18,7 +18,7 @@ import TabDocumentos from '../components/crear/TabDocumentos';
 import ModalImpresion from '../components/modal/ModalImpresion';
 import ModalVistaPreviaPDF from '../components/modal/ModalVistaPreviaPDF';
 
-import { getExpedienteCompleto, getSelectEstCivil, getEstudios } from '../services/expedienteService';
+import { getExpedienteCompleto, getSelectEstCivil, getEstudios, getNominaResumen } from '../services/expedienteService';
 import { mapearCompletoADetalle } from '../utils/expedienteMappers';
 import { generarFichaExpedienteURL, obtenerFotoPerfilURL } from '../services/pdfService.jsx';
 
@@ -192,9 +192,23 @@ export default function DetalleExpediente() {
         try {
             setGenerandoPDF(true);
             setVistaPreviaAbierta(true);
-            const fotoUrl = await obtenerFotoPerfilURL(datosExpediente);
+
+            // El resumen salarial solo se incluye si se imprime la seccion laboral
+            // y el usuario tiene acceso al modulo de deducciones/nomina.
+            const incluyeLaboral = opcionesSeleccionadas?.todo || opcionesSeleccionadas?.laboral;
+            const puedeVerNomina = tienePermiso(RECURSO.DEDUCCIONES);
+
+            const [fotoUrl, nomina] = await Promise.all([
+                obtenerFotoPerfilURL(datosExpediente),
+                (incluyeLaboral && puedeVerNomina && datosExpediente?.idEmpleado)
+                    ? getNominaResumen(datosExpediente.idEmpleado)
+                        .then((res) => res?.data || null)
+                        .catch(() => null)
+                    : Promise.resolve(null),
+            ]);
+
             fotoUrlRef.current = fotoUrl;
-            const url = await generarFichaExpedienteURL(datosExpediente, estudios, opcionesSeleccionadas, fotoUrl);
+            const url = await generarFichaExpedienteURL(datosExpediente, estudios, opcionesSeleccionadas, fotoUrl, nomina);
             setPdfUrl(url);
         } catch (err) {
             const mensaje = err?.message || 'No se pudo generar el documento PDF.';

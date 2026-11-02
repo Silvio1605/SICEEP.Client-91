@@ -1,10 +1,5 @@
 import {
-    Document,
-    Page,
-    Text,
-    View,
-    Image,
-    StyleSheet,
+    Document,Page,Text,View,Image,StyleSheet,
 } from '@react-pdf/renderer';
 import {
     nombreCompletoPersona,
@@ -15,12 +10,23 @@ import {
     nombreTipoContrato,
 } from '../utils/expedienteMappers';
 
+// Constantes para separación de header y footer
+const HEADER_HEIGHT = 150;
+const FOOTER_HEIGHT = 60;
+
 const styles = StyleSheet.create({
     page: {
         flexDirection: 'column',
         paddingHorizontal: 20,
-        paddingTop: 192,
-        paddingBottom: 70,
+        paddingTop: HEADER_HEIGHT + 20,
+        paddingBottom: FOOTER_HEIGHT + 10,
+        fontFamily: 'Helvetica',
+    },
+    pageSecond: {
+        flexDirection: 'column',
+        paddingHorizontal: 20,
+        paddingTop: HEADER_HEIGHT + 20,
+        paddingBottom: FOOTER_HEIGHT + 10,
         fontFamily: 'Helvetica',
     },
     header: {
@@ -28,7 +34,7 @@ const styles = StyleSheet.create({
         top: 18,
         left: 20,
         right: 20,
-        bottom: 30,
+        height: HEADER_HEIGHT,
         fontSize: 14,
         fontWeight: 'bold',
     },
@@ -230,6 +236,7 @@ const styles = StyleSheet.create({
     w45: { width: '45%' },
     w80: { width: '80%' },
     Center: { textAlign: 'center' },
+    Left: { textAlign: 'left' },
     Right: { textAlign: 'right' },
     table: { display: 'table', width: 'auto', marginVertical: 4 },
     tableRow: { flexDirection: 'row' },
@@ -272,8 +279,9 @@ const styles = StyleSheet.create({
     footer: {
         position: 'absolute',
         bottom: 0,
-        left: 30,
-        right: 30,
+        left: 20,
+        right: 20,
+        height: FOOTER_HEIGHT,
         textAlign: 'center',
         fontSize: 12,
         paddingTop: 5,
@@ -310,7 +318,15 @@ const FilaDato = ({ etiqueta, valor, gris }) => (
     </View>
 );
 
-export default function FichaExpedientePDF({ datosExpediente, estudios, opciones, fotoSrc }) {
+// Formato monetario usado en la seccion salarial del PDF.
+const formatearMonto = (valor) => {
+    if (valor === null || valor === undefined || valor === '') return 'NO DISPONIBLE';
+    const numero = Number(valor);
+    if (Number.isNaN(numero)) return 'NO DISPONIBLE';
+    return `C$ ${numero.toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+};
+
+export default function FichaExpedientePDF({ datosExpediente, estudios, opciones, fotoSrc, nomina }) {
     const persona = datosExpediente?.persona || {};
     const contrato = datosExpediente?.contrato || {};
     const plaza = datosExpediente?.plaza || {};
@@ -325,6 +341,28 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
 
     const nombre = nombreCompletoPersona(persona) || 'NO DISPONIBLE';
 
+    // Resumen salarial: el backend entrega el ultimo periodo con nomina.
+    // El pago ordinario no se lista como devengado; solo los conceptos extras.
+    const nominaValida = nomina && !nomina.sinRegistros ? nomina : null;
+    const devengadosExtras = Array.isArray(nominaValida?.devengados)
+        ? nominaValida.devengados.filter((d) => Number(d?.idTipoDevengado) !== 4)
+        : [];
+    const totalDevengados = nominaValida
+        ? devengadosExtras.reduce((total, d) => total + Number(d?.monto || 0), 0)
+        : null;
+    const salarioOrdinario = contrato?.salarioMensual ?? nominaValida?.salarioOrdinario ?? plaza?.salario ?? null;
+    const salarioBruto = nominaValida?.salarioBruto ?? (
+        salarioOrdinario !== null && salarioOrdinario !== undefined
+            ? Number(salarioOrdinario) + Number(totalDevengados || 0)
+            : totalDevengados
+    );
+    const totalDeducciones = nominaValida?.totalDeducciones ?? null;
+    const salarioNeto = nominaValida?.salarioNeto ?? (
+        salarioBruto !== null && salarioBruto !== undefined && totalDeducciones !== null
+            ? salarioBruto - totalDeducciones
+            : null
+    );
+
     return (
         <Document title={`Ficha Expediente ${datosExpediente?.numeroExpediente || ''}`}>
             <Page size="LETTER" style={styles.page}>
@@ -334,7 +372,7 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                         <View style={styles.headerCentro}>
                             <Text style={[styles.headerTxt2]}>SEGURANICA S.A.</Text>
                             <Text style={[styles.headerTxt3]}>DIVISIÓN DE PERSONAL</Text>
-                            <Text style={[styles.headerTxt1]}>Ficha General del Funcionario Civil - Expediente Electrónico</Text>
+                            <Text style={[styles.headerTxt1]}>Ficha General del Funcionario - Expediente Electrónico</Text>
                         </View>
                     </View>
                     <View style={styles.frase}>
@@ -378,8 +416,8 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                                     <FilaDato etiqueta="Lugar Nacimiento:" valor={persona.lugarNacimiento} />
                                     <FilaDato etiqueta="Celular:" valor={persona.celular} gris />
                                     <View style={[styles.filaDato]}>
-                                        <View style={styles.celdaGris}><Text style={styles.labelDato}>Dirección:</Text></View>
-                                        <View style={[styles.celdaValor, { width: '50%' }]}><Text style={styles.valorDato}>{persona.direccion || 'NO DISPONIBLE'}</Text></View>
+                                        <View style={styles.celdaGris}><Text style={styles.labelDato}>Fecha Ingreso:</Text></View>
+                                        <View style={[styles.celdaValor, { width: '50%' }]}><Text style={styles.valorDato}>{formatearFechaLegible(datosExpediente?.fechaIngreso || contrato?.fechaInicio)}</Text></View>
                                     </View>
                                 </View>
                             )}
@@ -389,7 +427,7 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                         <View style={styles.columnDer}>
                             {laboral && (
                                 <>
-                                    <Text style={[styles.titleSection, styles.Center]}>Datos Laborales</Text>
+                                    <Text style={[styles.titleSection, styles.Left]}>Datos Laborales</Text>
                                     <View style={styles.section}>
                                         <View style={styles.row}>
                                             <View style={styles.w20}><Text style={styles.cellLabel}>Cargo:</Text></View>
@@ -405,7 +443,7 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                                         </View>
                                     </View>
 
-                                    <Text style={[styles.titleSection, styles.Center]}>Ubicación</Text>
+                                    <Text style={[styles.titleSection, styles.Left]}>Ubicación</Text>
                                     <View style={styles.section}>
                                         <View style={styles.row}>
                                             <View style={styles.w20}><Text style={styles.cellLabel}>Unidad:</Text></View>
@@ -431,15 +469,33 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                                         </View>
                                     </View>
 
-                                    <Text style={[styles.titleSection, styles.Center]}>Salario</Text>
+                                    <Text style={[styles.titleSection, styles.Left]}>Salario</Text>
                                     <View style={styles.section}>
                                         <View style={styles.row}>
-                                            <View style={styles.w35}><Text style={styles.cellLabel}>Salario (Plaza):</Text></View>
-                                            <View style={styles.w65}><Text style={styles.cellV}>{plaza?.salario ? `C$ ${Number(plaza.salario).toLocaleString()}` : 'NO DISPONIBLE'}</Text></View>
+                                            <View style={styles.w45}><Text style={styles.cellLabel}>Salario Ordinario:</Text></View>
+                                            <View style={styles.w55}><Text style={styles.cellV}>{formatearMonto(salarioOrdinario)}</Text></View>
+                                        </View>
+                                        {devengadosExtras.map((d, i) => (
+                                            <View style={styles.row} key={d.idDevengado ?? `${d.nombreTipoDevengado || 'devengado'}-${i}`}>
+                                                <View style={styles.w45}><Text style={styles.cellLabel}>{d.nombreTipoDevengado || 'DEVENGADO'}:</Text></View>
+                                                <View style={styles.w55}><Text style={styles.cellV}>{formatearMonto(d.monto)}</Text></View>
+                                            </View>
+                                        ))}
+                                        <View style={styles.row}>
+                                            <View style={styles.w45}><Text style={styles.cellLabel}>Total Devengados:</Text></View>
+                                            <View style={styles.w55}><Text style={styles.cellV}>{formatearMonto(totalDevengados)}</Text></View>
                                         </View>
                                         <View style={styles.row}>
-                                            <View style={styles.w35}><Text style={styles.cellLabel}>Salario (Contrato):</Text></View>
-                                            <View style={styles.w65}><Text style={styles.cellV}>{contrato?.salarioMensual ? `C$ ${Number(contrato.salarioMensual).toLocaleString()}` : 'NO DISPONIBLE'}</Text></View>
+                                            <View style={styles.w45}><Text style={styles.cellLabel}>Deducciones:</Text></View>
+                                            <View style={styles.w55}><Text style={styles.cellV}>{formatearMonto(totalDeducciones)}</Text></View>
+                                        </View>
+                                        <View style={styles.row}>
+                                            <View style={styles.w45}><Text style={styles.cellLabel}>Salario Bruto:</Text></View>
+                                            <View style={styles.w55}><Text style={styles.cellV}>{formatearMonto(salarioBruto)}</Text></View>
+                                        </View>
+                                        <View style={styles.row}>
+                                            <View style={styles.w45}><Text style={styles.cellLabel}>Salario Neto:</Text></View>
+                                            <View style={styles.w55}><Text style={styles.cellV}>{formatearMonto(salarioNeto)}</Text></View>
                                         </View>
                                     </View>
                                 </>
@@ -447,7 +503,7 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
 
                             {personal && (
                                 <>
-                                    <Text style={[styles.titleSection, styles.Center]}>Otros Datos de Interés</Text>
+                                    <Text style={[styles.titleSection, styles.Left]}>Otros Datos de Interés</Text>
                                     <View style={styles.section}>
                                         <View style={styles.row}>
                                             <View style={styles.w25}><Text style={styles.cellLabel}>Lugar Nacimiento:</Text></View>
@@ -465,9 +521,11 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                                 </>
                             )}
 
+                            <View break />
+
                             {contactoEmergencia && (
                                 <>
-                                    <Text style={[styles.titleSection, styles.Center]}>Contacto de Emergencia</Text>
+                                    <Text style={[styles.titleSection, styles.Left]}>Contacto de Emergencia</Text>
                                     <View style={styles.section}>
                                         <View style={styles.row}>
                                             <View style={styles.w30}><Text style={styles.cellLabel}>Nombre:</Text></View>
@@ -487,9 +545,41 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                         </View>
                     </View>
 
-                    {/* SECCIÓNES DE DETALLE (hoja 2+) */}
-                    <View break />
+                    {/* Footer fijo */}
+                    <View style={styles.footer} fixed>
+                        <View style={styles.footerSection}>
+                            <Text style={styles.footerLema}>HONESTIDAD, SEGURIDAD, SERVICIO</Text>
+                            <Text style={{ fontFamily: 'Times-Roman', fontSize: 10 }}>SeguraNica S.A. - División de Personal</Text>
+                            <Text style={{ fontFamily: 'Times-Roman', fontSize: 10 }}>Documento informativo del expediente electrónico.</Text>
+                        </View>
+                    </View>
+                </View>
+                <Text fixed style={{ position: 'absolute', bottom: 30, right: 25, fontSize: 8, textAlign: 'right' }} render={({ pageNumber }) => `${pageNumber}`} />
+            </Page>
 
+            <Page size="LETTER" style={styles.pageSecond}>
+                {/* Header fijo */}
+                <View style={styles.header} fixed>
+                    <View style={styles.subColumnContainer}>
+                        <View style={styles.headerCentro}>
+                            <Text style={[styles.headerTxt2]}>SEGURANICA S.A.</Text>
+                            <Text style={[styles.headerTxt3]}>DIVISIÓN DE PERSONAL</Text>
+                            <Text style={[styles.headerTxt1]}>Ficha General del Funcionario - Expediente Electrónico</Text>
+                        </View>
+                    </View>
+                    <View style={styles.frase}>
+                        <Text style={styles.fraseTxt}>{'"Comprometidos con tu Seguridad."'}</Text>
+                    </View>
+                    {/* Nombre completo en el título */}
+                    <View style={styles.tituloFuncionario}>
+                        <Text style={styles.tituloFicha}>FICHA GENERAL DEL FUNCIONARIO</Text>
+                        <Text style={styles.nombreFuncionario}>{nombre}</Text>
+                    </View>
+                </View>
+
+                {/* Contenido */}
+                <View style={styles.content}>
+                    {/* SECCIÓNES DE DETALLE (hoja 2+) */}
                     {familiar && familiares.length > 0 && (
                         <View wrap={false}>
                             <Text style={styles.tituloDetalle}>DETALLE NÚCLEO FAMILIAR:</Text>
@@ -513,8 +603,6 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                             </View>
                         </View>
                     )}
-
-                    <View break />
 
                     {academica && (estudios || []).length > 0 && (
                         <View wrap={false}>
