@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import {
     Box, Typography, Paper, Stack, Button, Chip, Skeleton, Alert, FormControlLabel, Checkbox,
     Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TablePagination,
-    InputAdornment, TextField, IconButton, Tooltip
+    InputAdornment, TextField, IconButton, Tooltip, Snackbar
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ClearIcon from '@mui/icons-material/Clear';
@@ -29,6 +29,7 @@ export default function TabPlazas() {
     const [page, setPage] = useState(0);
     const [pageSize, setPageSize] = useState(10);
     const [openModal, setOpenModal] = useState(false);
+    const [aviso, setAviso] = useState({ open: false, mensaje: '', severidad: 'success' });
 
     const refrescar = useCallback((pagina = 0, tamaño = pageSize) => {
         cargar({
@@ -38,6 +39,16 @@ export default function TabPlazas() {
             pageSize: tamaño
         });
     }, [cargar, texto, soloDisponibles, pageSize]);
+
+    const guardarYAvisar = async (datos) => {
+        const res = await guardarPlaza(datos);
+        setAviso({ open: true, mensaje: res?.message || 'Plaza registrada exitosamente.', severidad: 'success' });
+        refrescar(0, pageSize);
+        setPage(0);
+        return res;
+    };
+
+    const cerrarAviso = () => setAviso((prev) => ({ ...prev, open: false }));
 
     const hacerBusqueda = () => {
         setPage(0);
@@ -224,8 +235,19 @@ export default function TabPlazas() {
             <ModalPlaza
                 open={openModal}
                 onClose={() => setOpenModal(false)}
-                onGuardado={guardarPlaza}
+                onGuardado={guardarYAvisar}
             />
+
+            <Snackbar
+                open={aviso.open}
+                autoHideDuration={6000}
+                onClose={cerrarAviso}
+                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+            >
+                <Alert onClose={cerrarAviso} severity={aviso.severidad} variant="filled" sx={{ width: '100%' }}>
+                    {aviso.mensaje}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 }

@@ -46,15 +46,12 @@ function ContenidoModal({ onClose, onGuardado }) {
         setError(null);
         setGuardando(true);
         try {
-            const res = await onGuardado({
+            await onGuardado({
                 idCargo: cargo.id,
                 idUbicacion: ubicacion.id,
                 salarioBaseOficial: Number(salario),
                 observaciones: observaciones.trim() || null
             });
-            if (res?.message) {
-                alert(res.message);
-            }
             onClose();
         } catch (e) {
             setError(e?.response?.data?.message || e?.message || "No se pudo registrar la plaza.");
@@ -66,8 +63,8 @@ function ContenidoModal({ onClose, onGuardado }) {
     return (
         <React.Fragment>
             <DialogTitle>
-                <Typography variant="h6" fontWeight={700}>Nueva Plaza</Typography>
-                <Typography variant="body2" color="text.secondary">
+                <Typography component="span" display="block" variant="h6" fontWeight={700}>Nueva Plaza</Typography>
+                <Typography component="span" display="block" variant="body2" color="text.secondary">
                     La plaza se registrará como vacante y podrá asignarse más tarde.
                 </Typography>
             </DialogTitle>
