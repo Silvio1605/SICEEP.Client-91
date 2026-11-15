@@ -2,13 +2,17 @@ import React from 'react';
 import { Grid, Paper, Stack, Avatar, Box, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { modulos } from '../data/ayudaData';
+import { useAuth } from '../../../providers/Authenticacion/useAuth';
 
 export default function AccesosDirectos() {
     const navigate = useNavigate();
+    const { tienePermiso } = useAuth();
+
+    const visibles = modulos.filter((m) => m.soloAutenticado || tienePermiso(m.permiso));
 
     return (
         <Grid container spacing={1.5} sx={{ mb: 3 }}>
-            {modulos.map((m) => (
+            {visibles.map((m) => (
                 <Grid size={{ xs: 6, sm: 4, md: 3 }} key={m.titulo}>
                     <Paper
                         variant="outlined"

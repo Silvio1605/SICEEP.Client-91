@@ -36,11 +36,12 @@ const obtenerFotoPerfilURL = async (datosExpediente) => {
  * @param {object} opciones - { personal, familiar, laboral, academica, todo }
  * @param {string|null} fotoSrc - objectURL de la foto (opcional)
  * @param {object|null} nomina - ResumenNominaDto con devengados, deducciones, bruto y neto (opcional)
+ * @param {Array} historial - RecorridoDto[] con la trayectoria laboral (opcional)
  * @returns {Promise<Blob>}
  */
-export const generarFichaExpedienteBlob = async (datosExpediente, estudios, opciones, fotoSrc, nomina = null) => {
+export const generarFichaExpedienteBlob = async (datosExpediente, estudios, opciones, fotoSrc, nomina = null, historial = []) => {
     return pdf(
-        <FichaExpedientePDF datosExpediente={datosExpediente} estudios={estudios} opciones={opciones} fotoSrc={fotoSrc} nomina={nomina} />
+        <FichaExpedientePDF datosExpediente={datosExpediente} estudios={estudios} opciones={opciones} fotoSrc={fotoSrc} nomina={nomina} historial={historial} />
     ).toBlob();
 };
 
@@ -50,16 +51,16 @@ export const generarFichaExpedienteBlob = async (datosExpediente, estudios, opci
  * El llamador es responsable de revocar la URL del objeto (y la de la foto) cuando ya no se use.
  * @returns {Promise<string>} ObjectURL del PDF
  */
-export const generarFichaExpedienteURL = async (datosExpediente, estudios, opciones, fotoSrc, nomina = null) => {
-    const blob = await generarFichaExpedienteBlob(datosExpediente, estudios, opciones, fotoSrc, nomina);
+export const generarFichaExpedienteURL = async (datosExpediente, estudios, opciones, fotoSrc, nomina = null, historial = []) => {
+    const blob = await generarFichaExpedienteBlob(datosExpediente, estudios, opciones, fotoSrc, nomina, historial);
     return URL.createObjectURL(blob);
 };
 
 /**
  * Genera y descarga el PDF de la ficha del expediente electrónico directamente.
  */
-export const generarFichaExpedientePDF = async (datosExpediente, estudios, opciones, fotoSrc, nomina = null) => {
-    const url = await generarFichaExpedienteURL(datosExpediente, estudios, opciones, fotoSrc, nomina);
+export const generarFichaExpedientePDF = async (datosExpediente, estudios, opciones, fotoSrc, nomina = null, historial = []) => {
+    const url = await generarFichaExpedienteURL(datosExpediente, estudios, opciones, fotoSrc, nomina, historial);
     const numero = datosExpediente?.numeroExpediente || 'sin-numero';
 
     const enlace = document.createElement('a');

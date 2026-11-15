@@ -17,6 +17,10 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import HomeIcon from '@mui/icons-material/Home';
+import { RECURSO } from '../../../shared/constants/recursos';
+
+// "permiso" se compara con los permisos del usuario. "soloAutenticado" muestra la
+// opción a cualquier sesión iniciada.
 
 export const modulos = [
     {
@@ -24,6 +28,7 @@ export const modulos = [
         icono: <SettingsIcon fontSize="small" />,
         color: 'primary.main',
         ruta: '/index/configuracion',
+        soloAutenticado: true,
         desc: 'Mi cuenta, cambio de contraseña y ayuda.',
     },
     {
@@ -31,6 +36,7 @@ export const modulos = [
         icono: <PersonIcon fontSize="small" />,
         color: 'primary.main',
         ruta: '/index/usuarios',
+        permiso: RECURSO.REGISTRAR_USUARIO,
         desc: 'Crea y administra los accesos al sistema.',
     },
     {
@@ -38,6 +44,7 @@ export const modulos = [
         icono: <KeyIcon fontSize="small" />,
         color: 'info.main',
         ruta: '/index/permisos',
+        permiso: RECURSO.ASIGNAR_PERMISOS,
         desc: 'Asigna roles y permisos a los usuarios.',
     },
     {
@@ -45,6 +52,7 @@ export const modulos = [
         icono: <HistoryEduIcon fontSize="small" />,
         color: 'secondary.main',
         ruta: '/index/historial',
+        permiso: RECURSO.HISTORIAL_ACTIVIDAD,
         desc: 'Consulta la bitácora de actividades.',
     },
     {
@@ -52,6 +60,7 @@ export const modulos = [
         icono: <BadgeIcon fontSize="small" />,
         color: 'success.main',
         ruta: '/index/expedientes',
+        permiso: RECURSO.CONSULTAR_EXPEDIENTES,
         desc: 'Busca y abre el expediente de un empleado.',
     },
     {
@@ -59,6 +68,7 @@ export const modulos = [
         icono: <AddBoxIcon fontSize="small" />,
         color: 'success.main',
         ruta: '/index/crear-expediente',
+        permiso: RECURSO.REGISTRAR_EXPEDIENTE,
         desc: 'Registra un nuevo expediente personal.',
     },
     {
@@ -66,6 +76,7 @@ export const modulos = [
         icono: <ManageSearchIcon fontSize="small" />,
         color: 'warning.main',
         ruta: '/index/busqueda-rapida',
+        permiso: RECURSO.BUSQUEDA_RAPIDA,
         desc: 'Localiza información puntual de un empleado.',
     },
     {
@@ -73,6 +84,7 @@ export const modulos = [
         icono: <DescriptionIcon fontSize="small" />,
         color: 'grey.700',
         ruta: '/index/gestion-documentos',
+        permiso: RECURSO.DOCUMENTOS_EXPEDIENTE,
         desc: 'Sube y administra documentos del expediente.',
     },
     {
@@ -80,6 +92,7 @@ export const modulos = [
         icono: <WorkIcon fontSize="small" />,
         color: 'primary.main',
         ruta: '/index/plazas',
+        permiso: RECURSO.PLAZAS_Y_CARGOS,
         desc: 'Gestiona el catálogo de plazas.',
     },
     {
@@ -87,6 +100,7 @@ export const modulos = [
         icono: <SwapHorizIcon fontSize="small" />,
         color: 'info.main',
         ruta: '/index/movimientos',
+        permiso: RECURSO.MOVIMIENTOS_Y_RECORRIDO,
         desc: 'Registra el recorrido laboral del empleado.',
     },
     {
@@ -94,6 +108,7 @@ export const modulos = [
         icono: <ReceiptLongIcon fontSize="small" />,
         color: 'secondary.main',
         ruta: '/index/deducciones',
+        permiso: RECURSO.DEDUCCIONES,
         desc: 'Controla las deducciones de instituciones externas.',
     },
     {
@@ -101,6 +116,7 @@ export const modulos = [
         icono: <BarChartIcon fontSize="small" />,
         color: 'success.main',
         ruta: '/index/estadisticas',
+        permiso: RECURSO.PANEL_INDICADORES,
         desc: 'Visualiza el panel de control de la fuerza laboral.',
     },
     {
@@ -108,6 +124,7 @@ export const modulos = [
         icono: <SchoolIcon fontSize="small" />,
         color: 'warning.main',
         ruta: '/index/instituciones',
+        permiso: RECURSO.INSTITUCIONES_ACADEMICAS,
         desc: 'Catálogo de instituciones académicas.',
     },
     {
@@ -115,6 +132,7 @@ export const modulos = [
         icono: <LocationOnIcon fontSize="small" />,
         color: 'grey.700',
         ruta: '/index/catalogos-ubicaciones',
+        permiso: RECURSO.UBICACIONES_Y_UNIDADES,
         desc: 'Catálogo de estructuras, unidades y ubicaciones.',
     },
     {
@@ -122,6 +140,7 @@ export const modulos = [
         icono: <ExitToAppIcon fontSize="small" />,
         color: 'error.main',
         ruta: '/',
+        soloAutenticado: true,
         desc: 'Salir de forma segura del sistema.',
     },
 ];

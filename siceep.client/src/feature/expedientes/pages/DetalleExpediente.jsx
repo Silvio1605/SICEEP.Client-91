@@ -21,6 +21,7 @@ import ModalVistaPreviaPDF from '../components/modal/ModalVistaPreviaPDF';
 import { getExpedienteCompleto, getSelectEstCivil, getEstudios, getNominaResumen } from '../services/expedienteService';
 import { mapearCompletoADetalle } from '../utils/expedienteMappers';
 import { generarFichaExpedienteURL, obtenerFotoPerfilURL } from '../services/pdfService.jsx';
+import { getHistorial } from '../../laboral/services/laboralServices';
 
 // Mapa local por si el catálogo no responde
 const ESTADOS_CIVIL_FALLBACK = { 1: 'SOLTERO', 2: 'CASADO', 1002: 'UNION DE HECHO' };
@@ -198,17 +199,22 @@ export default function DetalleExpediente() {
             const incluyeLaboral = opcionesSeleccionadas?.todo || opcionesSeleccionadas?.laboral;
             const puedeVerNomina = tienePermiso(RECURSO.DEDUCCIONES);
 
-            const [fotoUrl, nomina] = await Promise.all([
+            const [fotoUrl, nomina, historial] = await Promise.all([
                 obtenerFotoPerfilURL(datosExpediente),
                 (incluyeLaboral && puedeVerNomina && datosExpediente?.idEmpleado)
                     ? getNominaResumen(datosExpediente.idEmpleado)
                         .then((res) => res?.data || null)
                         .catch(() => null)
                     : Promise.resolve(null),
+                (incluyeLaboral && datosExpediente?.idEmpleado)
+                    ? getHistorial(datosExpediente.idEmpleado)
+                        .then((res) => res?.data || [])
+                        .catch(() => [])
+                    : Promise.resolve([]),
             ]);
 
             fotoUrlRef.current = fotoUrl;
-            const url = await generarFichaExpedienteURL(datosExpediente, estudios, opcionesSeleccionadas, fotoUrl, nomina);
+            const url = await generarFichaExpedienteURL(datosExpediente, estudios, opcionesSeleccionadas, fotoUrl, nomina, historial);
             setPdfUrl(url);
         } catch (err) {
             const mensaje = err?.message || 'No se pudo generar el documento PDF.';

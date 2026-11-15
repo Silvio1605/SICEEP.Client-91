@@ -3,9 +3,12 @@ import { Paper, Stack, Avatar, Box, Typography, Button } from '@mui/material';
 import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 import BadgeIcon from '@mui/icons-material/Badge';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../providers/Authenticacion/useAuth';
+import { RECURSO } from '../../../shared/constants/recursos';
 
 export default function FichaPdf() {
     const navigate = useNavigate();
+    const { tienePermiso } = useAuth();
 
     return (
         <Paper variant="outlined" sx={{ borderRadius: 3, borderColor: 'divider', mt: 3, p: 2 }}>
@@ -19,9 +22,11 @@ export default function FichaPdf() {
                         Desde el expediente puedes generar la ficha personal y otras constancias en formato PDF. Usa tu navegador para imprimir o guardar el archivo.
                     </Typography>
                 </Box>
-                <Button variant="outlined" startIcon={<BadgeIcon />} onClick={() => navigate('/index/expedientes')}>
-                    Ir a Expedientes
-                </Button>
+                {tienePermiso(RECURSO.CONSULTAR_EXPEDIENTES) && (
+                    <Button variant="outlined" startIcon={<BadgeIcon />} onClick={() => navigate('/index/expedientes')}>
+                        Ir a Expedientes
+                    </Button>
+                )}
             </Stack>
         </Paper>
     );

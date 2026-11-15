@@ -146,6 +146,20 @@ const styles = StyleSheet.create({
         fontFamily: 'Helvetica-Bold',
         marginVertical: 2,
     },
+    avisoBaja: {
+        marginTop: 2,
+        paddingVertical: 2,
+        paddingHorizontal: 8,
+        borderWidth: 1,
+        borderColor: '#C00000',
+        backgroundColor: '#FDE8E8',
+        alignSelf: 'center',
+    },
+    avisoBajaTxt: {
+        color: '#C00000',
+        fontSize: 9,
+        fontFamily: 'Helvetica-Bold',
+    },
     twoColumns: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -235,6 +249,7 @@ const styles = StyleSheet.create({
     w65: { width: '65%' },
     w45: { width: '45%' },
     w80: { width: '80%' },
+    w75: { width: '75%' },
     Center: { textAlign: 'center' },
     Left: { textAlign: 'left' },
     Right: { textAlign: 'right' },
@@ -326,7 +341,7 @@ const formatearMonto = (valor) => {
     return `C$ ${numero.toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 };
 
-export default function FichaExpedientePDF({ datosExpediente, estudios, opciones, fotoSrc, nomina }) {
+export default function FichaExpedientePDF({ datosExpediente, estudios, opciones, fotoSrc, nomina, historial = [] }) {
     const persona = datosExpediente?.persona || {};
     const contrato = datosExpediente?.contrato || {};
     const plaza = datosExpediente?.plaza || {};
@@ -340,6 +355,7 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
     const academica = incluyeTodo || opciones?.academica;
 
     const nombre = nombreCompletoPersona(persona) || 'NO DISPONIBLE';
+    const esBaja = Number(datosExpediente?.idEstado) === 1;
 
     // Resumen salarial: el backend entrega el ultimo periodo con nomina.
     // El pago ordinario no se lista como devengado; solo los conceptos extras.
@@ -382,6 +398,11 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                     <View style={styles.tituloFuncionario}>
                         <Text style={styles.tituloFicha}>FICHA GENERAL DEL FUNCIONARIO</Text>
                         <Text style={styles.nombreFuncionario}>{nombre}</Text>
+                        {esBaja && (
+                            <View style={styles.avisoBaja}>
+                                <Text style={styles.avisoBajaTxt}>PERSONA DADA DE BAJA — NO LABORA ACTUALMENTE EN LA INSTITUCIÓN</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -513,7 +534,7 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                                             <View style={styles.w25}><Text style={styles.cellLabel}>Teléfono:</Text></View>
                                             <View style={styles.w75}><Text style={styles.cellV}>{persona.celular || 'NO DISPONIBLE'}</Text></View>
                                         </View>
-                                        <View style={styles.row}>
+                                        <View style={[styles.row, { minHeight: 30, alignItems: 'flex-start' }]}>
                                             <View style={styles.w25}><Text style={styles.cellLabel}>Dirección:</Text></View>
                                             <View style={styles.w75}><Text style={styles.cellV}>{persona.direccion || 'NO DISPONIBLE'}</Text></View>
                                         </View>
@@ -574,6 +595,11 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                     <View style={styles.tituloFuncionario}>
                         <Text style={styles.tituloFicha}>FICHA GENERAL DEL FUNCIONARIO</Text>
                         <Text style={styles.nombreFuncionario}>{nombre}</Text>
+                        {esBaja && (
+                            <View style={styles.avisoBaja}>
+                                <Text style={styles.avisoBajaTxt}>PERSONA DADA DE BAJA — NO LABORA ACTUALMENTE EN LA INSTITUCIÓN</Text>
+                            </View>
+                        )}
                     </View>
                 </View>
 
@@ -598,6 +624,32 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
                                         <View style={styles.w20}><Text style={[styles.cell]}>{f.persona?.cedula || 'NO DISPONIBLE'}</Text></View>
                                         <View style={styles.w35}><Text style={[styles.cell]}>{nombreCompletoPersona(f.persona)}</Text></View>
                                         <View style={styles.w15}><Text style={[styles.cell, styles.Center]}>{f.tipoUnion || '—'}</Text></View>
+                                    </View>
+                                ))}
+                            </View>
+                        </View>
+                    )}
+
+                    {laboral && (historial || []).length > 0 && (
+                        <View wrap={false}>
+                            <Text style={styles.tituloDetalle}>TRAYECTORIA LABORAL:</Text>
+                            <View style={styles.table}>
+                                <View style={styles.tableRow}>
+                                    <View style={styles.w10}><Text style={[styles.cellHead, styles.Center]}>NUM</Text></View>
+                                    <View style={styles.w30}><Text style={[styles.cellHead, styles.Center]}>CARGO</Text></View>
+                                    <View style={styles.w30}><Text style={[styles.cellHead, styles.Center]}>UNIDAD / ESTRUCTURA</Text></View>
+                                    <View style={styles.w15}><Text style={[styles.cellHead, styles.Center]}>DESDE</Text></View>
+                                    <View style={styles.w15}><Text style={[styles.cellHead, styles.Center]}>HASTA</Text></View>
+                                </View>
+                                {historial.map((r, i) => (
+                                    <View key={String(r.idRecorrido ?? i)} style={styles.tableRow}>
+                                        <View style={styles.w10}><Text style={[styles.cell, styles.Center]}>{i + 1}</Text></View>
+                                        <View style={styles.w30}><Text style={styles.cell}>{r.cargo || 'NO DISPONIBLE'}</Text></View>
+                                        <View style={styles.w30}><Text style={styles.cell}>
+                                            {[r.unidad, r.estructura].filter(Boolean).join(' / ') || 'NO DISPONIBLE'}
+                                        </Text></View>
+                                        <View style={styles.w15}><Text style={[styles.cell, styles.Center]}>{formatearFechaLegible(r.fechaInicio) || '—'}</Text></View>
+                                        <View style={styles.w15}><Text style={[styles.cell, styles.Center]}>{formatearFechaLegible(r.fechaFin) || 'ACTUAL'}</Text></View>
                                     </View>
                                 ))}
                             </View>

@@ -150,7 +150,11 @@ export default function BusquedaRapida() {
                     .catch(() => null)
                 : null;
 
-            const url = await generarFichaExpedienteURL({ ...dto, ...detalle }, estudios, opcionesPDF, fotoUrl, nomina);
+            const historial = incluyeLaboral
+                ? await getHistorial(dto.idEmpleado).then((res) => res?.data || []).catch(() => [])
+                : [];
+
+            const url = await generarFichaExpedienteURL({ ...dto, ...detalle }, estudios, opcionesPDF, fotoUrl, nomina, historial);
             setPdfUrl(url);
         } catch (err) {
             console.error("Error al generar el PDF: ", err);
