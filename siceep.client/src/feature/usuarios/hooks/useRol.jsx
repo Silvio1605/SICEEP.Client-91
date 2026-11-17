@@ -12,6 +12,9 @@ const actualizarRol = async (id, cambioRol) => {
         return await updateRol(rolActualizado);
     } catch (error) {
         console.log(error);
+        // Se relanza para que la pantalla pueda avisar que el cambio falló;
+        // antes se tragaba el error y siempre decía "actualizado".
+        throw error;
     }
 };
 

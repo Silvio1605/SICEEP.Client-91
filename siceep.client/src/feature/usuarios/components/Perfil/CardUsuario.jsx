@@ -11,6 +11,7 @@ import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import LockResetIcon from '@mui/icons-material/LockReset';
 // servicios
 import { useNotificacionContext } from '../../../../providers/Notificacion/useNotificacionContext';
+import { mensajeDeError } from '../../../../shared/utils/errores';
 import { useBusquedaContext } from '../../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePerfil } from '../../hooks/usePerfil';
 import { usePermisosContext } from '../../../../providers/Permisos/usePermisoContext';
@@ -96,9 +97,9 @@ function CardUsuario({ actualizar }) {
             await actualizarRol(perfil.usuario?.id, rol);
             mostrarNotificacion({ message: "Rol actualizado correctamente", severity: "success" });
             await permisosHook.refetch();
-        } catch {
+        } catch (error) {
             mostrarNotificacion({
-                message: "Error al actualizar el rol",
+                message: mensajeDeError(error, "Error al actualizar el rol"),
                 severity: "error",
             });
         }
@@ -119,7 +120,7 @@ function CardUsuario({ actualizar }) {
             await reload();
             await actualizar();
         } catch (error) {
-            mostrarNotificacion({ message: error.message ?? "Error al actualizar el estado", severity: "error" });
+            mostrarNotificacion({ message: mensajeDeError(error, "Error al actualizar el estado"), severity: "error" });
         }
         cerrar();
     };

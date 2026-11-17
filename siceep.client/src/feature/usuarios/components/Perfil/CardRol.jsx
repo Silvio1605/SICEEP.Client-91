@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-import { Box, Stack, Skeleton } from "@mui/material";
+import { Box, Stack, Skeleton, Typography } from "@mui/material";
 import AppButton from './../../../../shared/components/AppButton';
 import WorkIcon from '@mui/icons-material/Work';
 
@@ -8,6 +8,7 @@ import SelectItem from './../../../../shared/components/SelectItem';
 import { useSelectRoles } from "./../../hooks/useSelectRoles";
 import { usePerfil } from './../../hooks/usePerfil';
 import { useBusquedaContext } from './../../../../providers/BusquedaUsers/useBusquedaContext';
+import { useAuth } from './../../../../providers/Authenticacion/useAuth';
 
 function CardRol({ abrirConfirmRol, setRol, rol }) {
 
@@ -15,6 +16,10 @@ function CardRol({ abrirConfirmRol, setRol, rol }) {
     const { perfil } = usePerfil(idSeleccionado);
     // datos para las cajas de selecciones
     const { selRol, loading } = useSelectRoles();
+
+    // El backend no permite cambiar el rol propio: se refleja en la interfaz.
+    const { usuario } = useAuth();
+    const esUsuarioActual = String(idSeleccionado ?? '') === String(usuario?.idUsuario ?? '');
 
     useEffect(() => {
         const cargarRol = () => {
@@ -43,12 +48,18 @@ function CardRol({ abrirConfirmRol, setRol, rol }) {
                         iconBtn={<WorkIcon />}
                         isfullWidth={true}
                         content={"Actualizar Rol"}
+                        disabled={esUsuarioActual}
                         onClick={(e) => {
                             // Evitar que el botón mantenga el foco después de hacer clic
                             e.currentTarget.blur();
                             abrirConfirmRol();
                         }}
                     />
+                    {esUsuarioActual && (
+                        <Typography variant="caption" color="text.secondary">
+                            No puedes cambiar tu propio rol. Debe hacerlo otro administrador.
+                        </Typography>
+                    )}
                 </Stack>
             )}
         </Box>

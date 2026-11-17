@@ -5,11 +5,15 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import { alpha } from '@mui/material/styles';
 
-const CardPermiso = ({ id, nombrePermiso, descripcion, checked, modificado, cambiarPermiso }) => {
+const CardPermiso = ({ id, nombrePermiso, descripcion, checked, modificado, cambiarPermiso, bloqueado = false }) => {
+
+    const alternar = () => {
+        if (!bloqueado) cambiarPermiso(id);
+    };
 
     return (
         <Card
-            onClick={() => cambiarPermiso(id)}
+            onClick={alternar}
             sx={{
                 height: '100%',
                 borderRadius: 3,
@@ -17,12 +21,15 @@ const CardPermiso = ({ id, nombrePermiso, descripcion, checked, modificado, camb
                 border: checked ? '2px solid #0288d1' : '1px solid',
                 borderColor: checked ? '#0288d1' : 'divider',
                 transition: 'all 0.25s ease',
-                cursor: 'pointer',
-                '&:hover': {
-                    boxShadow: 3,
-                    transform: 'translateY(-2px)',
-                    borderColor: '#0288d1'
-                }
+                cursor: bloqueado ? 'default' : 'pointer',
+                opacity: bloqueado ? 0.75 : 1,
+                ...(bloqueado ? {} : {
+                    '&:hover': {
+                        boxShadow: 3,
+                        transform: 'translateY(-2px)',
+                        borderColor: '#0288d1'
+                    }
+                })
             }}
         >
             <CardContent
@@ -36,7 +43,8 @@ const CardPermiso = ({ id, nombrePermiso, descripcion, checked, modificado, camb
             >
                 <Checkbox
                     checked={checked}
-                    onChange={() => cambiarPermiso(id)}
+                    onChange={alternar}
+                    disabled={bloqueado}
                     onClick={(e) => e.stopPropagation()}
                     color="primary"
                     icon={<RadioButtonUncheckedIcon />}

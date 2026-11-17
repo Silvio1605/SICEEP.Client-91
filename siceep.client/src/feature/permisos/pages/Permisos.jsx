@@ -15,6 +15,7 @@ import GuardarPermisosDialog from '../components/GuardarPermisos';
 // servicios
 import { useBusquedaContext } from './../../../providers/BusquedaUsers/useBusquedaContext';
 import { usePermisosContext } from "./../../../providers/Permisos/usePermisoContext";
+import { useAuth } from './../../../providers/Authenticacion/useAuth';
 
 const COLORES_MODULO = ['#1565C0', '#2E7D32', '#C62828', '#6A1B9A', '#EF6C00', '#00695C', '#455A64', '#AD1457'];
 
@@ -26,6 +27,11 @@ export default function Permisos({ idUsuario }) {
     const idSeleccionado =
         idUsuario ??
         busquedaContext.idSeleccionado;
+
+    // El backend rechaza que un usuario modifique sus propios permisos;
+    // la interfaz se bloquea para no dejarlo intentarlo.
+    const { usuario } = useAuth();
+    const esMiPropioUsuario = String(idSeleccionado ?? '') === String(usuario?.idUsuario ?? '');
 
     //hook personalizado para manejar permisos
     const { permisosHook } = usePermisosContext() ?? {};
@@ -126,7 +132,7 @@ export default function Permisos({ idUsuario }) {
                             color={activos === total && total > 0 ? 'success' : 'default'}
                             variant="outlined"
                         />
-                        <Button size="small" onClick={() => marcarTodos(modulo, !todosActivados)}>
+                        <Button size="small" onClick={() => marcarTodos(modulo, !todosActivados)} disabled={esMiPropioUsuario}>
                             {todosActivados ? 'Deshabilitar todos' : 'Habilitar todos'}
                         </Button>
                     </Stack>
@@ -142,6 +148,7 @@ export default function Permisos({ idUsuario }) {
                                 checked={permiso.check}
                                 modificado={esModificado(permiso)}
                                 cambiarPermiso={cambiarPermiso}
+                                bloqueado={esMiPropioUsuario}
                             />
                         </Grid>
                     ))}
@@ -228,6 +235,12 @@ export default function Permisos({ idUsuario }) {
                 />
             </Box>
 
+            {esMiPropioUsuario && (
+                <Alert severity="info" sx={{ mx: { xs: 2, md: 4 }, mt: 2 }}>
+                    No puedes modificar tus propios permisos. Pídele a otro administrador que los cambie.
+                </Alert>
+            )}
+
             {/* Contenido */}
             {loading ? (
                 <Stack spacing={2} sx={{ mt: 2 }}>
@@ -311,7 +324,7 @@ export default function Permisos({ idUsuario }) {
                         color="primary"
                         startIcon={<SaveIcon />}
                         onClick={() => setOpenDialog(true)}
-                        disabled={cambiosCount === 0}
+                        disabled={cambiosCount === 0 || esMiPropioUsuario}
                     >
                         Guardar cambios
                     </Button>

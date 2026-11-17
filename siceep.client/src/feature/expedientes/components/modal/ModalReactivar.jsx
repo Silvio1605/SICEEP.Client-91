@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import HowToRegIcon from '@mui/icons-material/HowToReg';
 import { useNotificacionContext } from './../../../../providers/Notificacion/useNotificacionContext';
+import { mensajeDeError } from './../../../../shared/utils/errores';
 import { reactivarEmpleado } from './../../services/bajaService';
 import { getPlazas } from './../../../laboral/services/laboralServices';
 import FormContratoPlaza from './../FormContratoPlaza';
@@ -87,7 +88,7 @@ export default function ModalReactivar({ open, onClose, empleado, onConfirmada }
                 const primerError = Object.values(data.errors)[0][0];
                 mostrarNotificacion({ message: primerError, severity: "error" });
             } else if (error.response) {
-                mostrarNotificacion({ message: error.response.data?.message || error.response.data, severity: "error" });
+                mostrarNotificacion({ message: mensajeDeError(error, "No se pudo completar la operación."), severity: "error" });
             } else if (error.request) {
                 mostrarNotificacion({ message: "No se pudo conectar con el servidor.", severity: "error" });
             } else {

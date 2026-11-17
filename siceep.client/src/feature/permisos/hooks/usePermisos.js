@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react'; 
 // servicios
 import { getPermisos } from './../services/PermisoService';
+import { mensajeDeError } from './../../../shared/utils/errores';
 
 
 // funcíon para obtener una lista plana de todos los permisos
@@ -36,7 +37,9 @@ export const usePermisos = (id) => {
                 structuredClone(res.data)
             );
         } catch (e) {
-            setError(e?.response?.data ?? e?.message ?? "Error al cargar los permisos");
+            // Nunca guardar el objeto de respuesta completo: se renderiza y
+            // provoca el error #31 de React (objeto { mensaje }).
+            setError(mensajeDeError(e, "Error al cargar los permisos"));
         } finally {
             setLoading(false);
         }
