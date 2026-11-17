@@ -68,7 +68,6 @@ export const AuthProvider = ({ children }) => {
     }, [autenticado]);
 
     // Bloqueo por inactividad: si el usuario no interactúa en 120 minutos,
-    // la sesión se cierra. El timer se resetea con cualquier interacción
     // y al volver a la pestaña se comprueba cuánto tiempo pasó de verdad
     // (los timers se throttlean en segundo plano, así que se mide con Date.now()).
     useEffect(() => {
