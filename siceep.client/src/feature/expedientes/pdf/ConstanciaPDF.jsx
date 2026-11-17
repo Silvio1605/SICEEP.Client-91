@@ -33,8 +33,10 @@ export default function ConstanciaPDF({ datosExpediente, config }) {
 
     const { mostrarSalario = false } = config || {};
 
+    // El salario real del funcionario es el del contrato; el de la plaza es
+    // solo el presupuestado y puede diferir (por eso no debe tener prioridad).
     const salarioMensual = mostrarSalario
-        ? (plaza?.salario ?? contrato?.salarioMensual ?? 0)
+        ? (contrato?.salarioMensual ?? plaza?.salario ?? 0)
         : 0;
 
     return (

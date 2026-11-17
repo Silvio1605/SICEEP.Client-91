@@ -363,13 +363,16 @@ export default function FichaExpedientePDF({ datosExpediente, estudios, opciones
     const devengadosExtras = Array.isArray(nominaValida?.devengados)
         ? nominaValida.devengados.filter((d) => Number(d?.idTipoDevengado) !== 4)
         : [];
-    const totalDevengados = nominaValida
-        ? devengadosExtras.reduce((total, d) => total + Number(d?.monto || 0), 0)
-        : null;
+    const extrasTotal = devengadosExtras.reduce((total, d) => total + Number(d?.monto || 0), 0);
     const salarioOrdinario = contrato?.salarioMensual ?? nominaValida?.salarioOrdinario ?? plaza?.salario ?? null;
+    // El total devengado es el salario ordinario mas los conceptos extras
+    // (es el mismo monto que el salario bruto).
+    const totalDevengados = nominaValida
+        ? Number(salarioOrdinario ?? 0) + extrasTotal
+        : null;
     const salarioBruto = nominaValida?.salarioBruto ?? (
         salarioOrdinario !== null && salarioOrdinario !== undefined
-            ? Number(salarioOrdinario) + Number(totalDevengados || 0)
+            ? Number(salarioOrdinario) + extrasTotal
             : totalDevengados
     );
     const totalDeducciones = nominaValida?.totalDeducciones ?? null;

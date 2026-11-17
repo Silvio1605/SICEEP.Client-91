@@ -62,19 +62,19 @@ export const AuthProvider = ({ children }) => {
                 clearInterval(intervalo);
                 cerrarSesionPorTokenExpirado('Tu sesión ha expirado. Ingresa nuevamente.');
             }
-        }, 5 * 60 * 1000);
+        }, 50 * 60 * 1000);
 
         return () => clearInterval(intervalo);
     }, [autenticado]);
 
-    // Bloqueo por inactividad: si el usuario no interactúa en 10 minutos,
+    // Bloqueo por inactividad: si el usuario no interactúa en 120 minutos,
     // la sesión se cierra. El timer se resetea con cualquier interacción
     // y al volver a la pestaña se comprueba cuánto tiempo pasó de verdad
     // (los timers se throttlean en segundo plano, así que se mide con Date.now()).
     useEffect(() => {
         if (!autenticado) return;
 
-        const LIMITE_INACTIVIDAD = 5 * 60 * 1000;
+        const LIMITE_INACTIVIDAD = 120 * 60 * 1000;
         let ultimaActividad = Date.now();
         let temporizador = null;
 

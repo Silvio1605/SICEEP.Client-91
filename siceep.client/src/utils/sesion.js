@@ -8,7 +8,6 @@ export const cerrarSesionPorTokenExpirado = (motivo = 'Sesión expirada') => {
     try {
         sessionStorage.setItem('siceep_motivo_logout', motivo);
         // Marca la sesión como cerrada: aunque la cookie HttpOnly permanezca
-        // (p. ej. si el servidor estaba caído), el token no se reutilizará.
         sessionStorage.setItem('siceep_sesion_cerrada', '1');
     } catch {
         // sin almacenamiento disponible

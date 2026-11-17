@@ -1,5 +1,4 @@
 // Id_Accion de dbo.Tipo_Accion usados al registrar manualmente en la bitácora
-// (POST /api/Bitacora/Registrar). Deben coincidir con el catálogo del servidor.
 export const ACCION_BITACORA = Object.freeze({
     VER: 1,
     REGISTRAR: 2,
